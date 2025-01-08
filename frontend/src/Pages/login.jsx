@@ -29,7 +29,6 @@ const Login = () => {
     }
     if (user) {
       toast.success("Login successful!", { position: "top-center" });
-      navigate("/home");
     }
   }, [error, user, navigate]);
 

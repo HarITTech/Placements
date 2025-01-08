@@ -200,6 +200,7 @@ const userSlice = createSlice({
         state.token = action.payload.user.token;
         state.status = "succeeded";
         state.error = null;
+        window.location.reload();
       })
       .addCase(loginUser .pending, (state) => {
         state.status = "loading";
