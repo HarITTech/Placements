@@ -8,7 +8,17 @@ import {
 import { jwtDecode } from "jwt-decode";
 import { IoImagesOutline } from "react-icons/io5";
 import { MdModeEdit, MdSave } from "react-icons/md";
-import { toast } from "react-toastify";
+import Loading from "../../component/Loading";
+import toast from "react-hot-toast";
+import Cookies from "js-cookie";
+import jsPDF from "jspdf";
+import {
+  FaEnvelope,
+  FaPhone,
+  FaGraduationCap,
+  FaCalendarAlt,
+  FaBook,
+} from "react-icons/fa";
 
 function Home() {
   const dispatch = useDispatch();
@@ -34,6 +44,7 @@ function Home() {
     twelfthSchool: "",
     twelfthScore: "",
     jee: "",
+    gap: "",
     mhtcet: "",
     cgpa: [],
     backlogs: [],
@@ -88,7 +99,22 @@ function Home() {
         clearTimeout(debounceTimeout.current);
       }
     };
-  }, [token, dispatch, user?.profile]); 
+  }, [token, dispatch, user?.profile]);
+
+  useEffect(() => {
+    let timeoutId;
+    if (loading) {
+      timeoutId = setTimeout(() => {
+        toast.warn("Taking too long to load. Refreshing...", {
+          position: "top-center",
+        });
+        Cookies.remove("mpsp");
+        localStorage.removeItem("persist:root");
+        window.location.reload();
+      }, 6000); // 1 minute timeout
+    }
+    return () => clearTimeout(timeoutId);
+  }, [loading]);
 
   useEffect(() => {
     if (user?.profile) {
@@ -112,6 +138,7 @@ function Home() {
         twelfthScore: user.profile.academicRecords?.twelfth?.percentage || "",
         twelfthSchool: user.profile.academicRecords?.twelfth?.schoolName || "",
         jee: user.profile.academicRecords?.jeeScore || "",
+        gap: user.profile.academicRecords?.gap || "",
         mhtcet: user.profile.academicRecords?.mhtCetScore || "",
         cgpa:
           user.profile.academicRecords?.cgpa.length > 0
@@ -205,7 +232,7 @@ function Home() {
 
   const handleBacklogChange = (index, field, value) => {
     const updatedBacklogs = [...formData.backlogs];
-    updatedBacklogs[index][field] = value;
+    updatedBacklogs[index] = { ...updatedBacklogs[index], [field]: value };
     setFormData((prev) => ({ ...prev, backlogs: updatedBacklogs }));
   };
 
@@ -224,7 +251,7 @@ function Home() {
   const addBacklog = () => {
     setFormData((prev) => ({
       ...prev,
-      backlogs: [...prev.backlogs, { semester: "", count: "" }],
+      backlogs: [...prev.backlogs, { semester: "", count: "", dead: "" }],
     }));
   };
 
@@ -252,6 +279,7 @@ function Home() {
           address: formData.address,
           academicRecords: {
             jeeScore: formData.jee,
+            gap: formData.gap,
             mhtCetScore: formData.mhtcet,
             twelfth: {
               schoolName: formData.twelfthSchool,
@@ -274,6 +302,7 @@ function Home() {
             backlogs: formData.backlogs.map((item) => ({
               semester: item.semester,
               count: parseInt(item.count, 10) || 0,
+              dead: parseInt(item.dead, 10) || 0,
             })),
           },
           suspension: {
@@ -322,10 +351,160 @@ function Home() {
     setIsEditing((prev) => !prev);
   };
   //console.error("Error from controller:", err);
+
+  const handlePreviewPDF = () => {
+    try {
+      const doc = new jsPDF();
+
+      // Colors and Styling
+      const primaryColor = "#2C3E50";
+      const lightGray = "#BDC3C7";
+
+      // Add Header Section
+      doc.setFillColor(primaryColor);
+      doc.rect(0, 0, 215, 45, "F"); // Full-width header
+
+      // Add Profile Picture Placeholder
+      const profileImg = user?.profile?.profilePic || "default-profile.png"; // Replace with an actual image path or default image
+      try {
+        doc.addImage(profileImg, "JPEG", 10, 10, 30, 30);
+      } catch (err) {
+        console.error("Profile picture not added:", err);
+      }
+
+      // Add Name and College Details
+      doc.setFont("Helvetica", "bold");
+      doc.setFontSize(24);
+      doc.setTextColor("#FFFFFF");
+      doc.text(String(formData.studentName || "Your Name"), 50, 20); // Name
+      doc.setFontSize(16);
+
+      // Handle long college names with word wrapping
+      const collegeName =
+        formData.collegeName ||
+        "Tulsiramji Gaikwad Patil College of Engineering and Technology, Nagpur";
+      const collegeLines = doc.splitTextToSize(collegeName, 140); // Wrap text to fit within 140mm width
+      doc.text(collegeLines, 50, 30); // Display wrapped text
+      doc.setFontSize(8);
+
+      const collegeWebsite =
+        formData.collegeWebsite || "https://tnpportal.harittech.in";
+      doc.textWithLink("Visit TNP Portal by HarIT Tech Solution", 52, 42, {
+        url: collegeWebsite,
+      });
+
+      // Section Heading Function
+      const addSectionHeading = (title, yPosition) => {
+        doc.setFontSize(18);
+        doc.setTextColor(primaryColor);
+        doc.setFont("Helvetica", "bold");
+        doc.text(String(title), 10, yPosition);
+        doc.setDrawColor(primaryColor);
+        doc.setLineWidth(0.5);
+        doc.line(10, yPosition + 2, 200, yPosition + 2); // Horizontal line
+      };
+
+      // Add Content
+      const addContent = (key, value, x, y) => {
+        const safeValue = String(value || "N/A");
+
+        // Add Key and Value
+        doc.setFontSize(12);
+        doc.setTextColor(lightGray);
+        doc.setFont("Helvetica", "bold");
+        doc.text(String(key), x, y);
+        doc.setFont("Helvetica", "normal");
+        doc.setTextColor("#000000");
+        doc.text(safeValue, x + 40, y); // Add spacing for value alignment
+      };
+
+     // Add Personal Details Section
+    addSectionHeading("Personal Details", 55);
+    addContent("Email:", formData.email, 15, 65);
+    addContent("Phone:", formData.phone, 15, 75);
+    addContent("Branch:", formData.branch, 15, 85);
+    addContent("Year:", formData.year, 15, 95);
+    addContent("Semester:", formData.semester, 15, 105);
+    addContent("College ID:", formData.tbtId, 15, 115);
+    addContent("Session:", formData.session, 15, 125);
+    addContent("Gender:", formData.gender, 15, 135);
+    addContent("Date of Birth:", formData.dob, 15, 145);
+
+    // Add Academic Details Section
+    addSectionHeading("Academic Details", 155);
+    addContent("10th School:", formData.tenthSchool, 15, 165);
+    addContent("10th Score:", formData.tenthScore, 15, 175);
+    addContent("12th School:", formData.twelfthSchool, 15, 185);
+    addContent("12th Score:", formData.twelfthScore, 15, 195);
+    addContent("JEE Score:", formData.jee, 15, 205);
+    addContent("MHT CET Score:", formData.mhtcet, 15, 215);
+
+    // Add CGPA Details Section
+    addSectionHeading("CGPA Details", 225);
+    let cgpaYOffset = 235; // Dynamic Y offset for CGPA details
+    (formData.cgpa || []).forEach((cgpaObj, index) => {
+      cgpaObj.semesters.forEach((semesterData, semIndex) => {
+        addContent(
+          `${semesterData.semester} Semester:`,
+          semesterData.cgpa,
+          20,
+          cgpaYOffset
+        );
+        cgpaYOffset += 10; // Add spacing between rows
+      });
+    });
+
+    // Add Backlog Details Section
+    addSectionHeading("Backlog Details", cgpaYOffset + 15); // Add gap after CGPA section
+    let backlogYOffset = cgpaYOffset + 25; // Dynamic Y offset for backlog details
+    (formData.backlogs || []).forEach((backlog, index) => {
+      addContent(
+        `${backlog.semester} Semester:`,
+        `${backlog.count || 0} live, ${backlog.dead || 0} dead`,
+        15,
+        backlogYOffset
+      );
+      backlogYOffset += 15; // Add spacing between rows
+    });
+
+    // Check if the page is full
+    if (backlogYOffset > 280) {
+      doc.addPage();
+      backlogYOffset = 20; // Reset the Y offset for the new page
+    }
+
+    // Add Achievements and Skills Section
+    addSectionHeading("Achievements & Skills", backlogYOffset + 15);
+    addContent("Achievements:", formData.achievements, 15, backlogYOffset + 25);
+    addContent("Skills:", formData.skills, 15, backlogYOffset + 35);
+
+    // Add Current Status Section
+    addSectionHeading("Current Status", backlogYOffset + 45);
+    addContent("Company Name:", formData.currentStatus.companyName, 15, backlogYOffset + 55);
+    addContent("Position:", formData.currentStatus.position, 15, backlogYOffset + 65);
+    addContent("Duration:", formData.currentStatus.duration, 15, backlogYOffset + 75);
+    addContent("Job Type:", formData.currentStatus.jobType, 15, backlogYOffset + 85);
+    addContent("Location:", formData.currentStatus.location, 15, backlogYOffset + 95);
+    addContent("Start Date:", formData.currentStatus.startDate, 15, backlogYOffset + 105);
+    addContent("End Date:", formData.currentStatus.endDate, 15, backlogYOffset + 115);
+
+   
+
+      // Save and Preview PDF
+      const pdfBlob = doc.output("blob");
+      const pdfUrl = URL.createObjectURL(pdfBlob);
+      window.open(pdfUrl);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-200 py-6 px-4">
       {loading ? ( // Add this conditional rendering
-        <div className="text-center text-gray-600">Loading...</div>
+        <div className="">
+          <Loading />
+        </div>
       ) : (
         <div className="w-full mx-auto border-[2px] border-gray-600 bg-opacity-40 bg-white backdrop-blur-md rounded-lg shadow-lg p-6">
           <div className="flex items-center justify-between">
@@ -387,6 +566,7 @@ function Home() {
                 </div>
               </div>
             </div>
+            <div className="flex gap-2 ">
             <button
               onClick={toggleEditMode}
               className={`flex items-center gap-2 transition duration-300 ease-in-out ${
@@ -405,6 +585,14 @@ function Home() {
                 </>
               )}
             </button>
+            <button
+              onClick={handlePreviewPDF}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-2 px-4 rounded-lg shadow-md"
+            >
+              Export
+            </button>
+            </div>
+            
           </div>
 
           {/* Profile Details */}
@@ -436,7 +624,7 @@ function Home() {
               />
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-md font-semibold text-gray-700">
                 Own Email <span className="text-red-500">*</span>
               </label>
@@ -448,7 +636,7 @@ function Home() {
                 required // This makes the field required
                 className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
               />
-            </div>
+            </div> */}
 
             <div>
               <label className="block text-md font-semibold text-gray-700">
@@ -492,6 +680,19 @@ function Home() {
                 <option value="2025-2026">2025-2026</option>
               </select>
             </div>
+
+            <div>
+                <label className="block text-md font-semibold text-gray-700">
+                  Gap Between
+                </label>
+                <input
+                  id="gap"
+                  value={formData.gap}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                />
+              </div>
 
             <div>
               <label className="block text-md font-semibold text-gray-700">
@@ -772,6 +973,15 @@ function Home() {
                             placeholder="Count"
                             className="border border-gray-300 rounded p-1 mr-2"
                           />
+                          <input
+                            type="number"
+                            value={backlog.dead}
+                            onChange={(e) =>
+                              handleBacklogChange(index, "dead", e.target.value)
+                            }
+                            placeholder="Dead"
+                            className="border border-gray-300 rounded p-1 mr-2"
+                          />
                           <button
                             onClick={() => removeBacklog(index)}
                             className="bg-red-600 text-white py-1 px-2 rounded"
@@ -785,7 +995,7 @@ function Home() {
                             {backlog.semester} Semester:{" "}
                           </span>
                           <span className="font-semibold text-red-600">
-                            {backlog.count} backlog
+                            {backlog.count} live, {backlog.dead} dead
                           </span>
                         </li>
                       )}
@@ -946,9 +1156,13 @@ function Home() {
             <h2 className="text-2xl font-bold text-gray-800">Applied Jobs</h2>
             <div className="space-y-2 mt-4">
               {user?.profile?.appliedJobsHistory?.map((job, index) => (
-                <div key={index} className="space-y-2 bg-white/80 shadow-sm rounded-lg p-4">
+                <div
+                  key={index}
+                  className="space-y-2 bg-white/80 shadow-sm rounded-lg p-4"
+                >
                   <p className="font-medium">
-                    <span className="font-semibold">{job.jobId.title}</span> at {job.jobId.company}
+                    <span className="font-semibold">{job.jobId.title}</span> at{" "}
+                    {job.jobId.company}
                   </p>
                   <p className="text-xs">
                     Applied on: {new Date(job.appliedOn).toLocaleDateString()}

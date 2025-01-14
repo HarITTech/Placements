@@ -65,7 +65,7 @@ const Navigation = () => {
       <header className="relative p-4 flex flex-col items-center gap-2">
         <div className="w-20 h-20 rounded-full text-[#dddddd]">
           <img
-            src={tnp}
+            src="https://img.freepik.com/premium-photo/3d-entrepreneur-icon-business-leader-innovation-illustration-logo_762678-101891.jpg"
             alt="user-img"
             className="w-full h-full rounded-full object-cover"
           />

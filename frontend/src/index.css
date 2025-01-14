@@ -20,3 +20,15 @@
   *::-webkit-scrollbar {
     display: none; /* Hides the scrollbar */
   }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+  
+  button:disabled:hover::after {
+    content: "✖"; /* Wrong symbol */
+    position: absolute;
+    color: red;
+    font-size: 20px;
+    margin-left: 5px;
+  }

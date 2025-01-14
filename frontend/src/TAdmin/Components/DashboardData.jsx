@@ -2,12 +2,18 @@ import React, { useEffect } from "react";
 import { SiConstruct3 } from "react-icons/si";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserById, listUsersOfCollege } from "../../redux/userSlice";
+import { getAllJobs } from "../../redux/jobSlice";
 
 const DashboardData = () => {
   const dispatch = useDispatch();
   const { user, status, error, collegeUsers } = useSelector(
     (state) => state.user
   );
+  const { jobs, loading } = useSelector((state) => state.jobs);
+
+  useEffect(() => {
+    dispatch(getAllJobs());
+  }, [dispatch]);
 
   useEffect(() => {
     if (user?._id) {
@@ -15,8 +21,12 @@ const DashboardData = () => {
       dispatch(listUsersOfCollege(user.college._id));
     }
   }, [dispatch, user?._id]);
- 
+
   if (status === "loading" || !user || !user.college) {
+    return <div>Loading...</div>;
+  }
+
+  if (loading) {
     return <div>Loading...</div>;
   }
 
@@ -30,7 +40,7 @@ const DashboardData = () => {
         <div>
           <div className="bg-[#ffffff80] backdrop-blur-sm mb-6 p-5 rounded-[20px] w-[320px] shadow-lg flex flex-col items-center text-center">
             <img
-              src="https://gratisography.com/wp-content/uploads/2024/10/gratisography-cool-cat-800x525.jpg"
+              src="https://img.freepik.com/premium-photo/3d-entrepreneur-icon-business-leader-innovation-illustration-logo_762678-101891.jpg"
               alt="Upload Illustration"
               className="w-36 h-36 object-cover rounded-xl mb-5 mt-3"
             />
@@ -82,7 +92,7 @@ const DashboardData = () => {
               Contact HarIT Tech
             </button>
           </div>
-          <div className="bg-[#ffffff80] backdrop-blur-sm mb-6 p-5 w-[320px] rounded-[20px] shadow-lg">
+          <div className="bg-[#ffffff80] backdrop-blur-sm mb-6 p-2 w-[320px] rounded-[20px] shadow-lg">
             <h3 className="text-lg font-bold mb-3">Recently Added Student's</h3>
             <div>
               {[...collegeUsers] // Create a copy of the array
@@ -102,7 +112,7 @@ const DashboardData = () => {
                       className="w-[40px] h-[40px] object-cover rounded-2xl mr-4"
                     />
                     <div className="flex-1">
-                      <div className="font-bold text-[16px] text-[#333]">
+                      <div className="font-bold text-[16px] text-[#333 ">
                         {student.email}
                       </div>
                       <div className="font-semibold text-[14px] text-[#383838]">
@@ -117,69 +127,103 @@ const DashboardData = () => {
         </div>
 
         <div>
+          
           <div className="bg-[#ffffff80] mb-6 backdrop-blur-sm p-5 min-w-[430px] rounded-[20px] shadow-lg">
-            <h3 className="text-lg font-bold mb-3">Student Analytics</h3>
+            <h3 className="text-lg font-bold mb-3 text-[#333]">
+              Student Analytics
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-[#ffffff37] p-3 rounded-[20px] shadow-md">
+                <h4 className="text-md font-bold mb-2 text-[#444242]">
+                  Job Round Qualification
+                </h4>
+                <div className="flex justify-between">
+                  <div className="flex flex-col items-center">
+                    <p className="text-lg font-bold text-[#5f5ff1]">
+                      Qualified
+                    </p>
+                    <p className="text-2xl font-bold text-[#333]">80%</p>
+                  </div>
+                  <div className="flex flex-col pl-2 items-center">
+                    <p className="text-lg font-bold text-[#e46059]">
+                      Not Qualified
+                    </p>
+                    <p className="text-2xl font-bold text-[#333]">20%</p>
+
+                  </div>
+                </div>
+              </div>
+              <div className="bg-[#ffffff37] p-3 rounded-[20px] shadow-md">
+                <h4 className="text-md font-bold mb-2 text-[#444242]">
+                  Student Job Applied
+                </h4>
+                <div className="flex justify-between">
+                  <div className="flex flex-col items-center">
+                    <p className="text-lg font-bold text-[#5f5ff1]">Applied</p>
+                    <p className="text-2xl font-bold text-[#333]">120</p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <p className="text-lg pl-2 font-bold text-[#e46059]">
+                      Not Applied
+                    </p>
+                    <p className="text-2xl font-bold text-[#333]">80</p>
+
+                  </div>
+                </div>
+              </div>
+              <div className="bg-[#ffffff37] p-3 rounded-[20px] shadow-md">
+                <h4 className="text-md font-bold mb-2 text-[#444242]">
+                  Placement Analysis
+                </h4>
+                <div className="flex justify-between">
+                  <div className="flex flex-col items-center">
+                    <p className="text-lg font-bold text-[#5f5ff1]">Placed</p>
+                    <p className="text-2xl font-bold text-[#333]">60%</p>
+                   
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <p className="text-lg font-bold text-[#e46059]">
+                      Not Placed
+                    </p>
+                    <p className="text-2xl font-bold text-[#333]">40%</p>
+                   
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="bg-[#ffffff80] mb-6 backdrop-blur-sm p-5 min-w-[430px] rounded-[20px] shadow-lg">
             <h3 className="text-lg font-bold mb-3">Recent's Post</h3>
             <div className="w-[100%] justify-items-center my-3 ">
-              <div className="flex w-[100%] items-center mb-4 p-3 bg-[#ffffff37] backdrop-blur-sm shadow-md rounded-[20px] hover:bg-[#ffffffb9] cursor-pointer">
-                <img
-                  src="https://cdn3.pixelcut.app/7/20/uncrop_hero_bdf08a8ca6.jpg"
-                  alt="avatar"
-                  className="w-[52px] h-[52px] object-cover rounded-2xl mr-4"
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between mb-1">
-                    <span className="font-bold text-[16px] text-[#333]">
-                      Job Title
-                    </span>
-                    <span className="text-[13px] text-[#717171]">date</span>
+              {[...jobs]
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                .slice(0, 3)
+                .map((job) => (
+                  <div
+                    key={job._id}
+                    className="flex w-[100%] items-center mb-4 p-3 bg-[#ffffff37] backdrop-blur-sm shadow-md rounded-[20px] hover:bg-[#ffffffb9] cursor-pointer"
+                  >
+                    <img
+                      src={job.logo}
+                      alt="avatar"
+                      className="w-[52px] h-[52px] object-cover rounded-2xl mr-4"
+                    />
+                    <div className="flex-1">
+                      <div className="flex justify-between mb-1">
+                        <span className="font-bold text-[16px] text-[#333]">
+                          {job.title}
+                        </span>
+                        <span className="text-[13px] text-[#717171]">
+                          {new Date(job.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="font-semibold text-[15px] text-[#383838]">
+                        {job.company}
+                      </div>
+                    </div>
                   </div>
-                  <div className="font-semibold text-[15px] text-[#383838]">
-                    Company Name
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex w-[100%] items-center mb-4 p-3 bg-[#ffffff37] backdrop-blur-sm shadow-md rounded-[20px] hover:bg-[#ffffffb9] cursor-pointer">
-                <img
-                  src="https://cdn3.pixelcut.app/7/20/uncrop_hero_bdf08a8ca6.jpg"
-                  alt="avatar"
-                  className="w-[52px] h-[52px] object-cover rounded-2xl mr-4"
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between mb-1">
-                    <span className="font-bold text-[16px] text-[#333]">
-                      Job Title
-                    </span>
-                    <span className="text-[13px] text-[#717171]">date</span>
-                  </div>
-                  <div className="font-semibold text-[15px] text-[#383838]">
-                    Company Name
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex w-[100%] items-center mb-4 p-3 bg-[#ffffff37] backdrop-blur-sm shadow-md rounded-[20px] hover:bg-[#ffffffb9] cursor-pointer">
-                <img
-                  src="https://cdn3.pixelcut.app/7/20/uncrop_hero_bdf08a8ca6.jpg"
-                  alt="avatar"
-                  className="w-[52px] h-[52px] object-cover rounded-2xl mr-4"
-                />
-                <div className="flex-1">
-                  <div className="flex justify-between mb-1">
-                    <span className="font-bold text-[16px] text-[#333]">
-                      Job Title
-                    </span>
-                    <span className="text-[13px] text-[#717171]">date</span>
-                  </div>
-                  <div className="font-semibold text-[15px] text-[#383838]">
-                    Company Name
-                  </div>
-                </div>
-              </div>
+                ))}
             </div>
           </div>
 
@@ -209,6 +253,24 @@ const DashboardData = () => {
               <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
                 Manage Placement Drive Data
               </li>
+              <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
+                Job Management Portal
+              </li>
+              <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
+                Feedback and Contact Features
+              </li>
+              <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
+                Email through Notifications
+              </li>
+              <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
+                Enroll to Upcoming Events
+              </li>
+              <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
+                Export option for Resume
+              </li>
+              <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
+                Rounds Updates on Student Portal
+              </li>
               <li className="mb-2 pb-2">Direct Access Student Details</li>
             </ul>
           </div>
@@ -216,11 +278,15 @@ const DashboardData = () => {
             <h3 className="text-xl font-bold mb-3">Upcoming Feature's</h3>
             <ul className=" ml-3  font-medium text-lg text-gray-600">
               <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
-                Create Round for Job's{" "}
+                Training Section for Student{" "}
               </li>
               <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
-                Student Feedback and Messages
+                Highlights of Top Placements and Companies
               </li>
+              <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
+                Student Eligibility Tracking Algorithm
+              </li>
+
               <li className="mb-2 border-b-[1px] border-[rgb(22,22,59)] pb-2">
                 Off Campus Placement Opportunity
               </li>

@@ -9,6 +9,9 @@ import { IoImagesOutline } from "react-icons/io5";
 import { deleteJob, updateLogo } from "../../redux/jobSlice"; 
 import DOMPurify from "dompurify";
 import toast from "react-hot-toast";
+import Popup from "./AppliedPopup";
+import { MdModeEdit } from "react-icons/md";
+import PlacementPopup from "./PlacementPopup";
 
 
 const JobCard = ({ job }) => {
@@ -16,7 +19,9 @@ const JobCard = ({ job }) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-    
+  const [isPopupOpen, setPopupOpen] = useState(false);
+  const [isPlacementPopupOpen, setIsPlacementPopupOpen] = useState(false); // New state for PlacementPopup
+
   const handleDelete = async () => {
     try {
       const resultAction = await dispatch(deleteJob(job._id));
@@ -72,7 +77,15 @@ const JobCard = ({ job }) => {
 
   const { title, description, company, location, type, logo, totalApplications } = job;
   
+  const handleEditClick = () => {
+    document.body.classList.add("no-scroll");
+    setPopupOpen(true);
+  };
 
+  const closePopup = () => {
+    document.body.classList.remove("no-scroll");
+    setPopupOpen(false);
+  };
 
   return (
     <div className="flex flex-wrap gap-5 justify-center p-5 mx-10 mt-5">
@@ -122,18 +135,25 @@ const JobCard = ({ job }) => {
             </h4>
             <p className="text-[15px] text-[#16163b]">Location: {location}</p>
           </div>
-          <button className="absolute top-[0px] right-[0px] flex items-center gap-1 px-2 py-0.5 pr-3 bg-[#A6C0CF] shadow-xl text-[#16163b] border border-[#517488] rounded-xl text-[15px] font-medium hover:bg-[#80a7be]">
-            <FaRankingStar /> Create Rounds
-          </button>
+          
           <div className="absolute top-[35px] right-[0px] flex items-center gap-2">
-            <button className="flex items-center gap-1 px-2 py-0.5 pr-3 bg-[#A6C0CF] shadow-md text-[#16163b] border border-[#517488] rounded-xl text-[15px] font-medium hover:bg-[#80a7be]">
-              <FaUserCheck /> {totalApplications} Applied
+          <button
+              className="flex items-center gap-1 px-2 py-0.5 pr-3 bg-[#A6C0CF] shadow-md text-[#16163b] border border-[#517488] rounded-xl text-[15px] font-medium hover:bg-[#80a7be]"
+              onClick={handleEditClick}
+            >
+              <MdModeEdit /> Rounds
             </button>
             <button
               className="flex items-center gap-1 px-2 py-0.5 pr-3 bg-[#dd4d4d] shadow-md text-white border border-[#a52929] rounded-xl text-[15px] font-medium hover:bg-[#a52929]"
               onClick={() => setIsConfirmOpen(true)}
             >
               <MdDeleteForever /> Delete
+            </button>
+            <button
+              className="flex items-center gap-1 px-2 py-0.5 pr-3 bg-[#A6C0CF] shadow-md text-[#16163b] border border-[#517488] rounded-xl text-[15px] font-medium hover:bg-[#80a7be]"
+              onClick={() => setIsPlacementPopupOpen(true)}
+            >
+              <MdModeEdit /> Placements
             </button>
           </div>
         </div>
@@ -179,6 +199,10 @@ const JobCard = ({ job }) => {
           ></div>
         </div>
       </div>
+      {isPopupOpen && <Popup onClose={closePopup} job={job}/>}
+      {isPlacementPopupOpen && (
+          <PlacementPopup onClose={() => setIsPlacementPopupOpen(false)} job={job} />
+        )}
     </div>
   );
 };

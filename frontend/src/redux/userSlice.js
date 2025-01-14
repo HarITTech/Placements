@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axiosInstance from "./axiosInstance";
 import Cookies from "js-cookie"; // Import js-cookie library
+import toast from "react-hot-toast";
 
 // Thunk for login functionality
 export const loginUser = createAsyncThunk(
@@ -40,6 +41,8 @@ export const logoutUser = createAsyncThunk(
       // Remove persist:root from localStorage to clear Redux state
       localStorage.removeItem("persist:root");
 
+      
+
       return {}; // Return an empty object
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Logout failed");
@@ -61,7 +64,7 @@ export const logoutUser = createAsyncThunk(
 //   }
 // );
 export const fetchUserById = createAsyncThunk(
-  "user/fetchUser ById",
+  "user/fetchUserById",
   async (userId, { getState, rejectWithValue }) => {
     const { user, student } = getState().user;
 
@@ -167,6 +170,32 @@ export const deleteUser  = createAsyncThunk(
   }
 );
 
+// Thunk for forget password functionality
+export const forgetPassword = createAsyncThunk(
+  "user/forgetPassword",
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("auth/forgot-password", { email });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Forget password failed");
+    }
+  }
+);
+
+// Thunk for reset password functionality
+export const resetPassword = createAsyncThunk(
+  "user/resetPassword",
+  async ({ email, otp, newPassword }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/auth/reset-password", { email, otp, newPassword });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Reset password failed");
+    }
+  }
+);
+
 
 
 const userSlice = createSlice({
@@ -180,6 +209,7 @@ const userSlice = createSlice({
     createdStudent: null,
     status: "idle",
     error: null,
+    loading: false,
   },
   reducers: {
     resetState: (state) => {
@@ -190,6 +220,7 @@ const userSlice = createSlice({
       state.collegeUsers = [];
       state.createdStudent = null;
       state.status = "idle";
+      state.loading = false;
       state.error = null;
     },
   },
@@ -197,16 +228,19 @@ const userSlice = createSlice({
     builder
       .addCase(loginUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
+        state.loading = false;
         state.token = action.payload.user.token;
         state.status = "succeeded";
         state.error = null;
         window.location.reload();
       })
-      .addCase(loginUser .pending, (state) => {
+      .addCase(loginUser.pending, (state) => {
         state.status = "loading";
+        state.loading = true;
       })
-      .addCase(loginUser .rejected, (state, action) => {
+      .addCase(loginUser.rejected, (state, action) => {
         state.status = "failed";
+        state.loading = false;
         state.error = action.payload; // Debugging
       })
       .addCase(logoutUser.fulfilled, (state) => {
@@ -240,6 +274,7 @@ const userSlice = createSlice({
         // Replace the whole user object with the updated profile
         state.user = { ...state.user, profile: action.payload.profile };
         state.status = "succeeded";
+        window.location.reload();
       })
     .addCase(updateStudentProfile.rejected, (state, action) => {
       state.status = "failed";
@@ -268,6 +303,7 @@ const userSlice = createSlice({
       state.createdStudent = action.payload; // Store the created student
       state.status = "succeeded";
       state.error = null;
+      window.location.reload();
     })
     .addCase(createStudent.pending, (state) => {
       state.status = "loading";
@@ -286,6 +322,38 @@ const userSlice = createSlice({
     .addCase(deleteUser .rejected, (state, action) => {
       state.status = "failed";
       state.error = action.payload;
+    })
+    .addCase(forgetPassword.pending, (state) => {
+      state.status = "loading";
+      state.loading = true;
+    })
+    .addCase(forgetPassword.fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.loading = false;
+      state.error = null;
+      toast.success("OTP has been sent to your email", { position: "top-center" });
+    })
+    .addCase(forgetPassword.rejected, (state, action) => {
+      state.status = "failed";
+      state.loading = false;
+      state.error = action.payload;
+      toast.error(`Forget password failed: ${action.payload}`, { position: "top-center" });
+    })
+    . addCase(resetPassword.pending, (state) => {
+      state.status = "loading";
+      state.loading = true;
+    })
+    .addCase(resetPassword.fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.loading = false;
+      state.error = null;
+      toast.success("Password reset successfully!", { position: "top-center" });
+    })
+    .addCase(resetPassword.rejected, (state, action) => {
+      state.status = "failed";
+      state.loading = false;
+      state.error = action.payload;
+      toast.error(`Reset password failed: ${action.payload}`, { position: "top-center" });
     });
   },
 });

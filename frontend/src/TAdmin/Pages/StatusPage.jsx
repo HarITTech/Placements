@@ -5,6 +5,7 @@ import { TbProgressCheck } from "react-icons/tb";
 import JobCard from '../Components/JobCard';
 import Content from '../Components/Content';
 import { getAllJobs } from '../../redux/jobSlice';
+import Loading from '../../component/Loading';
 
 const StatusPage = () => {
     const dispatch = useDispatch();
@@ -63,7 +64,7 @@ const StatusPage = () => {
 
                 {/* Display filtered job cards based on activeForm */}
                 {loading ? (
-                    <p className="text-center text-lg text-gray-600">Loading jobs...</p>
+                    <p className="text-center text-lg text-gray-600"><Loading/></p>
                 ) : (
                     <div className="w-full">
                         {sortedJobs.length > 0 ? (

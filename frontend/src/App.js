@@ -20,39 +20,60 @@ import JobDetails from "./Pages/home/Jobdetails";
 import { Internship } from "./Pages/home/Internship";
 import TAdminRoutes from "./Routes/TAdminRoutes";
 import { Toaster } from "react-hot-toast";
+import Event from "./Pages/home/Event";
+import Highlight from "./Pages/home/Highlight";
+import Loading from "./component/Loading";
 
 function App() {
   const { token } = useSelector((state) => state.user);
-  const [loading, setLoading] = useState(true); // Loading state
+  const [loading, setLoading] = useState(true);
+
+  const applyBackgroundColor = (role) => {
+    if (role === "student") {
+      document.body.style.backgroundColor = "rgb(22, 22, 59)";
+      localStorage.setItem("backgroundColor", "rgb(22, 22, 59)");
+    } else if (role === "global_admin") {
+      document.body.style.backgroundColor = "rgb(26, 32, 44)";
+      localStorage.setItem("backgroundColor", "rgb(26, 32, 44)");
+    } else {
+      document.body.style.backgroundColor = "rgba(255, 255, 255, 0)";
+      localStorage.removeItem("backgroundColor");
+    }
+  };
 
   useEffect(() => {
     const tokenFromCookies = Cookies.get("mpsp") || token;
+
     if (window.location.pathname !== "/login") {
       if (tokenFromCookies) {
         try {
           const decoded = jwtDecode(tokenFromCookies);
-          // Check if token is expired
+
           if (decoded.exp * 1000 < Date.now()) {
             Cookies.remove("mpsp");
+            localStorage.removeItem("persist:root");
             window.location.href = "/login";
           } else {
-            // Set background color based on role
-            if (decoded.role === "student") {
-              document.body.style.backgroundColor = "rgb(22, 22, 59)";
-            } else if (decoded.role === "global_admin") {
-              document.body.style.backgroundColor = "rgb(26, 32, 44)";
-            }
+            applyBackgroundColor(decoded.role);
           }
         } catch (error) {
           console.error("Error decoding token:", error);
           Cookies.remove("mpsp");
+          localStorage.removeItem("persist:root");
           window.location.href = "/login";
         }
       } else {
-        document.body.style.backgroundColor = "rgba(255, 255, 255, 0)";
+        applyBackgroundColor(null);
+        localStorage.removeItem("persist:root");
+      }
+    } else {
+      const storedColor = localStorage.getItem("backgroundColor");
+      if (storedColor) {
+        document.body.style.backgroundColor = storedColor;
       }
     }
-    setLoading(false); // Set loading to false after checks
+
+    setLoading(false);
   }, [token]);
 
   const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -61,12 +82,10 @@ function App() {
 
     try {
       const decoded = jwtDecode(tokenFromCookies);
-      // Check if token is expired
       if (decoded.exp * 1000 < Date.now()) {
         Cookies.remove("mpsp");
         return <Navigate to="/login" />;
       }
-      // Check if user role is allowed
       if (allowedRoles.includes(decoded.role)) {
         return children;
       }
@@ -83,13 +102,16 @@ function App() {
     if (tokenFromCookies) {
       try {
         const decoded = jwtDecode(tokenFromCookies);
-        // Check if token is expired
         if (decoded.exp * 1000 < Date.now()) {
           Cookies.remove("mpsp");
           return "/login";
         }
-        // Validate role and return appropriate route
-        if (decoded && decoded.role && ["student", "global_admin", "tnp_admin"].includes(decoded.role)) {
+        if (
+          decoded &&
+          decoded.role &&
+          ["student", "global_admin", "tnp_admin"].includes(decoded.role)
+        ) {
+          applyBackgroundColor(decoded.role); // Ensure background color is applied
           if (decoded.role === "student") return "/";
           else if (decoded.role === "global_admin") return "/gadmin/dashboard";
           else if (decoded.role === "tnp_admin") return "/tadmin/dashboard";
@@ -103,7 +125,7 @@ function App() {
   };
 
   if (loading) {
-    return <div>Loading...</div>; // Show loading state
+    return <div><Loading/></div>;
   }
 
   return (
@@ -123,7 +145,7 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRoute allowedRoles={["student", "tnp_admin", "global_admin"]}>
+            <ProtectedRoute allowedRoles={["student"]}>
               <div className="flex">
                 <Sidebar />
                 <main className="flex-1 bg-gray-200 p-3 rounded-l-3xl">
@@ -136,10 +158,12 @@ function App() {
         <Route
           path="/job"
           element={
-            <ProtectedRoute allowedRoles={["student", "tnp_admin", "global_admin"]}>
+            <ProtectedRoute
+              allowedRoles={["student", "tnp_admin", "global_admin"]}
+            >
               <div className="flex">
                 <Sidebar />
-                <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
+                <main className="flex-1  bg-gray-200 p-6 rounded-l-3xl">
                   <Job />
                 </main>
               </div>
@@ -149,7 +173,9 @@ function App() {
         <Route
           path="/job/:jobId"
           element={
-            <ProtectedRoute allowedRoles={["student", "tnp_admin", "global_admin"]}>
+            <ProtectedRoute
+              allowedRoles={["student", "tnp_admin", "global_admin"]}
+            >
               <div className="flex">
                 <Sidebar />
                 <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
@@ -162,7 +188,9 @@ function App() {
         <Route
           path="/internship"
           element={
-            <ProtectedRoute allowedRoles={["student", "tnp_admin", "global_admin"]}>
+            <ProtectedRoute
+              allowedRoles={["student", "tnp_admin", "global_admin"]}
+            >
               <div className="flex">
                 <Sidebar />
                 <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
@@ -175,7 +203,9 @@ function App() {
         <Route
           path="/notify"
           element={
-            <ProtectedRoute allowedRoles={["student", "tnp_admin", "global_admin"]}>
+            <ProtectedRoute
+              allowedRoles={["student", "tnp_admin", "global_admin"]}
+            >
               <div className="flex">
                 <Sidebar />
                 <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
@@ -185,7 +215,33 @@ function App() {
             </ProtectedRoute>
           }
         />
-       
+        <Route
+          path="/event"
+          element={
+            <ProtectedRoute allowedRoles={["student"]}>
+              <div className="flex">
+                <Sidebar />
+                <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
+                  <Event />
+                </main>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        {/* <Route
+          path="/highlight"
+          element={
+            <ProtectedRoute allowedRoles={["student"]}>
+              <div className="flex">
+                <Sidebar />
+                <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
+                  <Highlight />
+                </main>
+              </div>
+            </ProtectedRoute>
+          }
+        /> */}
+
         {/* GAdmin Routes */}
         <Route
           path="/gadmin/*"

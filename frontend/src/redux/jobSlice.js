@@ -11,7 +11,7 @@ export const createJob = createAsyncThunk(
       const response = await axiosInstance.post("/jobs/create", jobData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to create job.");
+      return rejectWithValue(error.response?.data?.message || "Failed to create job.");
     }
   }
 );
@@ -24,7 +24,7 @@ export const getAllJobs = createAsyncThunk(
       const response = await axiosInstance.get("/jobs/all");
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -37,7 +37,7 @@ export const showEligibleStudents = createAsyncThunk(
       const response = await axiosInstance.post("/jobs/eligible-students", criteria);
       return response.data; // Return the list of eligible students
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to fetch eligible students.");
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch eligible students.");
     }
   }
 );
@@ -50,7 +50,7 @@ export const getEligibleJobs = createAsyncThunk(
       const response = await axiosInstance.get("/jobs/eligible");
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -63,7 +63,7 @@ export const deleteJob = createAsyncThunk(
       const response = await axiosInstance.delete(`/jobs/${jobId}`);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -76,7 +76,7 @@ export const applyForJob = createAsyncThunk(
       const response = await axiosInstance.post(`/jobs/${jobId}/apply`);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data?.message);
     }
   }
 );
@@ -87,9 +87,9 @@ export const createRounds = createAsyncThunk(
   async ({ jobId, rounds }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(`/jobs/${jobId}/rounds`, { rounds });
-      return response.data;
+      return response.data; // Response includes the updated job with new rounds
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data?.message || "Failed to create rounds.");
     }
   }
 );
@@ -97,12 +97,12 @@ export const createRounds = createAsyncThunk(
 // Update Round Results
 export const updateRoundResults = createAsyncThunk(
   "jobs/updateRoundResults",
-  async ({ jobId, roundId, qualifiedStudents }, { rejectWithValue }) => {
+  async ({ jobId, roundId, qualifiedStudents, unqualifiedStudents, absentStudents }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.put(`/jobs/${jobId}/rounds/${roundId}`, { qualifiedStudents });
+      const response = await axiosInstance.put(`/jobs/${jobId}/rounds/${roundId}`, { qualifiedStudents, unqualifiedStudents, absentStudents });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data?.message || "Failed to update round results.");
     }
   }
 );
@@ -120,7 +120,45 @@ export const updateLogo = createAsyncThunk(
       });
       return response.data; // Response with updated logo URL
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to update logo.");
+      return rejectWithValue(error.response?.data?.message || "Failed to update logo.");
+    }
+  }
+);
+
+export const addPlacement = createAsyncThunk(
+  "jobs/addPlacement",
+  async ({ jobId, studentId, packageAmount }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/jobs/placement/${jobId}`, { studentId, packageAmount });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to add placement.");
+    }
+  }
+);
+
+// Get All Placements for a Specific Job
+export const getPlacementsForJob = createAsyncThunk(
+  "jobs/getPlacementsForJob",
+  async (jobId, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/jobs/placement/${jobId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || "Failed to fetch placements.");
+    }
+  }
+);
+
+// Fetch Applied Jobs
+export const fetchAppliedJobs = createAsyncThunk(
+  "jobs/fetchAppliedJobs",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/jobs/applied");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to fetch applied jobs.");
     }
   }
 );
@@ -137,6 +175,8 @@ const jobsSlice = createSlice({
     loading: false,
     error: null,
     success: false,
+    placements: [],
+    appliedJobs: [],
   },
   reducers: {
     resetState: (state) => {
@@ -218,13 +258,17 @@ const jobsSlice = createSlice({
       // Create Rounds
       .addCase(createRounds.pending, (state) => {
         state.loading = true;
+        state.error = null;
+        state.success = false;
       })
       .addCase(createRounds.fulfilled, (state, action) => {
         state.loading = false;
+        state.success = true;
         const job = state.jobs.find(job => job._id === action.payload.jobId);
         if (job) {
           job.rounds = action.payload.rounds;
         }
+        window.location.reload();
       })
       .addCase(createRounds.rejected, (state, action) => {
         state.loading = false;
@@ -234,16 +278,21 @@ const jobsSlice = createSlice({
       // Update Round Results
       .addCase(updateRoundResults.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(updateRoundResults.fulfilled, (state, action) => {
         state.loading = false;
         const job = state.jobs.find(job => job._id === action.payload.jobId);
         if (job) {
-          const round = job.rounds.find(round => round._id === action.payload.round._id);
+          const round = job.rounds.find((round) => round._id === action.payload.round._id);
           if (round) {
             round.qualifiedStudents = action.payload.round.qualifiedStudents;
+            round.unqualifiedStudents = action.payload.round.unqualifiedStudents;
+            round.absentStudents = action.payload.round.absentStudents;
           }
         }
+        window.location.reload();
+        state.success = true;
       })
       .addCase(updateRoundResults.rejected, (state, action) => {
         state.loading = false;
@@ -280,7 +329,50 @@ const jobsSlice = createSlice({
       .addCase(showEligibleStudents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      // Add Placement
+      .addCase(addPlacement.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
+      .addCase(addPlacement.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        // Update the placements state if needed
+      })
+      .addCase(addPlacement.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // Get Placements for Job
+      .addCase(getPlacementsForJob.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getPlacementsForJob.fulfilled, (state, action) => {
+        state.loading = false;
+        state.placements = action.payload;
+        return state; // Add this line to prevent the popup from closing
+      })
+      .addCase(getPlacementsForJob.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Fetch Applied Jobs
+    .addCase(fetchAppliedJobs.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchAppliedJobs.fulfilled, (state, action) => {
+      state.appliedJobs = action.payload.appliedJobs; // Ensure this matches the backend response
+      state.loading = false;
+    })
+    .addCase(fetchAppliedJobs.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
   },
 });
 

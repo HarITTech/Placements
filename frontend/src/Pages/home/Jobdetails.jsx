@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import TermsAndConditionsPopup from "../../component/TermsAndConditionsPopup";
 import toast from "react-hot-toast";
+import Loading from "../../component/Loading";
 
 
 const JobDetails = () => {
@@ -41,7 +42,7 @@ const JobDetails = () => {
   };
 
   if (loading) {
-    return <p>Loading job details...</p>;
+    return <p><Loading/></p>;
   }
 
   if (error) {

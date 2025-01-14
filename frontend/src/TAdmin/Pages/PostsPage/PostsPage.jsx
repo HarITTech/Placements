@@ -32,7 +32,7 @@ const PostsPage = () => {
       tenthPercentage: "",
       twelfthPercentage: "",
       polyPercentage: "",
-      currentBacklogs: 0,
+      currentBacklogs: null,
     },
   });
 
@@ -48,7 +48,7 @@ const PostsPage = () => {
         ...prev,
         eligibilityCriteria: {
           ...prev.eligibilityCriteria,
-          [name]: value,
+          [name]: name === "currentBacklogs" && value === "" ? null : value,
         },
       }));
     } else {
@@ -71,7 +71,7 @@ const PostsPage = () => {
         tenthPercentage: "",
         twelfthPercentage: "",
         polyPercentage: "",
-        currentBacklogs: 0,
+        currentBacklogs: null,
       },
     }));
     toast.info("Filters cleared!");

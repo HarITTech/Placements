@@ -3,6 +3,7 @@ import  { User }  from "../models/user.model.js";
 import { College } from "../models/college.model.js";
 import dotenv from "dotenv";
 import { deleteImageFromCloudinary, uploadImageOnCloudinary } from "../cloud/cloudinary.js";
+import { sendResetPasswordEmail } from "../config/emailService.js";
 
 dotenv.config();
 
@@ -95,7 +96,7 @@ export const loginUser = async (req, res) => {
     res.cookie('mpsp', token, { 
       httpOnly: true, 
       secure: process.env.NODE_ENV === 'production',  
-      sameSite: "None" 
+     
     });
 
     res.status(200).json({ message: "Login successful", user: { id: user._id, role: user.role, token } });
@@ -351,3 +352,72 @@ export const getProfileCompletionDetails = async (req, res) => {
 };
 
 
+// Forget Password: Send reset password email with a reset code
+export const forgetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // 1. Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User  not found" });
+    }
+
+    // 2. Generate a 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetPasswordOTP = otp;
+    user.resetPasswordOTPExpires = Date.now() + 10 * 60 * 1000; // OTP valid for 10 minutes
+    await user.save();
+
+    // 3. Send OTP to the user's email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Password Reset OTP",
+      html: `<p>Your OTP for password reset is: <strong>${otp}</strong>. It is valid for 10 minutes.</p>`,
+    };
+
+    await sendResetPasswordEmail(mailOptions);
+
+    res.status(200).json({
+      message: "OTP has been sent to your email",
+    });
+  } catch (error) {
+    console.error("Error in forgetPassword:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Reset Password: Reset the user's password using the reset code
+export const resetPassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  try {
+    // 1. Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User  not found" });
+    }
+
+    // 2. Validate OTP
+    if (
+      user.resetPasswordOTP !== otp ||
+      user.resetPasswordOTPExpires < Date.now()
+    ) {
+      return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    // 3. Update the user's password
+    user.password = newPassword;
+    user.resetPasswordOTP = null; // Clear OTP
+    user.resetPasswordOTPExpires = null; // Clear OTP expiration
+    await user.save();
+
+    res.status(200).json({
+      message: "Password has been reset successfully",
+    });
+  } catch (error) {
+    console.error("Error in resetPassword:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

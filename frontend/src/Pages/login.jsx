@@ -8,6 +8,9 @@ import college from "../assets/college.png";
 import harit from "../assets/harit.png";
 import { FaUserCog } from "react-icons/fa";
 import back from "../assets/back.png";
+import Cookies from "js-cookie";
+import Loading from "../component/Loading";
+import ForgetPasswordPopup from "../component/ForgetPasswordPopup";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -16,6 +19,8 @@ const Login = () => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showForgetPassword, setShowForgetPassword] = useState(false);
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -29,8 +34,25 @@ const Login = () => {
     }
     if (user) {
       toast.success("Login successful!", { position: "top-center" });
+      navigate("/");
     }
   }, [error, user, navigate]);
+
+    // Handle long loading state
+  useEffect(() => {
+    let timeoutId;
+    if (loading) {
+      timeoutId = setTimeout(() => {
+        toast.warn("Taking too long to load. Refreshing...", {
+          position: "top-center",
+        });
+        Cookies.remove("mpsp");
+        localStorage.removeItem("persist:root");
+        window.location.reload();
+      }, 6000); // 1 minute timeout
+    }
+    return () => clearTimeout(timeoutId);
+  }, [loading]);
 
   return (
     <div className="bg-sky-300/20 min-h-screen flex flex-col">
@@ -46,7 +68,7 @@ const Login = () => {
           <img
             src={harit}
             alt="Harit Tech Logo"
-            className="h-20 w-[200px] mr-4"
+            className="h-20 w-[200px] mr-4 object-fill rounded-[20px]"
           />
         </div>
       </header>
@@ -132,21 +154,24 @@ const Login = () => {
                       d="M4 12a8 8 0 018-8v8z"
                     ></path>
                   </svg>
-                  Logging in...
+                  <Loading/>
                 </>
               ) : (
                 "Login"
               )}
             </button>
             <a
-              href="#"
-              className="text-gray-700 hover:text-blue-700 font-medium text-sm"
+              onClick={() => setShowForgetPassword(true)}
+              className="text-gray-700 hover:text-blue-700 font-medium text-sm cursor-pointer"
             >
               Forgot password?
             </a>
           </div>
         </form>
       </main>
+      {showForgetPassword && (
+        <ForgetPasswordPopup onClose={() => setShowForgetPassword(false)} />
+      )}
 
       <footer className="px-3 py-4 bg-transparent justify-start items-start">
         <p className="text-xs">

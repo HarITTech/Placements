@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getEligibleJobs } from "../../redux/jobSlice"; // Adjust the path as necessary
 import { Link } from "react-router-dom"; // Import Link
 import { ChevronDown, SlidersHorizontal, Search, BellRing } from "lucide-react";
+import Loading from "../../component/Loading";
 
 export function Internship() {
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ export function Internship() {
         <button className="p-2 hover:bg-gray-100 rounded-full">
           <SlidersHorizontal className="w-5 h-5 text-gray-700" />
         </button>
-        <div className="relative">
+        {/* <div className="relative">
           <button
             onClick={toggleNotifications}
             className="p-2 hover:bg-gray-100 rounded-full transition-all duration-300"
@@ -53,7 +54,7 @@ export function Internship() {
           </button>
           {isNotificationOpen && (
             <div className="absolute right-0 mt-8 w-80  bg-[#ffffff8a] backdrop-blur-[6px] border border-gray-200 rounded-lg shadow-lg z-50">
-              {/* Notification Dropdown Content */}
+              
               <div className="flex justify-between items-center p-4 bg-[#3e79a7] text-white rounded-t-lg">
                 <h2 className="font-bold text-lg">Notifications</h2>
                 <button
@@ -103,18 +104,18 @@ export function Internship() {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Job Cards */}
       {loading ? (
-        <div className="text-center text-gray-600">Loading...</div>
+        <div className="text-center text-gray-600"><Loading/></div>
       ) : error ? (
         <div className="text-center text-red-600">Error: {error.message}</div>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {jobs
-            .filter((job) => job.type === "job")
+            .filter((job) => job.type === "Internship")
             .map((job) => (
               <div
                 key={job._id}

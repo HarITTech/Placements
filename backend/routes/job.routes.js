@@ -11,6 +11,9 @@ import {
   updateRoundResults,
   getNotifications,
   updateLogo,
+  addPlacement,
+  getPlacementsForJob,
+  fetchAppliedJobs,
 } from "../controller/job.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 import upload from "../cloud/multerConfig.js";
@@ -34,5 +37,12 @@ router.post("/:jobId/rounds", protect, createRounds); // Create rounds for a job
 router.put("/:jobId/rounds/:roundId",protect, updateRoundResults); // Update round results
 router.get("/notifications", protect, getNotifications); // Get notifications for students
 router.put("/:jobId/logo",protect, upload.single("logo"), updateLogo);
+// Route to add placement
+router.post("/placement/:jobId",protect, addPlacement);
+
+// Route to get placements for a specific job
+router.get("/placement/:jobId",protect, getPlacementsForJob);
+
+router.get("/applied",protect, fetchAppliedJobs);
 
 export default router;

@@ -9,6 +9,8 @@ import connectDB from "./config/db.js";
 import authRoutes from "./routes/auth.routes.js";
 import collegeRoutes from "./routes/college.routes.js";
 import jobRoutes from "./routes/job.routes.js";
+import FeedbackRoutes from './routes/feedback.routes.js';
+import communicationRoutes from './routes/communication.routes.js'
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +49,8 @@ app.use(morgan("dev")); // Log HTTP requests for better debugging
 app.use("/api/auth", authRoutes);
 app.use("/api/college", collegeRoutes);
 app.use("/api/jobs", jobRoutes);
+app.use("/api/job", FeedbackRoutes);
+app.use("/api/help", communicationRoutes);
 
 // Default route
 app.get("/", (req, res) => {

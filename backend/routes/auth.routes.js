@@ -9,7 +9,9 @@ import {
   deleteStudent,
   fetchUserById,
   updateProfilePic,
-  getProfileCompletionDetails
+  getProfileCompletionDetails,
+  resetPassword,
+  forgetPassword
 } from "../controller/user.controller.js";
 import { protect, authorizeRoles } from "../middleware/auth.middleware.js";
 import { checkSubscription } from "../middleware/checkSubscription.middleware.js";
@@ -65,5 +67,10 @@ router.put('/updateProfilePic',  protect, upload.single('profilePic'), updatePro
 // Route for getting profile completion details (accessible by TNP Admin and self)
 router.get('/get-profile-completion', protect, getProfileCompletionDetails);
 
+// Forgot password route
+router.post("/forgot-password", forgetPassword);
+
+// Reset password route
+router.post("/reset-password", resetPassword);
 
 export default router;
