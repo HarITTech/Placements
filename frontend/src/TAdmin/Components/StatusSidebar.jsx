@@ -103,93 +103,100 @@ const StatusSidebar = ({ isOpen, onClose }) => {
   return (
     <div
       className={`fixed top-0 z-50 left-[-20px] w-full h-full backdrop-blur-[6px] flex justify-center items-center ${
-        isOpen ?  "translate-x-0" : "translate-x-full"
-      }`}
-    >
-    <div
-      ref={sidebarRef}
-      className={`fixed z-50 top-0 inset-y-0 right-[-20px] w-[400px] backdrop-blur-[6px] bg-[#ffffff95] shadow-lg transform transition-transform duration-300 ease-in-out ${
         isOpen ? "translate-x-0" : "translate-x-full"
       }`}
     >
-      <div className="flex justify-between items-center p-4 border-b-[2px] rounded-[8px] shadow-md border-[rgba(33,86,105,0.758)]">
-        <h2 className="text-xl font-bold">Profile Completion Status</h2>
-        <div className="relative">
-          <button
-            onClick={handleSortButtonClick}
-            className="p-2 bg-transparent rounded hover:bg-[#ffffffbf] focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <FaSortAmountDown className="text-[rgba(22,22,59)]" />
-          </button>
-          {isDropdownOpen && (
-            <div className="absolute right-3 justify-items-center items-center font-medium w-[130px] border-b-[1px] border-[rgba(33,86,105,0.758)] bg-[#ffffffc9] backdrop-blur-[6px] border rounded-[10px] rounded-se-none shadow-lg z-50">
-              <button
-                onClick={() => handleSortOrderChange("asc")}
-                className="block w-full px-4 py-2 border-b-[1px] border-[rgba(33,86,105,0.758)] text-left hover:bg-[#c0c0c0c5] hover:text-[rgb(22,22,59)] rounded-ss-[10px]"
-              >
-                Ascending
-              </button>
-              <button
-                onClick={() => handleSortOrderChange("desc")}
-                className="block w-full px-4 py-2 border-b-[1px] border-[rgba(33,86,105,0.758)] text-left hover:bg-[#c0c0c0c5] hover:text-[rgb(22,22,59)] rounded-[10px] rounded-se-none rounded-ss-none"
-              >
-              Descending
-              </button>
-            </div>
-          )}
-        </div>
-
-        <button onClick={onClose} className="p-2 hover:bg-[#ffffffbf] rounded-[50%]">
-          <AiOutlineClose className="text-xl text-[rgb(22,22,59)]" />
-        </button>
-      </div>
-      <div className="p-5">
-        {/* Search Bar */}
-        <input
-          type="text"
-          placeholder="Search by Name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 mt-1 mb-5 bg-[#ffffffac] border-[rgba(33,86,105,0.758)] placeholder:text-[rgb(33,86,105)] placeholder:font- border-[1px] rounded-[12px] focus:outline-none focus:border-[2px] focus:border-[rgb(22,22,59)]"
-        />
-        {/* Sort Dropdown */}
-
-        <div className="overflow-y-auto h-[calc(100vh-64px)]">
-          {isLoading ? (
-            <div className="flex justify-center items-center h-full">
-              <div className="loader"></div>
-            </div>
-          ) : (
-            <div>
-              {filteredAndSortedDetails.map((detail) => (
-                <div
-                  key={detail.id}
-                  className="flex justify-between items-center p-3 border-b border-[rgba(33,86,105,0.758)] hover:bg-[#ffffff54] transition-colors duration-200"
+      <div
+        ref={sidebarRef}
+        className={`fixed z-50 top-0 inset-y-0 right-[-20px] w-[400px] backdrop-blur-[6px] bg-[#ffffff95] shadow-lg transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <div className="flex justify-between items-center p-4 border-b-[2px] rounded-[8px] shadow-md border-[rgba(33,86,105,0.758)]">
+          <h2 className="text-xl font-bold">Profile Completion Status</h2>
+          <div className="relative">
+            <button
+              onClick={handleSortButtonClick}
+              className="p-2 bg-transparent rounded hover:bg-[#ffffffbf] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <FaSortAmountDown className="text-[rgba(22,22,59)]" />
+            </button>
+            {isDropdownOpen && (
+              <div className="absolute right-3 justify-items-center items-center font-medium w-[130px] border-b-[1px] border-[rgba(33,86,105,0.758)] bg-[#ffffffc9] backdrop-blur-[6px] border rounded-[10px] rounded-se-none shadow-lg z-50">
+                <button
+                  onClick={() => handleSortOrderChange("asc")}
+                  className="block w-full px-4 py-2 border-b-[1px] border-[rgba(33,86,105,0.758)] text-left hover:bg-[#c0c0c0c5] hover:text-[rgb(22,22,59)] rounded-ss-[10px]"
                 >
-                  <span className="font-medium">{detail.name}</span>
-                  <div className="flex items-center gap-6 mr-2">
-                    <span
-                      className={`px-3 py-1 rounded-full text-sm text-center font-semibold ${getCompletionColor(
-                        detail.profileCompletion
-                      )}`}
-                    >
-                      {detail.profileCompletion}%
-                    </span>
-                    <button
-                      onClick={() => handleDelete(detail.id)}
-                      className="text-red-500 hover:text-red-800 p-2 rounded-[50%] hover:bg-[#ffffff] transition-colors duration-200"
-                    >
-                      <RiDeleteBin6Line />
-                    </button>
+                  Ascending
+                </button>
+                <button
+                  onClick={() => handleSortOrderChange("desc")}
+                  className="block w-full px-4 py-2 border-b-[1px] border-[rgba(33,86,105,0.758)] text-left hover:bg-[#c0c0c0c5] hover:text-[rgb(22,22,59)] rounded-[10px] rounded-se-none rounded-ss-none"
+                >
+                  Descending
+                </button>
+              </div>
+            )}
+          </div>
+
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-[#ffffffbf] rounded-[50%]"
+          >
+            <AiOutlineClose className="text-xl text-[rgb(22,22,59)]" />
+          </button>
+        </div>
+        <div className="p-5">
+          {/* Search Bar */}
+          <input
+            type="text"
+            placeholder="Search by Name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 mt-1 mb-5 bg-[#ffffffac] border-[rgba(33,86,105,0.758)] placeholder:text-[rgb(33,86,105)] placeholder:font- border-[1px] rounded-[12px] focus:outline-none focus:border-[2px] focus:border-[rgb(22,22,59)]"
+          />
+          {/* Sort Dropdown */}
+
+          <div className="overflow-y-auto h-[calc(100vh-64px)]">
+            {isLoading ? (
+              <div className="flex justify-center items-center h-full">
+                <div className="loader"></div>
+              </div>
+            ) : (
+              <div>
+                {filteredAndSortedDetails.map((detail) => (
+                  <div
+                    key={detail.id}
+                    className="flex justify-between items-center p-3 border-b border-[rgba(33,86,105,0.758)] hover:bg-[#ffffff54] transition-colors duration-200"
+                  >
+                    <div className="flex-1 flex flex-col">
+                      <span className="font-medium">{detail.name}</span>
+                      <span className="text-xs text-gray-600 font-sans">{detail.email}</span>
+                    </div>
+
+                    <div className="flex items-center gap-6 mr-2">
+                      <span
+                        className={`px-3 py-1 rounded-full text-sm text-center font-semibold ${getCompletionColor(
+                          detail.profileCompletion
+                        )}`}
+                      >
+                        {detail.profileCompletion}%
+                      </span>
+                      <button
+                        onClick={() => handleDelete(detail.id)}
+                        className="text-red-500 hover:text-red-800 p-2 rounded-[50%] hover:bg-[#ffffff] transition-colors duration-200"
+                      >
+                        <RiDeleteBin6Line />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
-              {error && <div className="text-red-500 mt-4">{error}</div>}
-            </div>
-          )}
+                ))}
+                {error && <div className="text-red-500 mt-4">{error}</div>}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { SiConstruct3 } from "react-icons/si";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserById, listUsersOfCollege } from "../../redux/userSlice";
 import { getAllJobs } from "../../redux/jobSlice";
+import constu from '../../assets/constru.gif';
 
 const DashboardData = () => {
   const dispatch = useDispatch();
@@ -127,69 +128,19 @@ const DashboardData = () => {
         </div>
 
         <div>
-          
-          <div className="bg-[#ffffff80] mb-6 backdrop-blur-sm p-5 min-w-[430px] rounded-[20px] shadow-lg">
+          <div className="bg-[#fffffffb] mb-6 backdrop-blur-sm p-5 min-w-[430px] rounded-[20px] shadow-lg">
             <h3 className="text-lg font-bold mb-3 text-[#333]">
               Student Analytics
             </h3>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#ffffff37] p-3 rounded-[20px] shadow-md">
-                <h4 className="text-md font-bold mb-2 text-[#444242]">
-                  Job Round Qualification
-                </h4>
-                <div className="flex justify-between">
-                  <div className="flex flex-col items-center">
-                    <p className="text-lg font-bold text-[#5f5ff1]">
-                      Qualified
-                    </p>
-                    <p className="text-2xl font-bold text-[#333]">80%</p>
-                  </div>
-                  <div className="flex flex-col pl-2 items-center">
-                    <p className="text-lg font-bold text-[#e46059]">
-                      Not Qualified
-                    </p>
-                    <p className="text-2xl font-bold text-[#333]">20%</p>
-
-                  </div>
-                </div>
-              </div>
-              <div className="bg-[#ffffff37] p-3 rounded-[20px] shadow-md">
-                <h4 className="text-md font-bold mb-2 text-[#444242]">
-                  Student Job Applied
-                </h4>
-                <div className="flex justify-between">
-                  <div className="flex flex-col items-center">
-                    <p className="text-lg font-bold text-[#5f5ff1]">Applied</p>
-                    <p className="text-2xl font-bold text-[#333]">120</p>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <p className="text-lg pl-2 font-bold text-[#e46059]">
-                      Not Applied
-                    </p>
-                    <p className="text-2xl font-bold text-[#333]">80</p>
-
-                  </div>
-                </div>
-              </div>
-              <div className="bg-[#ffffff37] p-3 rounded-[20px] shadow-md">
-                <h4 className="text-md font-bold mb-2 text-[#444242]">
-                  Placement Analysis
-                </h4>
-                <div className="flex justify-between">
-                  <div className="flex flex-col items-center">
-                    <p className="text-lg font-bold text-[#5f5ff1]">Placed</p>
-                    <p className="text-2xl font-bold text-[#333]">60%</p>
-                   
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <p className="text-lg font-bold text-[#e46059]">
-                      Not Placed
-                    </p>
-                    <p className="text-2xl font-bold text-[#333]">40%</p>
-                   
-                  </div>
-                </div>
-              </div>
+            <div className="w-[100%] justify-items-center my-3">
+            <video
+                className="rounded-lg h-[200px] w-auto"
+                src="https://cdnl.iconscout.com/lottie/premium/thumb/website-maintenance-animation-download-in-lottie-json-gif-static-svg-file-formats--under-logo-construction-testing-pack-design-development-animations-6516022.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
             </div>
           </div>
 
@@ -227,13 +178,17 @@ const DashboardData = () => {
             </div>
           </div>
 
-          <div className="bg-[#ffffff80] mb-6 backdrop-blur-sm p-5 min-w-[430px] rounded-[20px] shadow-lg">
+          <div className="bg-[#ffffff] mb-6 backdrop-blur-sm p-5 min-w-[430px] rounded-[20px] shadow-lg">
             <h3 className="text-lg font-bold mb-3">Recently Placed Students</h3>
             <div className="w-[100%] justify-items-center my-3 ">
-              <SiConstruct3 className="w-[120px] h-[120px] text-[#b0b0b0dc]" />
-              <h6 className="text-lg font-bold text-[#8d8d8dcc]">
-                Under Construction
-              </h6>
+              <video
+                className="rounded-lg h-[200px] w-auto"
+                src="https://cdnl.iconscout.com/lottie/premium/thumb/website-maintenance-animation-download-in-lottie-json-gif-static-svg-file-formats--under-logo-construction-testing-pack-design-development-animations-6516022.mp4"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
             </div>
           </div>
         </div>

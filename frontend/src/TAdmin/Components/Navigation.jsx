@@ -14,7 +14,7 @@ import {
   getProfileCompletionDetails,
 } from "../../redux/userSlice";
 import { jwtDecode } from "jwt-decode";
-import tnp from "../../assets/sopu.jpeg";
+import college from "../../assets/college.png";
 
 const Navigation = () => {
   const { token, user, profileCompletionDetails } = useSelector(
@@ -57,7 +57,7 @@ const Navigation = () => {
   return (
     <div className="sticky top-0 flex flex-col w-[30%] max-w-[420px] min-w-[220px] min-h-screen h-[100vh] bg-[#002146] text-white p-3">
       <img
-        src="/harit.png"
+        src={college}
         alt="College logo"
         className="mt-2 w-full h-auto mb-3"
       />
