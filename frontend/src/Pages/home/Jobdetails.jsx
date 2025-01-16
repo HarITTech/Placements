@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import TermsAndConditionsPopup from "../../component/TermsAndConditionsPopup";
 import toast from "react-hot-toast";
 import Loading from "../../component/Loading";
-
+import DOMPurify from "dompurify";
 
 const JobDetails = () => {
   const { jobId } = useParams();
@@ -16,7 +16,6 @@ const JobDetails = () => {
   const { jobs, loading, error } = useSelector((state) => state.jobs);
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate(); // Initialize useNavigate
-
 
   useEffect(() => {
     dispatch(getEligibleJobs());
@@ -42,7 +41,11 @@ const JobDetails = () => {
   };
 
   if (loading) {
-    return <p><Loading/></p>;
+    return (
+      <p>
+        <Loading />
+      </p>
+    );
   }
 
   if (error) {
@@ -107,9 +110,7 @@ const JobDetails = () => {
                     </h1>
                     <p className="text-2xl font-bold text-gray-700">{title}</p>
                     <div className="flex pt-2 space-x-6">
-                      <p className="text-gray-500 font-normal  ">
-                        {location}
-                      </p>
+                      <p className="text-gray-500 font-normal  ">{location}</p>
                       <p className="text-green-600 font-semibold">
                         {new Date(jobDate).toLocaleDateString("en-GB", {
                           day: "numeric",
@@ -156,7 +157,10 @@ const JobDetails = () => {
                   </div>
 
                   <div className="flex space-x-6 ">
-                    <button onClick={handleApply} className="px-6 py-2 bg-blue-500 text-white font-bold rounded-3xl transform transition-all duration-300 hover:bg-blue-600  focus:ring-2 focus:ring-blue-400 focus:outline-none ">
+                    <button
+                      onClick={handleApply}
+                      className="px-6 py-2 bg-blue-500 text-white font-bold rounded-3xl transform transition-all duration-300 hover:bg-blue-600  focus:ring-2 focus:ring-blue-400 focus:outline-none "
+                    >
                       Apply Now
                     </button>
                     <button className="px-6 py-2  text-blue-600 rounded-3xl  hover:text-blue-800 font-semibold  border-[2px] border-blue-600 hover:border-blue-800 hover:bg-blue-50 focus:ring-1 focus:ring-blue-600 focus:outline-none ">
@@ -216,8 +220,9 @@ const JobDetails = () => {
                     <h3 className="font-semibold pt-5 text-lg text-gray-800">
                       About the Job
                     </h3>
-                    <p className="text-gray-600"> (description)
-            </p>
+                    <p className="text-gray-600">
+                   {description}
+                    </p>
                   </div>
                   <div className="flex space-x-1 justify-items-end pt-5">
                     <h3 className="font-semibold text-gray-800">Posted On:</h3>
@@ -235,13 +240,13 @@ const JobDetails = () => {
               </div>
             </div>
             <AnimatePresence>
-        {showPopup && (
-          <TermsAndConditionsPopup
-            onClose={() => setShowPopup(false)}
-            onApply={handleConfirmApply}
-          />
-        )}
-      </AnimatePresence>
+              {showPopup && (
+                <TermsAndConditionsPopup
+                  onClose={() => setShowPopup(false)}
+                  onApply={handleConfirmApply}
+                />
+              )}
+            </AnimatePresence>
           </motion.div>
         </>
       )}

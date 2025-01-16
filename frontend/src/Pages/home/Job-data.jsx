@@ -316,7 +316,7 @@ export function JobData() {
 
       {/* Job Cards */}
       {loading ? (
-        <div className="text-center text-gray-600">Loading...</div>
+        <div className="text-center text-gray-600"><Loading/></div>
       ) : error ? (
         <div className="text-center text-red-600">Error: {error.message}</div>
       ) : (

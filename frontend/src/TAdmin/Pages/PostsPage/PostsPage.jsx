@@ -42,7 +42,7 @@ const PostsPage = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
+
     if (name in formData.eligibilityCriteria) {
       setFormData((prev) => ({
         ...prev,
@@ -58,7 +58,6 @@ const PostsPage = () => {
       }));
     }
   };
-  
 
   const clearFilters = () => {
     setFormData((prev) => ({
@@ -171,55 +170,55 @@ const PostsPage = () => {
 
         <div className="job-main">
           <div className="job-info job-name-role">
-              <div className="company-name">
-                <label>Company Name:</label>
-                <input
-                  type="text"
-                  name="company"
-                  value={formData.company}
-                  onChange={handleInputChange}
-                  placeholder="Enter Company Name"
-                />
-              </div>
-              <div className="job-name">
-                <label>Job Title:</label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="Enter Job Title"
-                />
-              </div>
-              <div className="job-des-loc">
-                <label>Type:</label>
-                <select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                  className="flex-1 py-1 px-2 border-b-2 border-[#215669C1] rounded-md bg-transparent text-[rgb(22,22,59)] focus:outline-none placeholder-[#215669C1] focus:border-[rgb(22,22,59)]"
-                >
-                  <option value="">Select Type</option>
-                  <option value="job">Job</option>
-                  <option value="Internship">Internship</option>
-                </select>
-                <label>Location:</label>
-                <input
-                  type="text"
-                  name="location"
-                  value={formData.location}
-                  onChange={handleInputChange}
-                  placeholder="Enter Job Location"
-                />
+            <div className="company-name">
+              <label>Company Name:</label>
+              <input
+                type="text"
+                name="company"
+                value={formData.company}
+                onChange={handleInputChange}
+                placeholder="Enter Company Name"
+              />
+            </div>
+            <div className="job-name">
+              <label>Job Title:</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleInputChange}
+                placeholder="Enter Job Title"
+              />
+            </div>
+            <div className="job-des-loc">
+              <label>Type:</label>
+              <select
+                name="type"
+                value={formData.type}
+                onChange={handleInputChange}
+                className="flex-1 py-1 px-2 border-b-2 border-[#215669C1] rounded-md bg-transparent text-[rgb(22,22,59)] focus:outline-none placeholder-[#215669C1] focus:border-[rgb(22,22,59)]"
+              >
+                <option value="">Select Type</option>
+                <option value="job">Job</option>
+                <option value="Internship">Internship</option>
+              </select>
+              <label>Location:</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleInputChange}
+                placeholder="Enter Job Location"
+              />
 
-                <label>Date:</label>
-                <input
-                  type="date"
-                  name="jobDate"
-                  value={formData.jobDate}
-                  onChange={handleInputChange}
-                />
-              </div>
+              <label>Date:</label>
+              <input
+                type="date"
+                name="jobDate"
+                value={formData.jobDate}
+                onChange={handleInputChange}
+              />
+            </div>
           </div>
           <div className="job-desc">
             <label>Job Description:</label>
@@ -239,9 +238,12 @@ const PostsPage = () => {
         </div>
 
         {step === 2 && (
-          <div className="popup">
-            <div className="popup-content">
-              <button className="close-btn z-50" onClick={() => setShowPopup(false)}>
+          <div className="popup" onClick={() => setShowPopup(false)}>
+            <div className="popup-content" onClick={(e) => e.stopPropagation()}>
+              <button
+                className="close-btn z-50"
+                onClick={() => setShowPopup(false)}
+              >
                 ×
               </button>
               <div className="popup-header">
@@ -251,7 +253,7 @@ const PostsPage = () => {
 
               {/* Filtration form here */}
               <div className="filter-group">
-                <label>Branches:</label>
+                <label><span className="text-red-500">* </span>Branches:</label>
                 {["CSE", "IT", "Aero", "Bio", "Mech", "EE", "ECE"].map(
                   (branch) => (
                     <button
@@ -270,7 +272,7 @@ const PostsPage = () => {
               </div>
 
               <div className="filter-group">
-                <label>Gender:</label>
+                <label><span className="text-red-500">* </span>Gender:</label>
                 {["Male", "Female"].map((gender) => (
                   <button
                     key={gender}
@@ -418,7 +420,10 @@ const PostsPage = () => {
                   <h3 className="font-bold text-[17px]">Eligible Students :</h3>
                   <ul className=" p-[10px]">
                     {eligibleStudents.map((student) => (
-                      <li key={student._id} className="px-4 py-2 mb-3 bg-[#ffffff3e] backdrop:blur-[5px] border-[1px] rounded-[12px] border-[rgba(60,118,138,0.37)] shadow-lg">
+                      <li
+                        key={student._id}
+                        className="px-4 py-2 mb-3 bg-[#ffffff3e] backdrop:blur-[5px] border-[1px] rounded-[12px] border-[rgba(60,118,138,0.37)] shadow-lg"
+                      >
                         <div>
                           <strong>Name:</strong> {student.profile.firstName}{" "}
                           {student.profile.lastName}
@@ -439,12 +444,19 @@ const PostsPage = () => {
 
               <div className="filter-actions">
                 <button onClick={handleShowEligibleStudents}>Show</button>
-                <button onClick={clearFilters}>Clear</button>
+                <button
+                  onClick={() => {
+                    clearFilters();
+                    setEligibleStudents([]);
+                  }}
+                >
+                  Clear
+                </button>
                 <button
                   onClick={handleSubmit}
                   disabled={loading || !showEligibleStudents}
                 >
-                  {loading ? "Creating..." : "Apply"}
+                  {loading ? "Creating..." : "Post"}
                 </button>
               </div>
             </div>

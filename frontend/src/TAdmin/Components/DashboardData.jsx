@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUserById, listUsersOfCollege } from "../../redux/userSlice";
 import { getAllJobs } from "../../redux/jobSlice";
 import constu from '../../assets/constru.gif';
+import Loading from "../../component/Loading";
 
 const DashboardData = () => {
   const dispatch = useDispatch();
@@ -24,11 +25,11 @@ const DashboardData = () => {
   }, [dispatch, user?._id]);
 
   if (status === "loading" || !user || !user.college) {
-    return <div>Loading...</div>;
+    return <div><Loading/></div>;
   }
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div><Loading/></div>;
   }
 
   if (status === "failed") {
