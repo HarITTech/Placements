@@ -37,12 +37,15 @@ function Home() {
     phone: "",
     dob: "",
     session: "",
+    address: "",
     email: "",
     address: "",
     tenthSchool: "",
     tenthScore: "",
     twelfthSchool: "",
     twelfthScore: "",
+    diplomacollege: "",
+    diplomacollegeScore: "",
     jee: "",
     gap: "",
     mhtcet: "",
@@ -137,6 +140,10 @@ function Home() {
         tenthScore: user.profile.academicRecords?.tenth?.percentage || "",
         twelfthScore: user.profile.academicRecords?.twelfth?.percentage || "",
         twelfthSchool: user.profile.academicRecords?.twelfth?.schoolName || "",
+        diplomacollege:
+          user.profile.academicRecords?.diploma?.collegeName || "",
+        diplomacollegeScore:
+          user.profile.academicRecords?.diploma?.percentage || "",
         jee: user.profile.academicRecords?.jeeScore || "",
         gap: user.profile.academicRecords?.gap || "",
         mhtcet: user.profile.academicRecords?.mhtCetScore || "",
@@ -271,6 +278,7 @@ function Home() {
           userEmail: formData.userEmail,
           collegeID: formData.tbtId,
           session: formData.session, // Include session in updates
+          address: formData.address,
           gender: formData.gender, // Add this line
           branch: formData.branch,
           year: formData.year, // Extracting year from 'year / semester' format
@@ -284,6 +292,10 @@ function Home() {
             twelfth: {
               schoolName: formData.twelfthSchool,
               percentage: parseFloat(formData.twelfthScore),
+            },
+            diploma: {
+              collegeName: formData.diplomacollege,
+              percentage: parseFloat(formData.diplomacollegeScore),
             },
             tenth: {
               schoolName: formData.tenthSchool,
@@ -418,77 +430,115 @@ function Home() {
         doc.text(safeValue, x + 40, y); // Add spacing for value alignment
       };
 
-     // Add Personal Details Section
-    addSectionHeading("Personal Details", 55);
-    addContent("Email:", formData.email, 15, 65);
-    addContent("Phone:", formData.phone, 15, 75);
-    addContent("Branch:", formData.branch, 15, 85);
-    addContent("Year:", formData.year, 15, 95);
-    addContent("Semester:", formData.semester, 15, 105);
-    addContent("College ID:", formData.tbtId, 15, 115);
-    addContent("Session:", formData.session, 15, 125);
-    addContent("Gender:", formData.gender, 15, 135);
-    addContent("Date of Birth:", formData.dob, 15, 145);
+      // Add Personal Details Section
+      addSectionHeading("Personal Details", 55);
+      addContent("Email:", formData.email, 15, 65);
+      addContent("Phone:", formData.phone, 15, 75);
+      addContent("Branch:", formData.branch, 15, 85);
+      addContent("Year:", formData.year, 15, 95);
+      addContent("Semester:", formData.semester, 15, 105);
+      addContent("College ID:", formData.tbtId, 15, 115);
+      addContent("Session:", formData.session, 15, 125);
+      addContent("Gender:", formData.gender, 15, 135);
+      addContent("Date of Birth:", formData.dob, 15, 145);
 
-    // Add Academic Details Section
-    addSectionHeading("Academic Details", 155);
-    addContent("10th School:", formData.tenthSchool, 15, 165);
-    addContent("10th Score:", formData.tenthScore, 15, 175);
-    addContent("12th School:", formData.twelfthSchool, 15, 185);
-    addContent("12th Score:", formData.twelfthScore, 15, 195);
-    addContent("JEE Score:", formData.jee, 15, 205);
-    addContent("MHT CET Score:", formData.mhtcet, 15, 215);
+      // Add Academic Details Section
+      addSectionHeading("Academic Details", 155);
+      addContent("10th School:", formData.tenthSchool, 15, 165);
+      addContent("10th Score:", formData.tenthScore, 15, 175);
+      addContent("12th School:", formData.twelfthSchool, 15, 185);
+      addContent("12th Score:", formData.twelfthScore, 15, 195);
+      addContent("JEE Score:", formData.jee, 15, 205);
+      addContent("MHT CET Score:", formData.mhtcet, 15, 215);
 
-    // Add CGPA Details Section
-    addSectionHeading("CGPA Details", 225);
-    let cgpaYOffset = 235; // Dynamic Y offset for CGPA details
-    (formData.cgpa || []).forEach((cgpaObj, index) => {
-      cgpaObj.semesters.forEach((semesterData, semIndex) => {
-        addContent(
-          `${semesterData.semester} Semester:`,
-          semesterData.cgpa,
-          20,
-          cgpaYOffset
-        );
-        cgpaYOffset += 10; // Add spacing between rows
+      // Add CGPA Details Section
+      addSectionHeading("CGPA Details", 225);
+      let cgpaYOffset = 235; // Dynamic Y offset for CGPA details
+      (formData.cgpa || []).forEach((cgpaObj, index) => {
+        cgpaObj.semesters.forEach((semesterData, semIndex) => {
+          addContent(
+            `${semesterData.semester} Semester:`,
+            semesterData.cgpa,
+            20,
+            cgpaYOffset
+          );
+          cgpaYOffset += 10; // Add spacing between rows
+        });
       });
-    });
 
-    // Add Backlog Details Section
-    addSectionHeading("Backlog Details", cgpaYOffset + 15); // Add gap after CGPA section
-    let backlogYOffset = cgpaYOffset + 25; // Dynamic Y offset for backlog details
-    (formData.backlogs || []).forEach((backlog, index) => {
+      // Add Backlog Details Section
+      addSectionHeading("Backlog Details", cgpaYOffset + 15); // Add gap after CGPA section
+      let backlogYOffset = cgpaYOffset + 25; // Dynamic Y offset for backlog details
+      (formData.backlogs || []).forEach((backlog, index) => {
+        addContent(
+          `${backlog.semester} Semester:`,
+          `${backlog.count || 0} live, ${backlog.dead || 0} dead`,
+          15,
+          backlogYOffset
+        );
+        backlogYOffset += 15; // Add spacing between rows
+      });
+
+      // Check if the page is full
+      if (backlogYOffset > 280) {
+        doc.addPage();
+        backlogYOffset = 20; // Reset the Y offset for the new page
+      }
+
+      // Add Achievements and Skills Section
+      addSectionHeading("Achievements & Skills", backlogYOffset + 15);
       addContent(
-        `${backlog.semester} Semester:`,
-        `${backlog.count || 0} live, ${backlog.dead || 0} dead`,
+        "Achievements:",
+        formData.achievements,
         15,
-        backlogYOffset
+        backlogYOffset + 25
       );
-      backlogYOffset += 15; // Add spacing between rows
-    });
+      addContent("Skills:", formData.skills, 15, backlogYOffset + 35);
 
-    // Check if the page is full
-    if (backlogYOffset > 280) {
-      doc.addPage();
-      backlogYOffset = 20; // Reset the Y offset for the new page
-    }
-
-    // Add Achievements and Skills Section
-    addSectionHeading("Achievements & Skills", backlogYOffset + 15);
-    addContent("Achievements:", formData.achievements, 15, backlogYOffset + 25);
-    addContent("Skills:", formData.skills, 15, backlogYOffset + 35);
-
-    // Add Current Status Section
-    addSectionHeading("Current Status", backlogYOffset + 45);
-    addContent("Company Name:", formData.currentStatus.companyName, 15, backlogYOffset + 55);
-    addContent("Position:", formData.currentStatus.position, 15, backlogYOffset + 65);
-    addContent("Duration:", formData.currentStatus.duration, 15, backlogYOffset + 75);
-    addContent("Job Type:", formData.currentStatus.jobType, 15, backlogYOffset + 85);
-    addContent("Location:", formData.currentStatus.location, 15, backlogYOffset + 95);
-    addContent("Start Date:", formData.currentStatus.startDate, 15, backlogYOffset + 105);
-    addContent("End Date:", formData.currentStatus.endDate, 15, backlogYOffset + 115);
-
-   
+      // Add Current Status Section
+      addSectionHeading("Current Status", backlogYOffset + 45);
+      addContent(
+        "Company Name:",
+        formData.currentStatus.companyName,
+        15,
+        backlogYOffset + 55
+      );
+      addContent(
+        "Position:",
+        formData.currentStatus.position,
+        15,
+        backlogYOffset + 65
+      );
+      addContent(
+        "Duration:",
+        formData.currentStatus.duration,
+        15,
+        backlogYOffset + 75
+      );
+      addContent(
+        "Job Type:",
+        formData.currentStatus.jobType,
+        15,
+        backlogYOffset + 85
+      );
+      addContent(
+        "Location:",
+        formData.currentStatus.location,
+        15,
+        backlogYOffset + 95
+      );
+      addContent(
+        "Start Date:",
+        formData.currentStatus.startDate,
+        15,
+        backlogYOffset + 105
+      );
+      addContent(
+        "End Date:",
+        formData.currentStatus.endDate,
+        15,
+        backlogYOffset + 115
+      );
 
       // Save and Preview PDF
       const pdfBlob = doc.output("blob");
@@ -566,33 +616,33 @@ function Home() {
                 </div>
               </div>
             </div>
-            <div className="flex gap-2 ">
-            <button
-              onClick={toggleEditMode}
-              className={`flex items-center gap-2 transition duration-300 ease-in-out ${
-                isEditing
-                  ? "bg-green-600 hover:bg-green-700 text-white"
-                  : "bg-gray-100 hover:bg-gray-200 text-gray-800"
-              } text-xl font-bold py-2 px-4 rounded-lg shadow-md`}
-            >
-              {isEditing ? (
-                <>
-                  <MdSave className="text-white text-xl" /> Save Changes
-                </>
-              ) : (
-                <>
-                  <MdModeEdit className="text-gray-800 text-xl" /> Edit
-                </>
-              )}
-            </button>
-            <button
-              onClick={handlePreviewPDF}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-2 px-4 rounded-lg shadow-md"
-            >
-              Export
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={toggleEditMode}
+                className={`relative flex items-center justify-center gap-2 py-3 px-6 text-lg font-medium rounded-lg transition-all duration-300 ease-in-out border-2 ${
+                  isEditing
+                    ? "bg-green-500 text-white border-green-500 hover:bg-transparent hover:text-green-500"
+                    : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100 hover:text-black"
+                }`}
+              >
+                {isEditing ? (
+                  <>
+                    <MdSave className="text-xl" /> Save Changes
+                  </>
+                ) : (
+                  <>
+                    <MdModeEdit className="text-xl" /> Edit
+                  </>
+                )}
+              </button>
+
+              <button
+                onClick={handlePreviewPDF}
+                className="relative flex items-center justify-center gap-2 py-3 px-6 bg-blue-500 text-white text-lg font-medium rounded-lg border-2 border-blue-500 transition-all duration-300 ease-in-out hover:bg-transparent hover:text-blue-500"
+              >
+                Export
+              </button>
             </div>
-            
           </div>
 
           {/* Profile Details */}
@@ -640,27 +690,46 @@ function Home() {
 
             <div>
               <label className="block text-md font-semibold text-gray-700">
-                Current Year
+                Current Year <span className="text-red-500">*</span>
               </label>
-              <input
+              <select
                 id="year"
                 value={formData.year}
                 onChange={handleChange}
                 disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-              />
+                required //
+                className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
+                  isEditing ? "bg-white" : "bg-transparent"
+                }`}>
+                <option value="1st">1st year</option>
+                <option value="2nd">2nd year</option>
+                <option value="3rd">3rd year</option>
+                <option value="4th">4th year</option>
+              </select>
             </div>
             <div>
               <label className="block text-md font-semibold text-gray-700">
-                Current Semester
+                Current Semester <span className="text-red-500">*</span>
               </label>
-              <input
+              <select
                 id="semester"
                 value={formData.semester}
                 onChange={handleChange}
                 disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-              />
+                required
+                className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
+                  isEditing ? "bg-white" : "bg-transparent"
+                }`}
+              >
+                <option value="1st">1st semester</option>
+                <option value="2nd">2nd semester</option>
+                <option value="3rd">3rd semester</option>
+                <option value="4th">4th semester</option>
+                <option value="5th">5th semester</option>
+                <option value="6th">6th semester</option>
+                <option value="7th">7th semester</option>
+                <option value="8th">8th semester</option>
+              </select>
             </div>
 
             <div>
@@ -673,8 +742,9 @@ function Home() {
                 onChange={handleChange}
                 disabled={!isEditing}
                 required //
-                className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-              >
+                className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
+                  isEditing ? "bg-white" : "bg-transparent"
+                }`} >
                 <option value="2023-2024">2023-2024</option>
                 <option value="2024-2025">2024-2025</option>
                 <option value="2025-2026">2025-2026</option>
@@ -682,17 +752,17 @@ function Home() {
             </div>
 
             <div>
-                <label className="block text-md font-semibold text-gray-700">
-                  Gap Between
-                </label>
-                <input
-                  id="gap"
-                  value={formData.gap}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                />
-              </div>
+              <label className="block text-md font-semibold text-gray-700">
+                Gap Between
+              </label>
+              <input
+                id="gap"
+                value={formData.gap}
+                onChange={handleChange}
+                disabled={!isEditing}
+                className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+              />
+            </div>
 
             <div>
               <label className="block text-md font-semibold text-gray-700">
@@ -714,12 +784,38 @@ function Home() {
               <input
                 id="phone"
                 value={formData.phone}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Allow only numbers and limit to 10 digits
+                  if (/^\d{0,10}$/.test(value)) {
+                    handleChange(e); // Call your handleChange function to update state
+                  }
+                }}
+                disabled={!isEditing}
+                required
+                className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                placeholder="Enter 10-digit phone number"
+              />
+              {formData.phone && formData.phone.length !== 10 && (
+                <p className="text-sm text-red-500 mt-1">
+                  Phone number must be 10 digits
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-md font-semibold text-gray-700">
+                Address
+              </label>
+              <input
+                id="address"
+                value={formData.address}
                 onChange={handleChange}
                 disabled={!isEditing}
-                required //
                 className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
               />
             </div>
+
             <div>
               <label className="block text-md font-semibold text-gray-700">
                 Branch <span className="text-red-500">*</span>
@@ -730,8 +826,9 @@ function Home() {
                 onChange={handleChange}
                 disabled={!isEditing}
                 required //
-                className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-              >
+                className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
+                  isEditing ? "bg-white" : "bg-transparent"
+                }`} >
                 <option value="">Select Branch</option>
                 <option value="CSE">CSE</option>
                 <option value="IT">IT</option>
@@ -752,8 +849,9 @@ function Home() {
                 onChange={handleChange}
                 disabled={!isEditing}
                 required //
-                className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-              >
+                className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
+                  isEditing ? "bg-white" : "bg-transparent"
+                }`} >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
@@ -826,6 +924,32 @@ function Home() {
                 <input
                   id="twelfthScore"
                   value={formData.twelfthScore}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                />
+              </div>
+
+              <div>
+                <label className="block text-md font-semibold text-gray-700">
+                  Diploma College ( if applicable )
+                </label>
+                <input
+                  id="diplomacollege"
+                  value={formData.diplomacollege}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                />
+              </div>
+
+              <div>
+                <label className="block text-md font-semibold text-gray-700">
+                  Diploma Score ( if applicable )
+                </label>
+                <input
+                  id="diplomacollegeScore"
+                  value={formData.diplomacollegeScore}
                   onChange={handleChange}
                   disabled={!isEditing}
                   className="mt-1 block w-full border border-gray-300 rounded-lg p-3"

@@ -4,7 +4,7 @@ import { Heart, LayoutDashboard, LogOut, Briefcase, Bell } from "lucide-react";
 
 export default function Job() {
   return (
-    <div className="flex-grow  rounded-l-3xl bg-[#EDE5E5]">
+    <div className="flex-grow  rounded-l-3xl ">
       <JobData />
     </div>
     // <div className="flex min-h-screen bg-[rgb(22,22,59)]">

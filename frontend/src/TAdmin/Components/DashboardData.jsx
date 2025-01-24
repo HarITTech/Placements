@@ -5,9 +5,11 @@ import { fetchUserById, listUsersOfCollege } from "../../redux/userSlice";
 import { getAllJobs } from "../../redux/jobSlice";
 import constu from '../../assets/constru.gif';
 import Loading from "../../component/Loading";
+import { useNavigate } from "react-router-dom";
 
 const DashboardData = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user, status, error, collegeUsers } = useSelector(
     (state) => state.user
   );
@@ -103,6 +105,7 @@ const DashboardData = () => {
                 .map((student) => (
                   <div
                     key={student._id}
+                    onClick={() => navigate("/tadmin/status")}
                     className="flex w-[100%] items-center mb-4 py-[6px] px-[10px] bg-[#ffffff37] backdrop-blur-sm shadow-md rounded-[20px] hover:bg-[#ffffffb9] cursor-pointer"
                   >
                     <img

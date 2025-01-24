@@ -220,10 +220,14 @@ const JobDetails = () => {
                     <h3 className="font-semibold pt-5 text-lg text-gray-800">
                       About the Job
                     </h3>
-                    <p className="text-gray-600">
-                   {description}
-                    </p>
+                    <div
+                      className="text-gray-600"
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(description),
+                      }}
+                    ></div>
                   </div>
+
                   <div className="flex space-x-1 justify-items-end pt-5">
                     <h3 className="font-semibold text-gray-800">Posted On:</h3>
                     <p className="text-gray-600">

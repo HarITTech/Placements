@@ -103,7 +103,8 @@ function Users() {
   if (searchTerm) {
     const fullName = `${user.profile?.firstName || ""} ${user.profile?.lastName || ""}`.toLowerCase();
     const collegeID = user.profile?.collegeID?.toLowerCase() || "";
-    if (!fullName.includes(searchTerm) && !collegeID.includes(searchTerm)) {
+    const email= user.email.toLowerCase() || "";
+    if (!fullName.includes(searchTerm) && !collegeID.includes(searchTerm) && !email.includes(searchTerm)) {
       return false;
     }
   }

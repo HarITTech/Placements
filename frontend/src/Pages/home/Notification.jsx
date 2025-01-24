@@ -4,7 +4,6 @@ import { fetchAppliedJobs } from "../../redux/jobSlice";
 import { MdOutlineWorkOutline, MdSend } from "react-icons/md";
 import {
   IoChatbubbleOutline,
-  IoEllipsisVertical,
   IoFlagOutline,
   IoPaperPlaneOutline,
   IoTrashOutline,
@@ -24,7 +23,6 @@ import {
   getMessagesForStudent,
   sendMessageToAdmin,
 } from "../../redux/communicationSlice";
-import sopan from '../../assets/sopan.jpg';
 
 const NotificationPage = () => {
   const dispatch = useDispatch();
@@ -34,11 +32,11 @@ const NotificationPage = () => {
     error,
   } = useSelector((state) => state.jobs);
   const [selectedJob, setSelectedJob] = useState(null);
-  const { user, status } = useSelector((state) => state.user);
+  const { user } = useSelector((state) => state.user);
   const [showCommentInput, setShowCommentInput] = useState({});
   const [feedbackInput, setFeedbackInput] = useState("");
   const [commentInput, setCommentInput] = useState("");
-  const {  messages } = useSelector((state) => state.communication);
+  const { messages } = useSelector((state) => state.communication);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [formData, setFormData] = useState({
     problem: "",
@@ -52,26 +50,14 @@ const NotificationPage = () => {
   } = useSelector((state) => state.feedback.feedbacks);
 
   useEffect(() => {
-    // Fetch messages for the student when the component mounts
     dispatch(getMessagesForStudent());
   }, [dispatch]);
-
-  useEffect(() => {
-    const showCommentInputObj = feedbacks
-      ? feedbacks.reduce(
-          (acc, feedback) => ({ ...acc, [feedback._id]: false }),
-          {}
-        )
-      : {};
-    setShowCommentInput(showCommentInputObj);
-  }, [feedbacks]);
 
   useEffect(() => {
     dispatch(fetchAppliedJobs());
   }, [dispatch]);
 
   useEffect(() => {
-    // Set the first job as the selected job if no job is selected and appliedJobs is not empty
     if (!selectedJob && appliedJobs.length > 0) {
       setSelectedJob(appliedJobs[0]);
     }
@@ -82,66 +68,6 @@ const NotificationPage = () => {
       dispatch(getFeedbacksForJob(selectedJob.jobId));
     }
   }, [selectedJob, dispatch]);
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          <strong>Error:</strong> {error}
-        </div>
-      </div>
-    );
-  }
-
-  if (!appliedJobs || appliedJobs.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
-          No applied jobs found.
-        </div>
-      </div>
-    );
-  }
-
-  const handleShowCommentInput = (feedbackId) => {
-    setShowCommentInput((prevShowCommentInput) => ({
-      ...prevShowCommentInput,
-      [feedbackId]: !prevShowCommentInput[feedbackId],
-    }));
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    if (!formData.problem) {
-      toast.error("Please describe your problem.");
-      return;
-    }
-  
-    // Send the message as a string, not as an object
-    const message = `Problem: ${formData.problem}`;
-  
-    try {
-      const response = await dispatch(sendMessageToAdmin(message)).unwrap();
-      toast.success(response.message || "Message sent successfully!");
-      setFormData({ problem: "" }); // Reset form
-    } catch (error) {
-      toast.error(error || "Failed to send message.");
-    }
-  };
 
   const handleCreateFeedback = async () => {
     if (!feedbackInput.trim()) {
@@ -159,7 +85,6 @@ const NotificationPage = () => {
       ).unwrap();
       toast.success(response.message);
       setFeedbackInput("");
-      // Add the new feedback to the list of feedbacks
       dispatch(getFeedbacksForJob(selectedJob.jobId));
     } catch (error) {
       toast.error(error.message || "Failed to create feedback.");
@@ -180,26 +105,25 @@ const NotificationPage = () => {
       await dispatch(dislikeFeedback(feedbackId)).unwrap();
       toast.success("Feedback disliked successfully.");
     } catch (error) {
-      toast.error(error || "Failed to dislike feedback.");
+      toast.error(error.message || "Failed to dislike feedback.");
     }
   };
 
-  // const handleDeleteFeedback = async (feedbackId) => {
-  //   try {
-  //     await dispatch(deleteFeedback(feedbackId)).unwrap();
-  //     toast.success("Feedback deleted successfully.");
-  //   } catch (error) {
-  //     toast.error(error || "Failed to delete feedback.");
-  //   }
-  // };
+  const handleShowCommentInput = (feedbackId) => {
+    setShowCommentInput((prevShowCommentInput) => ({
+      ...prevShowCommentInput,
+      [feedbackId]: !prevShowCommentInput[feedbackId],
+    }));
+  };
 
   const handleDeleteFeedback = async (feedbackId) => {
     setShowDeleteModal(true);
+    setSelectedFeedbackId(feedbackId);
   };
 
-  const handleConfirmDelete = async (feedbackId) => {
+  const handleConfirmDelete = async () => {
     try {
-      await dispatch(deleteFeedback(feedbackId)).unwrap();
+      await dispatch(deleteFeedback(selectedFeedbackId)).unwrap();
       toast.success("Feedback deleted successfully.");
       setShowDeleteModal(false);
     } catch (error) {
@@ -220,39 +144,91 @@ const NotificationPage = () => {
     }
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.problem) {
+      toast.error("Please describe your problem.");
+      return;
+    }
+
+    const message = `Problem: ${formData.problem}`;
+
+    try {
+      const response = await dispatch(sendMessageToAdmin(message)).unwrap();
+      toast.success(response.message || "Message sent successfully!");
+      setFormData({ problem: "" });
+    } catch (error) {
+      toast.error(error.message || "Failed to send message.");
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <strong>Error:</strong> {error}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen  p-4 sm:p-6">
+    <div className="min-h-screen p-4 sm:p-6">
       {/* Applied Jobs Section */}
       <div className="flex flex-col md:flex-row gap-2">
         {/* Sidebar */}
         <div className="w-full md:w-1/3 bg-white rounded-lg shadow-lg h-auto md:h-screen overflow-y-auto">
           <ul>
-            {appliedJobs.map((job) => (
-              <li
-                key={job.jobId}
-                onClick={() => setSelectedJob(job)}
-                className={`flex items-center gap-4 p-4 border-b-[1px] border-gray-300 hover:bg-gray-50 rounded-sm cursor-pointer ${
-                  selectedJob?.jobId === job.jobId ? "bg-gray-100" : ""
-                }`}
-              >
+            {appliedJobs.length > 0 ? (
+              appliedJobs.map((job) => (
+                <li
+                  key={job.jobId}
+                  onClick={() => setSelectedJob(job)}
+                  className={`flex items-center gap-4 p-4 border-b-[1px] border-gray-300 hover:bg-gray-50 rounded-sm cursor-pointer ${
+                    selectedJob?.jobId === job.jobId ? "bg-gray-100" : ""
+                  }`}
+                >
+                  <img
+                    src={job.joblogo}
+                    alt={`${job.companyName} logo`}
+                    className="h-12 w-12 sm:h-16 sm:w-16 rounded-full object-fill"
+                  />
+                  <div className="flex flex-col">
+                    <h1 className="text-sm sm:text-md text-gray-600 font-bold">
+                      {job.jobTitle}
+                    </h1>
+                    <h3 className="font-thin pb-2 text-sm sm:text-base">
+                      {job.companyName}
+                    </h3>
+                    <p className="text-xs font-semibold text-green-700">
+                      Applied on: {new Date(job.appliedOn).toLocaleDateString()}
+                    </p>
+                  </div>
+                </li>
+              ))
+            ) : (
+              <div className="p-4 text-gray-600 h-full flex items-center justify-center">
                 <img
-                  src={job.joblogo}
-                  alt={`${job.companyName} logo`}
-                  className="h-12 w-12 sm:h-16 sm:w-16 rounded-full object-fill"
+                  className="rounded-lg h-full  w-auto"
+                  src="https://assets-v2.lottiefiles.com/a/051bbc5e-1178-11ee-8597-4717795896d7/oMojybDy7p.gif"
+                  alt="No applied jobs"
                 />
-                <div className="flex flex-col">
-                  <h1 className="text-sm sm:text-md text-gray-600 font-bold">
-                    {job.jobTitle}
-                  </h1>
-                  <h3 className="font-thin pb-2 text-sm sm:text-base">
-                    {job.companyName}
-                  </h3>
-                  <p className="text-xs font-semibold text-green-700">
-                    Applied on: {new Date(job.appliedOn).toLocaleDateString()}
-                  </p>
-                </div>
-              </li>
-            ))}
+              </div>
+            )}
           </ul>
         </div>
 
@@ -352,8 +328,8 @@ const NotificationPage = () => {
               <div className="flex items-center mb-5 gap-2">
                 {/* User Profile Picture */}
                 <img
-                  src={user?.profile?.profilePic || "/placeholder.svg"} // Replace with user's profile picture
-                  alt="User  profile"
+                  src={user?.profile?.profilePic || "/placeholder.svg"}
+                  alt="User    profile"
                   className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
                 />
 
@@ -372,8 +348,7 @@ const NotificationPage = () => {
                     onClick={handleCreateFeedback}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-md"
                   >
-                    <MdSend className="w-5 h-5" />{" "}
-                    {/* Modern send icon from react-icons */}
+                    <MdSend className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -433,27 +408,23 @@ const NotificationPage = () => {
                           className="flex items-center gap-2 text-blue-600 cursor-pointer hover:text-blue-700"
                           onClick={() => handleShowCommentInput(feedback._id)}
                         >
-                          <IoChatbubbleOutline />{" "}
-                          {/* Add this icon from react-icons */}
+                          <IoChatbubbleOutline />
                           <span>Comment</span>
                         </button>
 
                         {/* Report Button */}
                         <button className="flex items-center gap-2 text-red-600 cursor-pointer hover:text-red-700">
-                          <IoFlagOutline />{" "}
-                          {/* Add this icon from react-icons */}
+                          <IoFlagOutline />
                           <span>Report</span>
                         </button>
 
                         {/* Delete Button (Conditional) */}
-                        {feedback.studentId._id === user._id && ( // Check if feedback belongs to the current user
+                        {feedback.studentId._id === user._id && (
                           <button
                             className="flex items-center gap-2 text-red-600 cursor-pointer hover:text-red-700"
-                            // Add your delete logic here
                             onClick={() => handleDeleteFeedback(feedback._id)}
                           >
-                            <IoTrashOutline />{" "}
-                            {/* Add this icon from react-icons */}
+                            <IoTrashOutline />
                             <span>Delete</span>
                           </button>
                         )}
@@ -470,9 +441,7 @@ const NotificationPage = () => {
                               <div className="flex justify-end gap-2">
                                 <button
                                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                                  onClick={() =>
-                                    handleConfirmDelete(feedback._id)
-                                  }
+                                  onClick={handleConfirmDelete}
                                 >
                                   Delete
                                 </button>
@@ -495,8 +464,8 @@ const NotificationPage = () => {
                             <img
                               src={
                                 user?.profile?.profilePic || "/placeholder.svg"
-                              } // Replace with user's profile picture
-                              alt="User  profile"
+                              }
+                              alt="User    profile"
                               className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
                             />
 
@@ -522,8 +491,7 @@ const NotificationPage = () => {
                                 }
                                 className="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-md"
                               >
-                                <MdSend className="w-5 h-5" />{" "}
-                                {/* Modern send icon from react-icons */}
+                                <MdSend className="w-5 h-5" />
                               </button>
                             </div>
                           </div>
@@ -576,119 +544,120 @@ const NotificationPage = () => {
 
       {/* Help Form Section */}
       <div className="mt-10 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 sm:p-10 rounded-lg shadow-lg">
-  <div className="max-w-4xl mx-auto">
-    <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 text-center">
-      Need Help? Contact TNP Team
-    </h2>
-    <p className="text-gray-600 text-center mb-8">
-      If you have any issues or questions, feel free to reach out to us. We're here to help!
-    </p>
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-4 text-center">
+            Need Help? Contact TNP Team
+          </h2>
+          <p className="text-gray-600 text-center mb-8">
+            If you have any issues or questions, feel free to reach out to us.
+            We're here to help!
+          </p>
 
-    {/* Display Current User Info */}
-    <div className="mb-6 text-center">
-      <p className="text-gray-700 font-semibold">
-        Logged in as: {user?.profile?.firstName} {user?.profile?.lastName} ({user?.email})
-      </p>
-    </div>
+          {/* Display Current User Info */}
+          <div className="mb-6 text-center">
+            <p className="text-gray-700 font-semibold">
+              Logged in as: {user?.profile?.firstName} {user?.profile?.lastName}{" "}
+              ({user?.email})
+            </p>
+          </div>
 
-    {/* Message Input Form */}
-    <form className="space-y-6 mb-10" onSubmit={handleSubmit}>
-      {/* Problem Description Field */}
-      <div>
-        <label
-          htmlFor="problem"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Describe Your Problem
-        </label>
-        <div className="mt-1">
-          <textarea
-            id="problem"
-            name="problem"
-            rows="4"
-            placeholder="Explain your issue in detail..."
-            value={formData.problem}
-            onChange={handleInputChange}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-          />
-        </div>
-      </div>
-
-      {/* Help Image */}
-      <div className="flex justify-center">
-        <img
-          src={help}
-          alt="Help Illustration"
-          className="w-1/2 h-auto"
-        />
-      </div>
-
-      {/* Submit Button */}
-      <div>
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full flex justify-center items-center px-4 py-3 text-white font-semibold rounded-lg transition-all ${
-            loading ? "bg-gray-400" : "bg-sky-600 hover:bg-sky-700"
-          }`}
-        >
-          {loading ? (
-            "Sending..."
-          ) : (
-            <>
-              <IoPaperPlaneOutline className="mr-2" /> Send Message
-            </>
-          )}
-        </button>
-      </div>
-    </form>
-
-    {/* Messages Display Section */}
-    <div className="space-y-6">
-      {loading ? (
-        <p className="text-center text-gray-500">Loading messages...</p>
-      ) : error ? (
-        <p className="text-center text-red-500">{error}</p>
-      ) : (
-        messages.map((msg) => (
-          <div
-            key={msg._id}
-            className={`p-6 rounded-lg shadow-sm ${
-              msg.senderRole === "student"
-                ? "bg-blue-50 border-l-4 border-blue-500"
-                : "bg-gray-50 border-l-4 border-gray-500"
-            }`}
-          >
-            <div className="flex items-center mb-4">
-              <img
-                src={
-                  msg.senderRole === "student"
-                    ? msg.studentDetails.profilePic
-                    : msg.adminDetails.profilePic || "https://img.freepik.com/premium-photo/3d-entrepreneur-icon-business-leader-innovation-illustration-logo_762678-101891.jpg"
-                }
-                alt="Profile"
-                className="w-12 h-12 rounded-full object-cover mr-3"
-              />
-              <div>
-                <p className="font-semibold">
-                  {msg.senderRole === "student"
-                    ? `${msg.studentDetails.firstName} ${msg.studentDetails.lastName}`
-                    : "TNP Admin"}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {new Date(msg.createdAt).toLocaleString()}
-                </p>
+          {/* Message Input Form */}
+          <form className="space-y-6 mb-10" onSubmit={handleSubmit}>
+            {/* Problem Description Field */}
+            <div>
+              <label
+                htmlFor="problem"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Describe Your Problem
+              </label>
+              <div className="mt-1">
+                <textarea
+                  id="problem"
+                  name="problem"
+                  rows="4"
+                  placeholder="Explain your issue in detail..."
+                  value={formData.problem}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                />
               </div>
             </div>
-            <p className="text-gray-700">{msg.message}</p>
+
+            {/* Help Image */}
+            <div className="flex justify-center">
+              <img
+                src={help}
+                alt="Help Illustration"
+                className="w-1/2 h-auto"
+              />
+            </div>
+
+            {/* Submit Button */}
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
+                className={`w-full flex justify-center items-center px-4 py-3 text-white font-semibold rounded-lg transition-all ${
+                  loading ? "bg-gray-400" : "bg-sky-600 hover:bg-sky-700"
+                }`}
+              >
+                {loading ? (
+                  "Sending..."
+                ) : (
+                  <>
+                    <IoPaperPlaneOutline className="mr-2" /> Send Message
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+
+          {/* Messages Display Section */}
+          <div className="space-y-6">
+            {loading ? (
+              <p className="text-center text-gray-500">Loading messages...</p>
+            ) : error ? (
+              <p className="text-center text-red-500">{error}</p>
+            ) : (
+              messages.map((msg) => (
+                <div
+                  key={msg._id}
+                  className={`p-6 rounded-lg shadow-sm ${
+                    msg.senderRole === "student"
+                      ? "bg-blue-50 border-l-4 border-blue-500"
+                      : "bg-gray-50 border-l-4 border-gray-500"
+                  }`}
+                >
+                  <div className="flex items-center mb-4">
+                    <img
+                      src={
+                        msg.senderRole === "student"
+                          ? msg.studentDetails.profilePic
+                          : msg.adminDetails.profilePic ||
+                            "https://img.freepik.com/premium-photo/3d-entrepreneur-icon-business-leader-innovation-illustration-logo_762678-101891.jpg"
+                      }
+                      alt="Profile"
+                      className="w-12 h-12 rounded-full object-cover mr-3"
+                    />
+                    <div>
+                      <p className="font-semibold">
+                        {msg.senderRole === "student"
+                          ? `${msg.studentDetails.firstName} ${msg.studentDetails.lastName}`
+                          : "TNP Admin"}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(msg.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-gray-700">{msg.message}</p>
+                </div>
+              ))
+            )}
           </div>
-        ))
-      )}
-    </div>
-  </div>
-</div>
-
-
+        </div>
+      </div>
     </div>
   );
 };

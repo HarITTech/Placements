@@ -5,6 +5,7 @@ import { Link } from "react-router-dom"; // Import Link
 import { ChevronDown, SlidersHorizontal, Search, BellRing } from "lucide-react";
 import Loading from "../../component/Loading";
 import FilterDropdown from "./filterdropdown";
+import DOMPurify from "dompurify";
 
 export function JobData() {
   const dispatch = useDispatch();
@@ -251,7 +252,6 @@ export function JobData() {
           )}
         </div>
 
-
         {/* <div className="relative">
           <button
             onClick={toggleNotifications}
@@ -316,7 +316,9 @@ export function JobData() {
 
       {/* Job Cards */}
       {loading ? (
-        <div className="text-center text-gray-600"><Loading/></div>
+        <div className="text-center text-gray-600">
+          <Loading />
+        </div>
       ) : error ? (
         <div className="text-center text-red-600">Error: {error.message}</div>
       ) : (
@@ -344,7 +346,12 @@ export function JobData() {
                   </div>
                 </div>
                 {/* Job Description */}
-                <p className="t-black--light mt-2 flex-1">{job.description}</p>
+                <div
+                  className="text-gray-600"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(job.description),
+                  }}
+                ></div>
                 {/* Tags and Location */}
                 <div className="mb-4 flex flex-wrap gap-2 mt-2">
                   {job.eligibilityCriteria.branches.length > 0 && (
