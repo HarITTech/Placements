@@ -311,6 +311,42 @@ const NotificationPage = () => {
                 )}
               </section>
 
+              {/* Placement Section */}
+              {selectedJob.placement ? (
+                <div className="bg-green-100 border border-green-200 p-6 rounded-lg shadow-lg mb-6  flex flex-col items-center">
+                  <h2 className="text-2xl font-extrabold text-green-800 mb-2 text-center">
+                    🎉 Congratulations! 🎉
+                  </h2>
+                  <p className="text-lg text-gray-800 mb-1 text-center">
+                    You have been placed at{" "}
+                    <span className="font-semibold">
+                      {selectedJob.companyName}
+                    </span>
+                    !
+                  </p>
+                  <p className="text-gray-700 mb-1 text-center">
+                    <span className="font-semibold">Package Amount:</span> ₹
+                    {selectedJob.placement.packageAmount} LPA
+                  </p>
+                  <p className="text-gray-700 text-center">
+                    <span className="font-semibold">Placed On:</span>{" "}
+                    {new Date(
+                      selectedJob.placement.placedOn
+                    ).toLocaleDateString()}
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-yellow-100 p-4 rounded-lg shadow-md mb-6">
+                  <h2 className="text-xl font-bold text-yellow-800">
+                    Keep Going! 💪
+                  </h2>
+                  <p className="text-gray-700">
+                    You haven't been placed yet, but don't lose hope! Keep
+                    applying and improving your skills.
+                  </p>
+                </div>
+              )}
+
               {/* Feedback Section */}
               <h2 className="text-xl font-semibold mb-4">Feedbacks</h2>
 
@@ -329,7 +365,7 @@ const NotificationPage = () => {
                 {/* User Profile Picture */}
                 <img
                   src={user?.profile?.profilePic || "/placeholder.svg"}
-                  alt="User    profile"
+                  alt="User  profile"
                   className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
                 />
 
@@ -465,7 +501,7 @@ const NotificationPage = () => {
                               src={
                                 user?.profile?.profilePic || "/placeholder.svg"
                               }
-                              alt="User    profile"
+                              alt="User  profile"
                               className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
                             />
 

@@ -700,7 +700,8 @@ function Home() {
                 required //
                 className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
                   isEditing ? "bg-white" : "bg-transparent"
-                }`}>
+                }`}
+              >
                 <option value="1st">1st year</option>
                 <option value="2nd">2nd year</option>
                 <option value="3rd">3rd year</option>
@@ -744,7 +745,8 @@ function Home() {
                 required //
                 className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
                   isEditing ? "bg-white" : "bg-transparent"
-                }`} >
+                }`}
+              >
                 <option value="2023-2024">2023-2024</option>
                 <option value="2024-2025">2024-2025</option>
                 <option value="2025-2026">2025-2026</option>
@@ -828,7 +830,8 @@ function Home() {
                 required //
                 className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
                   isEditing ? "bg-white" : "bg-transparent"
-                }`} >
+                }`}
+              >
                 <option value="">Select Branch</option>
                 <option value="CSE">CSE</option>
                 <option value="IT">IT</option>
@@ -851,7 +854,8 @@ function Home() {
                 required //
                 className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
                   isEditing ? "bg-white" : "bg-transparent"
-                }`} >
+                }`}
+              >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </select>
@@ -1068,7 +1072,10 @@ function Home() {
                 )}
                 <ul className="list-disc ml-6 p-2">
                   {formData.backlogs.map((backlog, index) => (
-                    <div key={index} className="flex items-center">
+                    <div
+                      key={index}
+                      className="flex flex-col md:flex-row items-center mb-2"
+                    >
                       {isEditing ? (
                         <>
                           <input
@@ -1082,7 +1089,7 @@ function Home() {
                               )
                             }
                             placeholder="Semester"
-                            className="border border-gray-300 rounded p-1 mr-2"
+                            className="border border-gray-300 rounded p-1 mr-2 mb-2 md:mb-0 md:w-1/4"
                           />
                           <input
                             type="number"
@@ -1095,7 +1102,7 @@ function Home() {
                               )
                             }
                             placeholder="Count"
-                            className="border border-gray-300 rounded p-1 mr-2"
+                            className="border border-gray-300 rounded p-1 mr-2 mb-2 md:mb-0 md:w-1/4"
                           />
                           <input
                             type="number"
@@ -1104,7 +1111,7 @@ function Home() {
                               handleBacklogChange(index, "dead", e.target.value)
                             }
                             placeholder="Dead"
-                            className="border border-gray-300 rounded p-1 mr-2"
+                            className="border border-gray-300 rounded p-1 mr-2 mb-2 md:mb-0 md:w-1/4"
                           />
                           <button
                             onClick={() => removeBacklog(index)}
@@ -1114,7 +1121,7 @@ function Home() {
                           </button>
                         </>
                       ) : (
-                        <li>
+                        <li className="flex items-center">
                           <span className="font-normal">
                             {backlog.semester} Semester:{" "}
                           </span>
@@ -1138,15 +1145,20 @@ function Home() {
             <div className="space-y-4 mt-4">
               <div>
                 <h3 className="block text-md font-semibold text-gray-700">
-                  Achievements
+                  Achievements{" "}
                 </h3>
                 {isEditing ? (
-                  <textarea
-                    id="achievements"
-                    value={formData.achievements}
-                    onChange={handleChange}
-                    className="w-full border rounded p-2"
-                  />
+                  <div>
+                    <code className="text-red-500 text-xs">
+                      ( e.g., Achievement1, Achievement2, Achievement3... )
+                    </code>
+                    <textarea
+                      id="achievements"
+                      value={formData.achievements}
+                      onChange={handleChange}
+                      className="w-full border rounded p-2"
+                    />
+                  </div>
                 ) : (
                   <ul className="list-disc ml-6 p-2">
                     {user?.profile?.achievements?.map((achievement, index) => (
@@ -1163,12 +1175,17 @@ function Home() {
                   Skills
                 </h3>
                 {isEditing ? (
-                  <textarea
-                    id="skills"
-                    value={formData.skills}
-                    onChange={handleChange}
-                    className="w-full border rounded p-2"
-                  />
+                  <div>
+                    <code className="text-red-500 text-xs text-left">
+                      (e.g., Skill1, Skill2, Skill3...)
+                    </code>
+                    <textarea
+                      id="skills"
+                      value={formData.skills}
+                      onChange={handleChange}
+                      className="w-full border rounded p-2"
+                    />
+                  </div>
                 ) : (
                   <ul className="list-disc ml-6 p-2">
                     {user?.profile?.skills?.map((skill, index) => (

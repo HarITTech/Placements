@@ -69,15 +69,8 @@ const Sidebar = () => {
   return (
     <>
       {/* Small Screen Sidebar */}
-      {/* Small Screen Sidebar */}
       <div className="lg:hidden sticky top-0 left-0 z-50 w-16 h-screen bg-[#002146b7] backdrop-blur-sm text-[rgb(192,192,192)]">
         <div className="p-2">
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="flex items-center justify-center w-12 h-12 rounded-lg hover:bg-white/10"
-          >
-            <Menu className="h-6 w-6" />
-          </button>
         </div>
         <nav className="space-y-2 p-2">
           <NavLink

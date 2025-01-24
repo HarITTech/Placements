@@ -43,12 +43,6 @@ const UserStatus = ({ userStatus }) => {
       <div className="flex justify-between mb-5">
         <div className="flex-1 mx-2">
           <p className="text-[14] text-[#16163b] flex items-center mb-1">
-            <strong>Working or Not:</strong>
-            <h6 className="text-[14] ml-2 px-3 border-b border-[rgba(33,86,105,0.758)] bg-gradient-to-b from-transparent via-transparent to-[rgba(141,168,178,0.46)] text-[#16163b] rounded ">
-            {userStatus.isWorking ? "Working" : "Not Working"}
-            </h6>
-          </p>
-          <p className="text-[14] text-[#16163b] flex items-center mb-1">
             <strong>Company Name:</strong>
             <h6 className="text-[14] ml-2 px-3 border-b border-[rgba(33,86,105,0.758)] bg-gradient-to-b from-transparent via-transparent to-[rgba(141,168,178,0.46)] text-[#16163b] rounded">
             {userStatus.companyName || "NA"}
