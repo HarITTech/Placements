@@ -1,15 +1,20 @@
 import jwt from "jsonwebtoken";
-import  { User }  from "../models/user.model.js";
+import { User } from "../models/user.model.js";
 import { College } from "../models/college.model.js";
 import dotenv from "dotenv";
-import { deleteImageFromCloudinary, uploadImageOnCloudinary } from "../cloud/cloudinary.js";
+import {
+  deleteImageFromCloudinary,
+  uploadImageOnCloudinary,
+} from "../cloud/cloudinary.js";
 import { sendResetPasswordEmail } from "../config/emailService.js";
 
 dotenv.config();
 
 // Generate JWT token
 const generateToken = (res, userId) => {
-  const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "30d" });
+  const token = jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
 
   res.cookie("token", token, {
     httpOnly: true, // Secure the cookie
@@ -30,17 +35,25 @@ export const createTnpAdmin = async (req, res) => {
 
     // 2. Check for existing user
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Email already in use" });
+    if (existingUser)
+      return res.status(400).json({ message: "Email already in use" });
 
     // 3. Create a TNP Admin user
-    const tnpAdmin = new User({ email, password, role: "tnp_admin", college: college._id });
+    const tnpAdmin = new User({
+      email,
+      password,
+      role: "tnp_admin",
+      college: college._id,
+    });
     await tnpAdmin.save();
 
     // 4. Link TNP Admin to the college
     college.tnpAdmin = tnpAdmin._id;
     await college.save();
 
-    res.status(201).json({ message: "TNP Admin created successfully", tnpAdmin });
+    res
+      .status(201)
+      .json({ message: "TNP Admin created successfully", tnpAdmin });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -53,15 +66,23 @@ export const createStudent = async (req, res) => {
   try {
     // Ensure role-based access
     if (req.user.role !== "tnp_admin") {
-      return res.status(403).json({ message: "Only TNP Admins can create students" });
+      return res
+        .status(403)
+        .json({ message: "Only TNP Admins can create students" });
     }
 
     // 1. Check if email is already in use
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Email already in use" });
+    if (existingUser)
+      return res.status(400).json({ message: "Email already in use" });
 
     // 2. Create a Student user linked to the same college as the TNP Admin
-    const student = new User({ email, password, role: "student", college: req.user.college });
+    const student = new User({
+      email,
+      password,
+      role: "student",
+      college: req.user.college,
+    });
     await student.save();
 
     res.status(201).json({ message: "Student created successfully", student });
@@ -81,7 +102,8 @@ export const loginUser = async (req, res) => {
 
     // 2. Validate password
     const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) return res.status(401).json({ message: "Invalid credentials" });
+    if (!isPasswordValid)
+      return res.status(401).json({ message: "Invalid credentials" });
 
     // 3. Generate JWT token and set it in cookies
     const tokenPayload = { id: user._id, role: user.role };
@@ -91,20 +113,25 @@ export const loginUser = async (req, res) => {
       tokenPayload.college = user.college._id;
     }
 
-    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1d' });
-
-    res.cookie('mpsp', token, { 
-      httpOnly: true, 
-      secure: process.env.NODE_ENV === 'production',  
-     
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+      expiresIn: "1d",
     });
 
-    res.status(200).json({ message: "Login successful", user: { id: user._id, role: user.role, token } });
+    res.cookie("mpsp", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+    });
+
+    res
+      .status(200)
+      .json({
+        message: "Login successful",
+        user: { id: user._id, role: user.role, token },
+      });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-
 
 // Logout User
 export const logoutUser = (req, res) => {
@@ -115,7 +142,6 @@ export const logoutUser = (req, res) => {
   res.status(200).json({ message: "Logout successful" });
 };
 
-
 // List all users of a specific college
 export const listUsersOfCollege = async (req, res) => {
   try {
@@ -123,7 +149,7 @@ export const listUsersOfCollege = async (req, res) => {
     const { collegeId } = req.params;
 
     // Ensure the current user is either a TNP Admin of that college or a Global Admin
-    if (req.user.role !== 'global_admin') {
+    if (req.user.role !== "global_admin") {
       const userCollege = await College.findById(collegeId);
       if (!userCollege) {
         return res.status(404).json({ message: "College not found" });
@@ -131,16 +157,23 @@ export const listUsersOfCollege = async (req, res) => {
 
       // Check if the current user is the TNP Admin of the college
       if (userCollege.tnpAdmin.toString() !== req.user._id.toString()) {
-        return res.status(403).json({ message: "Not authorized to view users for this college" });
+        return res
+          .status(403)
+          .json({ message: "Not authorized to view users for this college" });
       }
     }
 
     // Fetch all users related to the specific college
-    const users = await User.find({ college: collegeId }).populate('college', 'name');
-    
+    const users = await User.find({ college: collegeId }).populate(
+      "college",
+      "name"
+    );
+
     // If no users found
     if (users.length === 0) {
-      return res.status(404).json({ message: "No users found for this college" });
+      return res
+        .status(404)
+        .json({ message: "No users found for this college" });
     }
 
     // Send the response with the list of users
@@ -164,7 +197,10 @@ export const fetchUserById = async (req, res) => {
     // Fetch the user by ID and populate necessary fields
     const user = await User.findById(userId)
       .populate("college", "name address subscription") // Populating the college name
-      .populate("profile.appliedJobsHistory.jobId", "title company location type description logo"); // Populating job history with job details
+      .populate(
+        "profile.appliedJobsHistory.jobId",
+        "title company location type description logo"
+      ); // Populating job history with job details
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -190,14 +226,15 @@ export const fetchUserById = async (req, res) => {
   }
 };
 
-
 export const deleteStudent = async (req, res) => {
   const { studentId } = req.params;
 
   try {
     // Ensure role-based access
     if (req.user.role !== "tnp_admin") {
-      return res.status(403).json({ message: "Only TNP Admins can delete students" });
+      return res
+        .status(403)
+        .json({ message: "Only TNP Admins can delete students" });
     }
 
     // Find the student to delete
@@ -208,7 +245,9 @@ export const deleteStudent = async (req, res) => {
 
     // Ensure the student belongs to the same college as the TNP Admin
     if (student.college.toString() !== req.user.college.toString()) {
-      return res.status(403).json({ message: "Not authorized to delete this student" });
+      return res
+        .status(403)
+        .json({ message: "Not authorized to delete this student" });
     }
 
     await User.findByIdAndDelete(studentId);
@@ -216,7 +255,6 @@ export const deleteStudent = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
-
 };
 
 // Middleware to ensure the user is a student
@@ -243,7 +281,7 @@ export const updateProfilePic = async (req, res) => {
     user.profile.profilePic = result.secure_url;
 
     await user.save();
-    
+
     res.status(200).json({
       message: "Profile picture updated successfully",
       profilePic: result.secure_url,
@@ -253,7 +291,6 @@ export const updateProfilePic = async (req, res) => {
     res.status(500).json({ message: "Failed to update profile picture" });
   }
 };
-
 
 // Update Student Profile
 export const updateStudentProfile = async (req, res) => {
@@ -301,7 +338,6 @@ export const updateStudentProfile = async (req, res) => {
   }
 };
 
-
 // TNP Admin Dashboard - View Student Profile Completion
 // TNP Admin or user can view profile completion details
 export const getProfileCompletionDetails = async (req, res) => {
@@ -313,12 +349,17 @@ export const getProfileCompletionDetails = async (req, res) => {
     // If the user is a TNP Admin, they can view any student in their college
     if (userRole === "tnp_admin") {
       // Fetch all students of the same college as the TNP Admin
-      const students = await User.find({ college: req.user.college, role: "student" });
+      const students = await User.find({
+        college: req.user.college,
+        role: "student",
+      });
 
       // Calculate profile completion for each student
       const profileDetails = students.map((student) => ({
         id: student._id,
-        name: `${student.profile.firstName || ""} ${student.profile.lastName || ""}`,
+        name: `${student.profile.firstName || ""} ${
+          student.profile.lastName || ""
+        }`,
         email: student.email,
         profileCompletion: student.profileCompletion,
       }));
@@ -351,7 +392,6 @@ export const getProfileCompletionDetails = async (req, res) => {
   }
 };
 
-
 // Forget Password: Send reset password email with a reset code
 export const forgetPassword = async (req, res) => {
   const { email } = req.body;
@@ -374,7 +414,29 @@ export const forgetPassword = async (req, res) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Password Reset OTP",
-      html: `<p>Your OTP for password reset is: <strong>${otp}</strong>. It is valid for 10 minutes.</p>`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <img src="https://res.cloudinary.com/dihc0jxm8/image/upload/v1736521415/default/file_1736521413798.jpg" alt="TNP Portal Logo" style="width: 150px; height: auto;">
+            <h1 style="font-size: 24px; color: #333;">TNP Portal</h1>
+          </div>
+          <h2 style="font-size: 20px; color: #333; text-align: center;">Password Reset OTP</h2>
+          <p style="font-size: 16px; text-align: center;">Your OTP for password reset is:</p>
+          <h2 style="font-size: 36px; font-weight: bold; color: #007BFF; text-align: center;">${otp}</h2>
+          <p style="font-size: 14px; text-align: center;">It is valid for 10 minutes.</p>
+          <hr style="margin: 20px 0;">
+          <p style="font-size: 14px; text-align: center;">If you did not request this, please ignore this email.</p>
+          <div style="text-align: center; margin-top: 20px;">
+            <p style="font-size: 14px;">Follow us on:</p>
+            <a href="https://www.linkedin.com/company/harit-tech-solution/posts/?feedView=all" style="margin: 0 10px;">LinkedIn</a>
+            <a href="http://www.harittech.in" style="margin: 0 10px;">Website</a>
+            <a href="mailto:info@harittech.in" style="margin: 0 10px;">Email</a>
+          </div>
+          <footer style="margin-top: 20px; font-size: 12px; text-align: center; color: #777;">
+            <p>&copy; ${new Date().getFullYear()} HarIT Tech Solution. All rights reserved.</p>
+          </footer>
+        </div>
+      `,
     };
 
     await sendResetPasswordEmail(mailOptions);
