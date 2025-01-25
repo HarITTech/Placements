@@ -71,6 +71,17 @@ const Login = () => {
           />
         </div>
       </header>
+      <div className="bg-yellow-500 border-t-[2px] border-gray-700 w-full">
+        <marquee
+          behavior=""
+          direction=""
+          style={{ color: "black", fontWeight: "normal" }}
+          scrollamount="10"
+        >
+          Update your profile to at least 80% completion before 27th January
+          2025 to remain eligible for all benefits...
+        </marquee>
+      </div>
 
       {/* <div className="flex justify-end p-3">
         <a

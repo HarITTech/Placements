@@ -596,11 +596,19 @@ function Home() {
             <div className="flex items-center gap-6">
               <div className="relative h-32 w-32 overflow-hidden border-[3px] border-gray-600 rounded-md bg-gray-200 group">
                 {/* Profile Picture */}
-                <img
-                  src={user?.profile?.profilePic || "/default-profile.png"}
-                  alt="Profile"
-                  className="h-full w-full object-cover"
-                />
+                {user?.profile?.profilePic ? (
+                  <img
+                    src={user.profile.profilePic}
+                    alt="Profile"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full w-full">
+                    <span className="text-gray-500 text-md text-center font-semibold">
+                      Upload Profile Picture
+                    </span>
+                  </div>
+                )}
 
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ">
