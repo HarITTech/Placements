@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { forgetPassword, resetPassword } from "../redux/userSlice";
-import tnp from '../assets/tnpportal.jpg';
+import tnp from "../assets/tnpportal.jpg";
 import { toast } from "react-toastify";
 import Loading from "../component/Loading";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Import eye icons
@@ -39,10 +39,14 @@ const ForgetPasswordPopup = ({ onClose }) => {
       return;
     }
     try {
-      await dispatch(resetPassword({ email, otp, newPassword: confirmPassword })).unwrap();
+      await dispatch(
+        resetPassword({ email, otp, newPassword: confirmPassword })
+      ).unwrap();
       onClose(); // Close the popup on success
     } catch (error) {
-      toast.error(`Failed to reset password: ${error}`, { position: "top-center" });
+      toast.error(`Failed to reset password: ${error}`, {
+        position: "top-center",
+      });
     }
   };
 
@@ -64,9 +68,13 @@ const ForgetPasswordPopup = ({ onClose }) => {
         />
         <div className="mb-8">
           <h1 className="text-2xl font-bold ">Forget Password</h1>
-          <p className=" text-xs hover:text-blue-400 cursor-pointer hover:underline">to continue to TNP Portal</p>
+          <p className=" text-xs hover:text-blue-400 cursor-pointer hover:underline">
+            to continue to TNP Portal
+          </p>
         </div>
-        <p className="text-muted-foreground mb-2">Enter your email to reset your password</p>
+        <p className="text-muted-foreground mb-2">
+          Enter your email to reset your password
+        </p>
         {otpSent ? (
           <form onSubmit={handleResetPassword}>
             <input
@@ -86,8 +94,8 @@ const ForgetPasswordPopup = ({ onClose }) => {
                 required
                 className="w-full p-2 border-[1px] border-gray-600 rounded focus:outline-none focus:ring focus:ring-ring"
               />
-              <span 
-                className="absolute right-2 top-2 cursor-pointer" 
+              <span
+                className="absolute right-2 top-2 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -102,20 +110,28 @@ const ForgetPasswordPopup = ({ onClose }) => {
                 required
                 className="w-full p-2 border-[1px] border-gray-600 rounded focus:outline-none focus:ring focus:ring-ring"
               />
-              <span 
-                className="absolute right-2 top-2 cursor-pointer" 
+              <span
+                className="absolute right-2 top-2 cursor-pointer"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </span>
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-sky-400/80 text-white hover:bg-sky-500 py-2 px-4 rounded"
-            >
-              {loading ? "Loading..." : "Reset Password"}
-            </button>
+            <div className="flex justify-between mt-6">
+              <button
+                onClick={onClose}
+                className="bg-secondary text-gray-800 border-gray-600 border-[1px] rounded-2xl hover:bg-secondary/80 py-2 px-4"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-sky-400/80 text-white hover:bg-sky-500 py-2 px-4 rounded"
+              >
+                {loading ? "Loading..." : "Reset Password"}
+              </button>
+            </div>
           </form>
         ) : (
           <form onSubmit={handleForgetPassword}>
@@ -137,7 +153,10 @@ const ForgetPasswordPopup = ({ onClose }) => {
               </a>
             </p>
             <div className="flex justify-between mt-6">
-              <button onClick={onClose} className="bg-secondary text-gray-800 border-gray-600 border-[1px] rounded-2xl hover:bg-secondary/80 py-2 px-4">
+              <button
+                onClick={onClose}
+                className="bg-secondary text-gray-800 border-gray-600 border-[1px] rounded-2xl hover:bg-secondary/80 py-2 px-4"
+              >
                 Cancel
               </button>
               <button

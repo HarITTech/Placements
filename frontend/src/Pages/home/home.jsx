@@ -33,6 +33,8 @@ function Home() {
     semester: "",
     gender: "",
     branch: "",
+    collegename: "",
+    collegeaddress: "",
     tbtId: "",
     phone: "",
     dob: "",
@@ -125,6 +127,8 @@ function Home() {
         studentName: user.profile.firstName + " " + user.profile.lastName || "",
         firstname: user.profile.firstName || "",
         lastname: user.profile.lastName || "",
+        collegename: user.college.name || "",
+        collegeaddress: user.college.address || "",
         userEmail: user.profile.userEmail || "",
         branch: user.profile.branch || "",
         year: user.profile.year || "",
@@ -386,18 +390,19 @@ function Home() {
 
       // Add Name and College Details
       doc.setFont("Helvetica", "bold");
-      doc.setFontSize(24);
+      doc.setFontSize(18); // Reduced font size
       doc.setTextColor("#FFFFFF");
       doc.text(String(formData.studentName || "Your Name"), 50, 20); // Name
-      doc.setFontSize(16);
+      doc.setFontSize(12); // Reduced font size
 
       // Handle long college names with word wrapping
       const collegeName =
-        formData.collegeName ||
+        formData.collegename ||
         "Tulsiramji Gaikwad Patil College of Engineering and Technology, Nagpur";
       const collegeLines = doc.splitTextToSize(collegeName, 140); // Wrap text to fit within 140mm width
       doc.text(collegeLines, 50, 30); // Display wrapped text
       doc.setFontSize(8);
+      doc.text(formData.collegeaddress || "Nagpur", 50, 35);
 
       const collegeWebsite =
         formData.collegeWebsite || "https://tnpportal.harittech.in";
@@ -407,7 +412,7 @@ function Home() {
 
       // Section Heading Function
       const addSectionHeading = (title, yPosition) => {
-        doc.setFontSize(18);
+        doc.setFontSize(16); // Reduced font size
         doc.setTextColor(primaryColor);
         doc.setFont("Helvetica", "bold");
         doc.text(String(title), 10, yPosition);
@@ -421,7 +426,7 @@ function Home() {
         const safeValue = String(value || "N/A");
 
         // Add Key and Value
-        doc.setFontSize(12);
+        doc.setFontSize(10); // Reduced font size
         doc.setTextColor(lightGray);
         doc.setFont("Helvetica", "bold");
         doc.text(String(key), x, y);
@@ -452,93 +457,123 @@ function Home() {
       addContent("MHT CET Score:", formData.mhtcet, 15, 215);
 
       // Add CGPA Details Section
-      addSectionHeading("CGPA Details", 225);
+      addSectionHeading("SGPA Details", 225);
       let cgpaYOffset = 235; // Dynamic Y offset for CGPA details
-      (formData.cgpa || []).forEach((cgpaObj, index) => {
-        cgpaObj.semesters.forEach((semesterData, semIndex) => {
+      (formData.cgpa || []).forEach((cgpaObj) => {
+        cgpaObj.semesters.forEach((semesterData) => {
           addContent(
             `${semesterData.semester} Semester:`,
             semesterData.cgpa,
             20,
             cgpaYOffset
           );
-          cgpaYOffset += 10; // Add spacing between rows
+          cgpaYOffset += 8; // Reduced spacing between rows
         });
       });
 
       // Add Backlog Details Section
       addSectionHeading("Backlog Details", cgpaYOffset + 15); // Add gap after CGPA section
-      let backlogYOffset = cgpaYOffset + 25; // Dynamic Y offset for backlog details
-      (formData.backlogs || []).forEach((backlog, index) => {
+      let backlogYOffset = cgpaYOffset + 20; // Dynamic Y offset for backlog details
+      (formData.backlogs || []).forEach((backlog) => {
         addContent(
           `${backlog.semester} Semester:`,
           `${backlog.count || 0} live, ${backlog.dead || 0} dead`,
           15,
           backlogYOffset
         );
-        backlogYOffset += 15; // Add spacing between rows
+        backlogYOffset += 10; // Reduced spacing between rows
       });
 
-      // Check if the page is full
-      if (backlogYOffset > 280) {
+      // Check if we need to add a new page
+      if (backlogYOffset > 250) {
+        // Adjust this threshold as needed
         doc.addPage();
         backlogYOffset = 20; // Reset the Y offset for the new page
       }
 
       // Add Achievements and Skills Section
+      // Add Achievements and Skills Section
       addSectionHeading("Achievements & Skills", backlogYOffset + 15);
-      addContent(
-        "Achievements:",
-        formData.achievements,
-        15,
-        backlogYOffset + 25
-      );
-      addContent("Skills:", formData.skills, 15, backlogYOffset + 35);
+
+      // Achievements Section
+      const achievementsText = formData.achievements || "No Achievements";
+      const wrappedAchievements = doc.splitTextToSize(achievementsText, 180); // Adjust width as needed
+      let achievementsYOffset = backlogYOffset + 25; // Start position for achievements
+      doc.setFontSize(12); // Set font size for the title
+      doc.setTextColor(primaryColor);
+      doc.text("Achievements:", 15, achievementsYOffset); // Title for Achievements
+      achievementsYOffset += 10; // Space after title
+
+      wrappedAchievements.forEach((line) => {
+        addContent("", line, 10, achievementsYOffset);
+        achievementsYOffset += 8; // Adjust spacing as needed
+      });
+
+      // Skills Section
+      const skillsText = formData.skills || "No Skills";
+      const wrappedSkills = doc.splitTextToSize(skillsText, 180); // Adjust width as needed
+      let skillsYOffset = achievementsYOffset + 10; // Add some space before skills
+      doc.setFontSize(12); // Set font size for the title
+      doc.setTextColor(primaryColor);
+      doc.text("Skills:", 15, skillsYOffset); // Title for Skills
+      skillsYOffset += 10; // Space after title
+
+      wrappedSkills.forEach((line) => {
+        addContent("", line, 10, skillsYOffset);
+        skillsYOffset += 8; // Adjust spacing as needed
+      });
 
       // Add Current Status Section
-      addSectionHeading("Current Status", backlogYOffset + 45);
+      addSectionHeading("Current Status", backlogYOffset + 85);
       addContent(
         "Company Name:",
         formData.currentStatus.companyName,
         15,
-        backlogYOffset + 55
+        backlogYOffset + 95
       );
       addContent(
         "Position:",
         formData.currentStatus.position,
         15,
-        backlogYOffset + 65
+        backlogYOffset + 105
       );
       addContent(
         "Duration:",
         formData.currentStatus.duration,
         15,
-        backlogYOffset + 75
+        backlogYOffset + 115
       );
       addContent(
         "Job Type:",
         formData.currentStatus.jobType,
         15,
-        backlogYOffset + 85
+        backlogYOffset + 125
       );
       addContent(
         "Location:",
         formData.currentStatus.location,
         15,
-        backlogYOffset + 95
+        backlogYOffset + 135
       );
       addContent(
         "Start Date:",
         formData.currentStatus.startDate,
         15,
-        backlogYOffset + 105
+        backlogYOffset + 145
       );
       addContent(
         "End Date:",
         formData.currentStatus.endDate,
         15,
-        backlogYOffset + 115
+        backlogYOffset + 155
       );
+
+      // Add Footer
+      const footerY = 290; // Adjust this value based on your content height
+      doc.setFontSize(8); // Reduced font size for footer
+      doc.setTextColor(lightGray);
+      doc.text("Generated by HarIT Tech Solution", 10, footerY);
+      doc.text("© 2025 All Rights Reserved", 150, footerY);
 
       // Save and Preview PDF
       const pdfBlob = doc.output("blob");
@@ -990,14 +1025,14 @@ function Home() {
               {/* CGPA Section */}
               <div>
                 <h3 className="text-md font-semibold text-gray-700">
-                  Semester-wise CGPA
+                  Semester-wise SGPA
                 </h3>
                 {isEditing && (
                   <button
                     onClick={addCgpa}
                     className="mt-2 bg-blue-600 text-white py-1 px-2 rounded"
                   >
-                    Add CGPA
+                    Add SGPA
                   </button>
                 )}
                 <ul className="list-disc ml-6 p-2">
@@ -1031,7 +1066,7 @@ function Home() {
                                     e.target.value
                                   )
                                 }
-                                placeholder="CGPA"
+                                placeholder="SGPA"
                                 className="border border-gray-300 rounded p-1 mr-2"
                               />
                               <button
@@ -1048,7 +1083,7 @@ function Home() {
                                 {semesterData.semester} Semester:{" "}
                               </span>
                               <span className="font-semibold text-sky-600">
-                                {semesterData.cgpa} CGPA
+                                {semesterData.cgpa} SGPA
                               </span>
                             </li>
                           ))}

@@ -16,7 +16,7 @@ import { VscFeedback } from "react-icons/vsc";
 import { RiFeedbackLine } from "react-icons/ri";
 import { FaRankingStar } from "react-icons/fa6";
 import { BiLogOut } from "react-icons/bi";
-import collage from '../assets/collage.png';
+import collage from "../assets/collage.png";
 import { MdEventAvailable, MdWork } from "react-icons/md";
 
 const Sidebar = () => {
@@ -70,8 +70,7 @@ const Sidebar = () => {
     <>
       {/* Small Screen Sidebar */}
       <div className="lg:hidden sticky top-0 left-0 z-50 w-16 h-screen bg-[#002146b7] backdrop-blur-sm text-[rgb(192,192,192)]">
-        <div className="p-2">
-        </div>
+        <div className="p-2"></div>
         <nav className="space-y-2 p-2">
           <NavLink
             to="/"
@@ -97,7 +96,7 @@ const Sidebar = () => {
               location.pathname === "/job" ? "border-b-2 border-white" : ""
             }`}
           >
-            <MdWork  className="h-5 w-5" />
+            <MdWork className="h-5 w-5" />
           </NavLink>
           <NavLink
             to="/event"
@@ -105,7 +104,7 @@ const Sidebar = () => {
               location.pathname === "/event" ? "border-b-2 border-white" : ""
             }`}
           >
-            <MdEventAvailable  className="h-5 w-5" />
+            <MdEventAvailable className="h-5 w-5" />
           </NavLink>
           {/* <NavLink
             to="/highlight"
@@ -271,7 +270,14 @@ const Sidebar = () => {
           <div className="px-3 py-4 bg-transparent justify-start items-start">
             <p className="text-xs">
               Made by <span className="text-red-500">❤️</span>{" "}
-              <span className="text-xs font-bold">Harit Tech Solution</span>
+              <a
+                href="https://www.harittech.in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold  hover:text-blue-500"
+              >
+                Harit Tech Solution
+              </a>
             </p>
           </div>
 

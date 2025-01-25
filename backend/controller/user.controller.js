@@ -91,7 +91,7 @@ export const loginUser = async (req, res) => {
       tokenPayload.college = user.college._id;
     }
 
-    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '30d' });
+    const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, { expiresIn: '1d' });
 
     res.cookie('mpsp', token, { 
       httpOnly: true, 

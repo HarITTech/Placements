@@ -21,7 +21,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [showForgetPassword, setShowForgetPassword] = useState(false);
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(loginUser({ email, password }));
@@ -38,7 +37,7 @@ const Login = () => {
     }
   }, [error, user, navigate]);
 
-    // Handle long loading state
+  // Handle long loading state
   useEffect(() => {
     let timeoutId;
     if (loading) {
@@ -98,7 +97,9 @@ const Login = () => {
           onSubmit={handleSubmit}
         >
           <div className="flex justify-center mb-4">
-            <button className="font-bold border-b-2 border-black">Log in</button>
+            <button className="font-bold border-b-2 border-black">
+              Log in
+            </button>
           </div>
           <div className="mb-4">
             <label htmlFor="email" className="block text-gray-700 mb-3">
@@ -154,7 +155,7 @@ const Login = () => {
                       d="M4 12a8 8 0 018-8v8z"
                     ></path>
                   </svg>
-                  <Loading/>
+                  <Loading />
                 </>
               ) : (
                 "Login"
@@ -176,7 +177,14 @@ const Login = () => {
       <footer className="px-3 py-4 bg-transparent justify-start items-start">
         <p className="text-xs">
           Made by <span className="text-red-500">❤️</span>{" "}
-          <span className="text-xs font-bold">Harit Tech Solution</span>
+          <a
+            href="https://www.harittech.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-bold  hover:text-blue-500"
+          >
+            Harit Tech Solution
+          </a>
         </p>
       </footer>
     </div>
