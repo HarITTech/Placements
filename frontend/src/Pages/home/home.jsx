@@ -681,7 +681,7 @@ function Home() {
 
               <button
                 onClick={handlePreviewPDF}
-                className="relative flex items-center justify-center gap-2 py-3 px-6 bg-blue-500 text-white text-lg font-medium rounded-lg border-2 border-blue-500 transition-all duration-300 ease-in-out hover:bg-transparent hover:text-blue-500"
+                className="relative flex items-center justify-center gap-2 py-3 px-6 bg-sky-400 text-white text-lg font-medium rounded-lg border-2 border-gray-200 transition-all duration-300 ease-in-out hover:bg-transparent hover:text-sky-500 hover:border-sky-500"
               >
                 Export
               </button>
@@ -1031,14 +1031,14 @@ function Home() {
 
               {/* CGPA Section */}
               {/* CGPA Section */}
-              <div>
+              <div className="p-4">
                 <h3 className="text-md font-semibold text-gray-700">
                   Semester-wise SGPA
                 </h3>
                 {isEditing && (
                   <button
                     onClick={addCgpa}
-                    className="mt-2 bg-blue-600 text-white py-1 px-2 rounded"
+                    className="mt-2 bg-sky-400 text-white py-1 px-2 rounded"
                   >
                     Add SGPA
                   </button>
@@ -1048,7 +1048,10 @@ function Home() {
                     <div key={index}>
                       {isEditing
                         ? cgpaObj.semesters.map((semesterData, semIndex) => (
-                            <div key={semIndex} className="flex items-center">
+                            <div
+                              key={semIndex}
+                              className="flex flex-col sm:flex-row items-center mb-2"
+                            >
                               <input
                                 type="text"
                                 value={semesterData.semester}
@@ -1061,7 +1064,7 @@ function Home() {
                                   )
                                 }
                                 placeholder="Semester"
-                                className="border border-gray-300 rounded p-1 mr-2"
+                                className="border border-gray-300 rounded p-1 mr-2 mb-2 sm:mb-0 sm:w-1/3"
                               />
                               <input
                                 type="number"
@@ -1075,7 +1078,7 @@ function Home() {
                                   )
                                 }
                                 placeholder="SGPA"
-                                className="border border-gray-300 rounded p-1 mr-2"
+                                className="border border-gray-300 rounded p-1 mr-2 mb-2 sm:mb-0 sm:w-1/3"
                               />
                               <button
                                 onClick={() => removeCgpa(index)}
@@ -1108,7 +1111,7 @@ function Home() {
                 {isEditing && (
                   <button
                     onClick={addBacklog}
-                    className="mt-2 bg-blue-600 text-white py-1 px-2 rounded"
+                    className="mt-2 bg-sky-400 text-white py-1 px-2 rounded"
                   >
                     Add Backlog
                   </button>
@@ -1192,7 +1195,7 @@ function Home() {
                 </h3>
                 {isEditing ? (
                   <div>
-                    <code className="text-red-500 text-xs">
+                    <code className="text-gray-500 text-xs">
                       ( e.g., Achievement1, Achievement2, Achievement3... )
                     </code>
                     <textarea
@@ -1219,7 +1222,7 @@ function Home() {
                 </h3>
                 {isEditing ? (
                   <div>
-                    <code className="text-red-500 text-xs text-left">
+                    <code className="text-gray-500 text-xs text-left">
                       (e.g., Skill1, Skill2, Skill3...)
                     </code>
                     <textarea

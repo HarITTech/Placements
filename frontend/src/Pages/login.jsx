@@ -60,18 +60,18 @@ const Login = () => {
           <img
             src={college}
             alt="College Logo"
-            className="h-20 w-[800px] ml-3 mr-4"
+            className="lg:h-20 lg:w-[800px] ml-3 mr-4"
           />
         </div>
         <div className="flex items-center">
           <img
             src={harit}
             alt="Harit Tech Logo"
-            className="h-20 w-[200px] mr-4 object-fill rounded-[20px]"
+            className="lg:h-20 lg:w-[200px] mr-4 object-fill rounded-[20px]"
           />
         </div>
       </header>
-      <div className="bg-yellow-500 border-t-[2px] border-gray-700 w-full">
+      <div className="bg-yellow-500 border-t-[2px] text-center border-gray-700 w-full">
         <marquee
           behavior=""
           direction=""
