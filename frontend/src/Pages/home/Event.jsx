@@ -6,6 +6,7 @@ import event3 from "../../assets/event3.jpeg";
 import event4 from "../../assets/event4.jpeg";
 import event5 from "../../assets/event5.jpeg";
 import event6 from "../../assets/event6.jpeg";
+import { FaTools } from "react-icons/fa";
 
 const Event = () => {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
@@ -61,7 +62,7 @@ const Event = () => {
       image: event3,
     },
   ];
- 
+
   useEffect(() => {
     if (emblaApi) {
       const intervalId = setInterval(() => {
@@ -81,9 +82,18 @@ const Event = () => {
 
   return (
     <div className="h-screen p-4  rounded-l-[35px] overflow-y-auto scrollbar-hide">
+      <marquee behavior="scroll" direction="left" scrollamount="10">
+        <code className="flex items-center gap-2 text-xs sm:text-sm text-green-500 font-medium">
+          Page  under maintenance. We’ll be back shortly{" "}
+          <FaTools className="text-green-500" size={16} />
+        </code>
+      </marquee>{" "}
       {/* Image Carousel */}
-      <div className="relative h-[80vh] ">
-        <div ref={emblaRef} className="h-full w-full overflow-hidden rounded-[25px] shadow-[#0000005c] shadow-lg">
+      <div className="relative lg:h-[80vh] h-[40vh] ">
+        <div
+          ref={emblaRef}
+          className="h-full w-full overflow-hidden rounded-[25px] shadow-[#0000005c] shadow-lg"
+        >
           <div className="flex h-full">
             {heroImages.map((image, index) => (
               <div
@@ -102,19 +112,33 @@ const Event = () => {
 
                   {/* Event Text Content */}
                   <div className="absolute inset-y-0 left-0 p-8 text-white flex flex-col justify-center max-w-[60%]">
-                    <h2 className="text-[60px] font-black">Event Title</h2>
-                    <p className="text-[20px] font-bold mb-4">Event Date: 12 Jan 2025</p>
-                    <div className="w-[50%] max-h-[270px] h-auto relative overflow-y-auto scrollbar-hide">
-                    <p className="text-[15px] ">
-                      Event Description goes here. It can include important information or highlights about the event. Event Description goes here. It can include important information or highlights about the event. Event Description goes here. It can include important information or highlights about the event. Event Description goes here. It can include important information or highlights about the event. Event Description goes here. It can include important information or highlights about the event. Event Description goes here. It can include important information or highlights about the event. 
+                    <h2 className="lg:text-[60px] text-[30px] font-black">
+                      Event Title
+                    </h2>
+                    <p className="lg:text-[20px] text-[10px] font-bold mb-4">
+                      Event Date: 12 Jan 2025
                     </p>
+                    <div className="w-[50%] max-h-[270px] h-auto relative overflow-y-auto scrollbar-hide">
+                      <p className="lg:text-[15px] text-[7px] ">
+                        Event Description goes here. It can include important
+                        information or highlights about the event. Event
+                        Description goes here. It can include important
+                        information or highlights about the event. Event
+                        Description goes here. It can include important
+                        information or highlights about the event. Event
+                        Description goes here. It can include important
+                        information or highlights about the event. Event
+                        Description goes here. It can include important
+                        information or highlights about the event. Event
+                        Description goes here. It can include important
+                        information or highlights about the event.
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
-
         </div>
 
         {/* Pagination Dots */}
@@ -130,7 +154,6 @@ const Event = () => {
           ))}
         </div>
       </div>
-
       <div className="max-w-7xl mx-auto px-6 py-16">
         <h2 className="text-4xl font-bold text-center text-black mb-12">
           <span className="text-sm block mb-2 text-gray-600">EVENTS</span>

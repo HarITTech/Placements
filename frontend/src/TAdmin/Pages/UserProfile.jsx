@@ -129,6 +129,7 @@ import { fetchUserById } from "../../redux/userSlice";
 import { toast } from "react-toastify";
 import AcademicRecords from '../Components/AcademicRecords';
 import UserStatus from '../Components/UserStatus';
+import Loading from "../../component/Loading";
 import JobInternContent from '../Components/JobInternContent';
 import debounce from "lodash.debounce";
 
@@ -152,6 +153,11 @@ const UserProfile = () => {
     return () => fetchData.cancel();
   }, [dispatch, userId, student]);
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error, { position: "top-center" });
+    }
+  }, [error]);
 
 
   const handleBackClick = () => {
@@ -174,7 +180,7 @@ const UserProfile = () => {
       </div>
 
       {status === "loading" ? (
-        <div className="flex justify-center items-center mt-10">Loading....</div>
+        <div className="flex justify-center items-center mt-10"><Loading/></div>
       ) : (
         <div className="relative flex flex-col w-[92%] ml-[4%]">
           {/* Display user information */}

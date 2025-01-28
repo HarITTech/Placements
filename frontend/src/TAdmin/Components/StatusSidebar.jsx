@@ -6,9 +6,11 @@ import { AiOutlineClose } from "react-icons/ai";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaSortAmountDown } from "react-icons/fa"; // Import a sorting icon
 import debounce from "lodash.debounce";
+import { useNavigate } from "react-router-dom";
 
 const StatusSidebar = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { profileCompletionDetails, status, error } = useSelector(
     (state) => state.user
   );
@@ -58,6 +60,12 @@ const StatusSidebar = ({ isOpen, onClose }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [onClose]);
+
+  const handleUserClick = (userId) => {
+    // console.log();
+    
+    navigate(`/tadmin/userprofile/${userId}`); // Step 3: Navigate to UserProfile with userId
+  };
 
   const handleDelete = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
@@ -166,8 +174,8 @@ const StatusSidebar = ({ isOpen, onClose }) => {
               <div>
                 {filteredAndSortedDetails.map((detail) => (
                   <div
-                    key={detail.id}
-                    className="flex justify-between items-center p-3 border-b border-[rgba(33,86,105,0.758)] hover:bg-[#ffffff54] transition-colors duration-200"
+                    key={detail.id} onClick={() => handleUserClick(detail.id)} 
+                    className="flex justify-between items-center p-3 border-b border-[rgba(33,86,105,0.758)] hover:text-blue-600 cursor-pointer hover:bg-[#ffffff54] transition-colors duration-200"
                   >
                     <div className="flex-1 flex flex-col">
                       <span className="font-medium">{detail.name}</span>

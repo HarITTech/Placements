@@ -85,7 +85,7 @@ const Login = () => {
             or message us on{" "}
             <a
               href="https://www.linkedin.com/company/harit-tech-solution/posts/?feedView=all/"
-              className=" items-center gap-1 text-blue-500 font-medium inline-flex"
+              className=" items-center gap-1 text-blue-500 font-medium inline-flex "
               target="_blank"
               rel="noopener noreferrer"
             >

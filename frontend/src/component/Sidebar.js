@@ -14,10 +14,10 @@ import { useEffect } from "react";
 import debounce from "lodash.debounce";
 import { VscFeedback } from "react-icons/vsc";
 import { RiFeedbackLine } from "react-icons/ri";
-import { FaRankingStar } from "react-icons/fa6";
+import { FaBook, FaRankingStar } from "react-icons/fa6";
 import { BiLogOut } from "react-icons/bi";
 import collage from "../assets/collage.png";
-import { MdEventAvailable, MdWork } from "react-icons/md";
+import { MdCastForEducation, MdEventAvailable, MdWork } from "react-icons/md";
 
 const Sidebar = () => {
   const { token, user, profileCompletionDetails } = useSelector(
@@ -99,6 +99,14 @@ const Sidebar = () => {
             <MdWork className="h-5 w-5" />
           </NavLink>
           <NavLink
+            to="/training"
+            className={`flex items-center justify-center w-12 h-12 rounded-lg hover:bg-white/ 10 ${
+              location.pathname === "/training" ? "border-b-2 border-white" : ""
+            }`}
+          >
+            <FaBook className="h-5 w-5" />
+          </NavLink>
+          <NavLink
             to="/event"
             className={`flex items-center justify-center w-12 h-12 rounded-lg hover:bg-white/ 10 ${
               location.pathname === "/event" ? "border-b-2 border-white" : ""
@@ -137,7 +145,7 @@ const Sidebar = () => {
 
       {/* Full Sidebar for larger screens */}
       <div
-        className={`hidden lg:flex sticky top-0 flex-col w-84 bg-transparent text-[rgb(192,192,192)] h-[140vh] ${
+        className={`hidden lg:flex sticky top-0 flex-col w-84 bg-transparent text-[rgb(192,192,192)] lg:h-[150vh] ${
           isSidebarOpen ? "block" : "hidden"
         }`}
       >
@@ -207,6 +215,15 @@ const Sidebar = () => {
             >
               <Briefcase className="h-5 w-5" />
               <h1 className="text-xl font-bold">Job's</h1>
+            </NavLink>
+            <NavLink
+              to="/training"
+              className={`flex items-center gap-3 rounded-lg px-4 py-2 hover:bg-white/10 ${
+                location.pathname === "/training" ? "border-b-2 border-white" : ""
+              }`}
+            >
+              <FaBook className="h-5 w-5" />
+              <h1 className="text-xl font-bold">Traning</h1>
             </NavLink>
             <NavLink
               to="/event"

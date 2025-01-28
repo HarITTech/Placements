@@ -6,6 +6,7 @@ import Header from "../Components/Header";
 import { useNavigate } from "react-router-dom";
 import { createStudent, listUsersOfCollege } from "../../redux/userSlice";
 import { BsPersonFillAdd } from "react-icons/bs";
+import Loading from "../../component/Loading";
 import { AiFillDashboard } from "react-icons/ai";
 import CreateStudentPopup from "../Components/CreateStudentPopup";
 import StatusSidebar from "../Components/StatusSidebar";
@@ -137,6 +138,7 @@ function Users() {
     
     navigate(`/tadmin/userprofile/${userId}`); // Step 3: Navigate to UserProfile with userId
   };
+  
 
   return (
     <div className="relative flex flex-col flex-1 bg-[#A3B5C0] min-h-screen rounded-l-[35px]">
@@ -173,7 +175,7 @@ function Users() {
       </div>
       {loading ? (
         <div className="flex justify-center items-center min-h-[50vh]">
-          <span className="loader"></span>
+         <Loading/>
         </div>
       ) : (
         <div className="flex justify-center p-6">
@@ -199,7 +201,7 @@ function Users() {
                     key={user._id} onClick={() => handleUserClick(user._id)} 
                     className={`${
                       index % 2 === 0 ? "bg-[#cdd9e165]" : ""
-                    } hover:bg-[#ffffff82] hover:backdrop-blur-sm hover:shadow-lg cursor-pointer`}
+                    } hover:bg-[#ffffff82] hover:backdrop-blur-sm hover:text-blue-500 hover:shadow-lg cursor-pointer`}
                   >
                     <td className="flex items-center gap-2 p-3 border border-[#cdd9e1bc]">
                       <img src={user.profile?.profilePic} alt="img" className="w-10 h-10 mr-3 object-cover text-center font-semibold text-sm transition-all border-gray-300 hover:bg-opacity-20 hover:backdrop-blur-sm hover:bg-white text-red-400 rounded-3xl shadow-sm" />

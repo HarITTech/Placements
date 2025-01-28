@@ -22,6 +22,7 @@ import TAdminRoutes from "./Routes/TAdminRoutes";
 import { Toaster } from "react-hot-toast";
 import Event from "./Pages/home/Event";
 import Highlight from "./Pages/home/Highlight";
+import Training from "./Pages/home/Training";
 import Loading from "./component/Loading";
 
 function App() {
@@ -125,7 +126,11 @@ function App() {
   };
 
   if (loading) {
-    return <div><Loading/></div>;
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
   }
 
   return (
@@ -200,6 +205,23 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/training"
+          element={
+            <ProtectedRoute
+              allowedRoles={["student", "tnp_admin", "global_admin"]}
+            >
+              <div className="flex">
+                <Sidebar />
+                <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
+                  <Training />
+                </main>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/notify"
           element={
