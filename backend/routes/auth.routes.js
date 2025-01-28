@@ -11,7 +11,9 @@ import {
   updateProfilePic,
   getProfileCompletionDetails,
   resetPassword,
-  forgetPassword
+  forgetPassword,
+  blockUser,
+  unblockUser
 } from "../controller/user.controller.js";
 import { protect, authorizeRoles } from "../middleware/auth.middleware.js";
 import { checkSubscription } from "../middleware/checkSubscription.middleware.js";
@@ -72,5 +74,13 @@ router.post("/forgot-password", forgetPassword);
 
 // Reset password route
 router.post("/reset-password", resetPassword);
+
+// Route to block a user
+router.post("/block-user", protect,
+  authorizeRoles( "tnp_admin", "global_admin"), blockUser );
+
+// Route to unblock a user
+router.post("/unblock-user", protect,
+  authorizeRoles( "tnp_admin", "global_admin"), unblockUser );
 
 export default router;

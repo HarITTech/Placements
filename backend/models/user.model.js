@@ -123,6 +123,8 @@ const userSchema = new mongoose.Schema(
     },
     resetPasswordOTP: { type: String, default: null },
     resetPasswordOTPExpires: { type: Date, default: null },
+    blocked: { type: Boolean, default: false },
+    blockedUntil: { type: Date, default: null },
   },
   { timestamps: true }
 );

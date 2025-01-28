@@ -196,6 +196,32 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+// Thunk for blocking a user
+export const blockUser  = createAsyncThunk(
+  "user/blockUser ",
+  async ({ userId, days }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/auth/block-user", { userId, days });
+      return response.data; // Return the response data
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to block user");
+    }
+  }
+);
+
+// Thunk for unblocking a user
+export const unblockUser  = createAsyncThunk(
+  "user/unblockUser ",
+  async (userId, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post("/auth/unblock-user", { userId });
+      return response.data; // Return the response data
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || "Failed to unblock user");
+    }
+  }
+);
+
 
 
 const userSlice = createSlice({
@@ -354,6 +380,38 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
       toast.error(`Reset password failed: ${action.payload}`, { position: "top-center" });
+    })
+    .addCase(blockUser .pending, (state) => {
+      state.status = "loading";
+      state.loading = true;
+    })
+    .addCase(blockUser .fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.loading = false;
+      state.error = null;
+      toast.success("User  blocked successfully!", { position: "top-center" });
+    })
+    .addCase(blockUser .rejected, (state, action) => {
+      state.status = "failed";
+      state.loading = false;
+      state.error = action.payload;
+      toast.error(`Block user failed: ${action.payload}`, { position: "top-center" });
+    })
+    .addCase(unblockUser .pending, (state) => {
+      state.status = "loading";
+      state.loading = true;
+    })
+    .addCase(unblockUser .fulfilled, (state, action) => {
+      state.status = "succeeded";
+      state.loading = false;
+      state.error = null;
+      toast.success("User  unblocked successfully!", { position: "top-center" });
+    })
+    .addCase(unblockUser .rejected, (state, action) => {
+      state.status = "failed";
+      state.loading = false;
+      state.error = action.payload;
+      toast.error(`Unblock user failed: ${action.payload}`, { position: "top-center" });
     });
   },
 });

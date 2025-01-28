@@ -92,20 +92,27 @@ export const createStudent = async (req, res) => {
 };
 
 // User Login
-export const loginUser = async (req, res) => {
+export const loginUser  = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     // 1. Find the user
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).json({ message: "User not found" });
+    if (!user) return res.status(404).json({ message: "User  not found" });
 
-    // 2. Validate password
+    // 2. Check if the user is blocked
+    if (user.blocked && user.blockedUntil > Date.now()) {
+      return res.status(403).json({
+        message: `Your account is blocked Contact TNP Department.`,
+      });
+    }
+
+    // 3. Validate password
     const isPasswordValid = await user.comparePassword(password);
     if (!isPasswordValid)
       return res.status(401).json({ message: "Invalid credentials" });
 
-    // 3. Generate JWT token and set it in cookies
+    // 4. Generate JWT token and set it in cookies
     const tokenPayload = { id: user._id, role: user.role };
 
     // Add college to the payload if it exists
@@ -122,12 +129,10 @@ export const loginUser = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
     });
 
-    res
-      .status(200)
-      .json({
-        message: "Login successful",
-        user: { id: user._id, role: user.role, token },
-      });
+    res.status(200).json({
+      message: "Login successful",
+      user: { id: user._id, role: user.role, token },
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -427,7 +432,7 @@ export const forgetPassword = async (req, res) => {
           <hr style="margin: 20px 0;">
           <p style="font-size: 14px; text-align: center;">If you did not request this, please ignore this email.</p>
           <div style="text-align: center; margin-top: 20px;">
-            <p style="font-size: 14px;">Follow us on:</p>
+            <p style="font-size: 14px;">Follow us on</p>
             <a href="https://www.linkedin.com/company/harit-tech-solution/posts/?feedView=all" style="margin: 0 10px;">LinkedIn</a>
             <a href="http://www.harittech.in" style="margin: 0 10px;">Website</a>
             <a href="mailto:info@harittech.in" style="margin: 0 10px;">Email</a>
@@ -480,6 +485,110 @@ export const resetPassword = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in resetPassword:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+
+
+export const blockUser  = async (req, res) => {
+  const { userId, days } = req.body; // Expecting userId and days to block
+
+  try {
+    // Ensure role-based access
+    if (req.user.role !== "tnp_admin") {
+      return res.status(403).json({ message: "Only TNP Admins can block users" });
+    }
+
+    // Find the user to block
+    const user = await User.findById(userId);
+    if (!user || user.role !== "student") {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Block the user
+    user.blocked = true;
+    user.blockedUntil = new Date(Date.now() + days * 24 * 60 * 60 * 1000); // Block for specified days
+    await user.save();
+
+    // Send email notification
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Account Blocked Notification",
+      html: `
+        <div>
+          <h1>Your Account Has Been Blocked</h1>
+          <p>Your account has been blocked for ${days} days. You will not be able to log in until ${user.blockedUntil.toLocaleString()}.</p>
+          <p>If you believe this is a mistake, please contact your TNP Department.</p>
+           <div style="text-align: center; margin-top: 80px;">
+            <p style="font-size: 14px;">Follow us on</p>
+            <a href="https://www.linkedin.com/company/harit-tech-solution/posts/?feedView=all" style="margin: 0 10px;">LinkedIn</a>
+            <a href="http://www.harittech.in" style="margin: 0 10px;">Website</a>
+            <a href="mailto:info@harittech.in" style="margin: 0 10px;">Email</a>
+          </div>
+          <footer style="margin-top: 20px; font-size: 12px; text-align: center; color: #777;">
+            <p>&copy; ${new Date().getFullYear()} HarIT Tech Solution. All rights reserved.</p>
+          </footer>
+        </div>
+      `,
+    };
+
+    await sendResetPasswordEmail(mailOptions);
+
+    res.status(200).json({ message: "User  blocked successfully", user });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+export const unblockUser  = async (req, res) => {
+  const { userId } = req.body; // Expecting userId to unblock
+
+  try {
+    // Ensure role-based access
+    if (req.user.role !== "tnp_admin") {
+      return res.status(403).json({ message: "Only TNP Admins can unblock users" });
+    }
+
+    // Find the user to unblock
+    const user = await User.findById(userId);
+    if (!user || user.role !== "student") {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Unblock the user
+    user.blocked = false;
+    user.blockedUntil = null; // Clear the blockedUntil date
+    await user.save();
+
+    // Send email notification
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Account Unblocked Notification",
+      html: `
+        <div>
+          <h1>Your Account Has Been Unblocked</h1>
+          <p>Your account has been successfully unblocked. You can now log in.</p>
+          <p>If you have any questions, please contact your TNP Department.</p>
+           <div style="text-align: center; margin-top: 80px;">
+            <p style="font-size: 14px;">Follow us on</p>
+            <a href="https://www.linkedin.com/company/harit-tech-solution/posts/?feedView=all" style="margin: 0 10px;">LinkedIn</a>
+            <a href="http://www.harittech.in" style="margin: 0 10px;">Website</a>
+            <a href="mailto:info@harittech.in" style="margin: 0 10px;">Email</a>
+          </div>
+          <footer style="margin-top: 20px; font-size: 12px; text-align: center; color: #777;">
+            <p>&copy; ${new Date().getFullYear()} HarIT Tech Solution. All rights reserved.</p>
+          </footer>
+        </div>
+      `,
+    };
+
+    await sendResetPasswordEmail(mailOptions);
+
+    res.status(200).json({ message: "User  unblocked successfully", user });
+  } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

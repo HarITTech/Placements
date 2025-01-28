@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { loginUser } from "../redux/userSlice";
 import college from "../assets/college.png";
 import harit from "../assets/harit.png";
-import { FaUserCog } from "react-icons/fa";
+import { FaLinkedin, FaUserCog } from "react-icons/fa";
 import back from "../assets/back.png";
 import Cookies from "js-cookie";
 import Loading from "../component/Loading";
@@ -71,16 +71,29 @@ const Login = () => {
           />
         </div>
       </header>
-      <div className="bg-yellow-500 border-t-[2px] text-center border-gray-700 w-full">
-        <marquee
-          behavior=""
-          direction=""
-          style={{ color: "black", fontWeight: "normal" }}
-          scrollamount="10"
-        >
-          Update your profile to at least 80% completion before 27th January
-          2025 to remain eligible for all benefits...
-        </marquee>
+      <div className="bg-yellow-500 border-t-2 border-gray-700 w-full">
+        <div className="overflow-hidden whitespace-nowrap">
+          <marquee
+            behavior="scroll"
+            direction="left"
+            className="text-black font-normal text-sm sm:text-base "
+            scrollamount="10"
+          >
+            Update your profile to at least 80% completion before 1st February
+            2025 to remain eligible for all benefits... For any query or help,
+            contact us at <span className="font-medium text-blue-600">info@harittech.in</span>{" "}
+            or message us on{" "}
+            <a
+              href="https://www.linkedin.com/company/harit-tech-solution/posts/?feedView=all/"
+              className=" items-center gap-1 text-blue-500 font-medium inline-flex"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaLinkedin size={16} />
+              LinkedIn
+            </a>
+          </marquee>
+        </div>
       </div>
 
       {/* <div className="flex justify-end p-3">
