@@ -61,7 +61,7 @@ const Content = () => {
             <h2 className="text-[18px] font-semibold m-0">
               Total Posts
             </h2>
-            <h3 className="text-[24px] font-bold m-0">97</h3>
+            <h3 className="text-[24px] font-bold m-0">0</h3>
           </div>
         </div>
         <div className="flex items-center justify-start bg-gradient-to-b from-[#709ABA] to-[#213e60] rounded-md p-4 gap-3 h-[100px] shadow-md transition-transform duration-200 hover:scale-95">
@@ -70,7 +70,7 @@ const Content = () => {
             <h2 className="text-[18px] font-semibold m-0">
               Interview's Schedule
             </h2>
-            <h3 className="text-[24px] font-bold m-0">25</h3>
+            <h3 className="text-[24px] font-bold m-0">0</h3>
           </div>
         </div>
       </div>

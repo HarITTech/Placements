@@ -45,33 +45,27 @@ function App() {
   useEffect(() => {
     const tokenFromCookies = Cookies.get("mpsp") || token;
 
-    if (window.location.pathname !== "/login") {
-      if (tokenFromCookies) {
-        try {
-          const decoded = jwtDecode(tokenFromCookies);
+    if (tokenFromCookies) {
+      try {
+        const decoded = jwtDecode(tokenFromCookies);
 
-          if (decoded.exp * 1000 < Date.now()) {
-            Cookies.remove("mpsp");
-            localStorage.removeItem("persist:root");
-            window.location.href = "/login";
-          } else {
-            applyBackgroundColor(decoded.role);
-          }
-        } catch (error) {
-          console.error("Error decoding token:", error);
+        // Check if the token is expired
+        if (decoded.exp * 1000 < Date.now()) {
           Cookies.remove("mpsp");
           localStorage.removeItem("persist:root");
-          window.location.href = "/login";
+          window.location.href = "/login"; // Redirect to login
+        } else {
+          applyBackgroundColor(decoded.role);
         }
-      } else {
-        applyBackgroundColor(null);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        Cookies.remove("mpsp");
         localStorage.removeItem("persist:root");
+        window.location.href = "/login"; // Redirect to login
       }
     } else {
-      const storedColor = localStorage.getItem("backgroundColor");
-      if (storedColor) {
-        document.body.style.backgroundColor = storedColor;
-      }
+      applyBackgroundColor(null);
+      localStorage.removeItem("persist:root");
     }
 
     setLoading(false);
