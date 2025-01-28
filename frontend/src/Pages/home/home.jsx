@@ -29,6 +29,7 @@ function Home() {
     firstname: "",
     lastname: "",
     year: "",
+    studentType: "",
     userEmail: "",
     semester: "",
     gender: "",
@@ -132,6 +133,7 @@ function Home() {
         userEmail: user.profile.userEmail || "",
         branch: user.profile.branch || "",
         year: user.profile.year || "",
+        studentType: user.profile.studentType || "",
         semester: user.profile.semester || "",
         tbtId: user.profile.collegeID || "",
         phone: user.profile.phoneNum || "",
@@ -286,6 +288,7 @@ function Home() {
           gender: formData.gender, // Add this line
           branch: formData.branch,
           year: formData.year, // Extracting year from 'year / semester' format
+          studentType: formData.studentType,
           semester: formData.semester, // Ensuring semester is correctly extracted
           dob: formData.dob,
           address: formData.address,
@@ -325,7 +328,6 @@ function Home() {
             isSuspended: formData.suspension?.isSuspended || false, // Ensure to set a default value
             suspensionEndDate: formData.suspension?.suspensionEndDate || null, // Set to null if not provided
           },
-          studentType: "Regular", // Assuming the student type is regular as per your example
           achievements: formData.achievements.split(", "), // Converting comma-separated string to array
           skills: formData.skills.split(", "), // Converting comma-separated string to array
           currentStatus: {
@@ -371,15 +373,15 @@ function Home() {
   const handlePreviewPDF = () => {
     try {
       const doc = new jsPDF();
-
+  
       // Colors and Styling
       const primaryColor = "#2C3E50";
       const lightGray = "#BDC3C7";
-
+  
       // Add Header Section
       doc.setFillColor(primaryColor);
       doc.rect(0, 0, 215, 45, "F"); // Full-width header
-
+  
       // Add Profile Picture Placeholder
       const profileImg = user?.profile?.profilePic || "default-profile.png"; // Replace with an actual image path or default image
       try {
@@ -387,14 +389,14 @@ function Home() {
       } catch (err) {
         console.error("Profile picture not added:", err);
       }
-
+  
       // Add Name and College Details
       doc.setFont("Helvetica", "bold");
       doc.setFontSize(18); // Reduced font size
       doc.setTextColor("#FFFFFF");
       doc.text(String(formData.studentName || "Your Name"), 50, 20); // Name
       doc.setFontSize(12); // Reduced font size
-
+  
       // Handle long college names with word wrapping
       const collegeName =
         formData.collegename ||
@@ -403,13 +405,13 @@ function Home() {
       doc.text(collegeLines, 50, 30); // Display wrapped text
       doc.setFontSize(8);
       doc.text(formData.collegeaddress || "Nagpur", 50, 35);
-
+  
       const collegeWebsite =
         formData.collegeWebsite || "https://tnpportal.harittech.in";
       doc.textWithLink("Visit TNP Portal by HarIT Tech Solution", 52, 42, {
         url: collegeWebsite,
       });
-
+  
       // Section Heading Function
       const addSectionHeading = (title, yPosition) => {
         doc.setFontSize(16); // Reduced font size
@@ -420,11 +422,11 @@ function Home() {
         doc.setLineWidth(0.5);
         doc.line(10, yPosition + 2, 200, yPosition + 2); // Horizontal line
       };
-
+  
       // Add Content
       const addContent = (key, value, x, y) => {
         const safeValue = String(value || "N/A");
-
+  
         // Add Key and Value
         doc.setFontSize(10); // Reduced font size
         doc.setTextColor(lightGray);
@@ -434,7 +436,7 @@ function Home() {
         doc.setTextColor("#000000");
         doc.text(safeValue, x + 40, y); // Add spacing for value alignment
       };
-
+  
       // Add Personal Details Section
       addSectionHeading("Personal Details", 55);
       addContent("Email:", formData.email, 15, 65);
@@ -446,16 +448,24 @@ function Home() {
       addContent("Session:", formData.session, 15, 125);
       addContent("Gender:", formData.gender, 15, 135);
       addContent("Date of Birth:", formData.dob, 15, 145);
-
+  
       // Add Academic Details Section
       addSectionHeading("Academic Details", 155);
       addContent("10th School:", formData.tenthSchool, 15, 165);
       addContent("10th Score:", formData.tenthScore, 15, 175);
-      addContent("12th School:", formData.twelfthSchool, 15, 185);
-      addContent("12th Score:", formData.twelfthScore, 15, 195);
+  
+      // Conditionally add 12th details or diploma details based on student type
+      if (formData.studentType === "Regular") {
+        addContent("12th School:", formData.twelfthSchool, 15, 185);
+        addContent("12th Score:", formData.twelfthScore, 15, 195);
+      } else if (formData.studentType === "DSY") {
+        addContent("Diploma College:", formData.diplomacollege, 15, 185);
+        addContent("Diploma Score:", formData.diplomacollegeScore, 15, 195);
+      }
+  
       addContent("JEE Score:", formData.jee, 15, 205);
       addContent("MHT CET Score:", formData.mhtcet, 15, 215);
-
+  
       // Add CGPA Details Section
       addSectionHeading("SGPA Details", 225);
       let cgpaYOffset = 235; // Dynamic Y offset for CGPA details
@@ -470,7 +480,7 @@ function Home() {
           cgpaYOffset += 8; // Reduced spacing between rows
         });
       });
-
+  
       // Add Backlog Details Section
       addSectionHeading("Backlog Details", cgpaYOffset + 15); // Add gap after CGPA section
       let backlogYOffset = cgpaYOffset + 20; // Dynamic Y offset for backlog details
@@ -483,46 +493,42 @@ function Home() {
         );
         backlogYOffset += 10; // Reduced spacing between rows
       });
-
+  
       // Check if we need to add a new page
       if (backlogYOffset > 250) {
-        // Adjust this threshold as needed
         doc.addPage();
         backlogYOffset = 20; // Reset the Y offset for the new page
       }
-
-      // Add Achievements and Skills Section
+  
       // Add Achievements and Skills Section
       addSectionHeading("Achievements & Skills", backlogYOffset + 15);
-
-      // Achievements Section
       const achievementsText = formData.achievements || "No Achievements";
-      const wrappedAchievements = doc.splitTextToSize(achievementsText, 180); // Adjust width as needed
+      const wrappedAchievements = doc.splitTextToSize(achievementsText, 180);
       let achievementsYOffset = backlogYOffset + 25; // Start position for achievements
-      doc.setFontSize(12); // Set font size for the title
+      doc.setFontSize(12);
       doc.setTextColor(primaryColor);
-      doc.text("Achievements:", 15, achievementsYOffset); // Title for Achievements
+      doc.text("Achievements:", 15, achievementsYOffset);
       achievementsYOffset += 10; // Space after title
-
+  
       wrappedAchievements.forEach((line) => {
         addContent("", line, 10, achievementsYOffset);
         achievementsYOffset += 8; // Adjust spacing as needed
       });
-
+  
       // Skills Section
       const skillsText = formData.skills || "No Skills";
-      const wrappedSkills = doc.splitTextToSize(skillsText, 180); // Adjust width as needed
+      const wrappedSkills = doc.splitTextToSize(skillsText, 180);
       let skillsYOffset = achievementsYOffset + 10; // Add some space before skills
-      doc.setFontSize(12); // Set font size for the title
+      doc.setFontSize(12);
       doc.setTextColor(primaryColor);
-      doc.text("Skills:", 15, skillsYOffset); // Title for Skills
+      doc.text("Skills:", 15, skillsYOffset);
       skillsYOffset += 10; // Space after title
-
+  
       wrappedSkills.forEach((line) => {
         addContent("", line, 10, skillsYOffset);
         skillsYOffset += 8; // Adjust spacing as needed
       });
-
+  
       // Add Current Status Section
       addSectionHeading("Current Status", backlogYOffset + 85);
       addContent(
@@ -567,14 +573,14 @@ function Home() {
         15,
         backlogYOffset + 155
       );
-
+  
       // Add Footer
       const footerY = 290; // Adjust this value based on your content height
       doc.setFontSize(8); // Reduced font size for footer
       doc.setTextColor(lightGray);
       doc.text("Generated by HarIT Tech Solution", 10, footerY);
       doc.text("© 2025 All Rights Reserved", 150, footerY);
-
+  
       // Save and Preview PDF
       const pdfBlob = doc.output("blob");
       const pdfUrl = URL.createObjectURL(pdfBlob);
@@ -751,6 +757,26 @@ function Home() {
                 <option value="4th">4th year</option>
               </select>
             </div>
+
+            <div>
+              <label className="block text-md font-semibold text-gray-700">
+                Student Type <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="studentType"
+                value={formData.studentType}
+                onChange={handleChange}
+                disabled={!isEditing}
+                required //
+                className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
+                  isEditing ? "bg-white" : "bg-transparent"
+                }`}
+              >
+                <option value="Regular">Regular</option>
+                <option value="DSY">DSY</option>
+              </select>
+            </div>
+
             <div>
               <label className="block text-md font-semibold text-gray-700">
                 Current Semester <span className="text-red-500">*</span>
@@ -790,6 +816,7 @@ function Home() {
                   isEditing ? "bg-white" : "bg-transparent"
                 }`}
               >
+                <option value="">No Session</option>
                 <option value="2023-2024">2023-2024</option>
                 <option value="2024-2025">2024-2025</option>
                 <option value="2025-2026">2025-2026</option>
@@ -901,6 +928,7 @@ function Home() {
               >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
+                <option value="">Other</option>
               </select>
             </div>
             <div>
@@ -951,57 +979,65 @@ function Home() {
                 />
               </div>
 
-              <div>
-                <label className="block text-md font-semibold text-gray-700">
-                  12th School
-                </label>
-                <input
-                  id="twelfthSchool"
-                  value={formData.twelfthSchool}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                />
-              </div>
+              {formData.studentType === "Regular" && (
+                <>
+                  <div>
+                    <label className="block text-md font-semibold text-gray-700">
+                      12th School
+                    </label>
+                    <input
+                      id="twelfthSchool"
+                      value={formData.twelfthSchool}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-md font-semibold text-gray-700">
-                  12th Score
-                </label>
-                <input
-                  id="twelfthScore"
-                  value={formData.twelfthScore}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                />
-              </div>
+                  <div>
+                    <label className="block text-md font-semibold text-gray-700">
+                      12th Score
+                    </label>
+                    <input
+                      id="twelfthScore"
+                      value={formData.twelfthScore}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
+                </>
+              )}
 
-              <div>
-                <label className="block text-md font-semibold text-gray-700">
-                  Diploma College ( if applicable )
-                </label>
-                <input
-                  id="diplomacollege"
-                  value={formData.diplomacollege}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                />
-              </div>
+              {formData.studentType === "DSY" && (
+                <>
+                  <div>
+                    <label className="block text-md font-semibold text-gray-700">
+                      Diploma College
+                    </label>
+                    <input
+                      id="diplomacollege"
+                      value={formData.diplomacollege}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-md font-semibold text-gray-700">
-                  Diploma Score ( if applicable )
-                </label>
-                <input
-                  id="diplomacollegeScore"
-                  value={formData.diplomacollegeScore}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                />
-              </div>
+                  <div>
+                    <label className="block text-md font-semibold text-gray-700">
+                      Diploma Score 
+                    </label>
+                    <input
+                      id="diplomacollegeScore"
+                      value={formData.diplomacollegeScore}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
+                </>
+              )}
 
               <div>
                 <label className="block text-md font-semibold text-gray-700">
@@ -1009,6 +1045,7 @@ function Home() {
                 </label>
                 <input
                   id="jee"
+                  type="number"
                   value={formData.jee}
                   onChange={handleChange}
                   disabled={!isEditing}
@@ -1022,6 +1059,7 @@ function Home() {
                 </label>
                 <input
                   id="mhtcet"
+                  type="number"
                   value={formData.mhtcet}
                   onChange={handleChange}
                   disabled={!isEditing}
@@ -1052,8 +1090,8 @@ function Home() {
                               key={semIndex}
                               className="flex flex-col sm:flex-row items-center mb-2"
                             >
-                              <input
-                                type="text"
+                              <select
+                                id="semester"
                                 value={semesterData.semester}
                                 onChange={(e) =>
                                   handleCgpaChange(
@@ -1063,9 +1101,22 @@ function Home() {
                                     e.target.value
                                   )
                                 }
+                                disabled={!isEditing}
+                                required
                                 placeholder="Semester"
-                                className="border border-gray-300 rounded p-1 mr-2 mb-2 sm:mb-0 sm:w-1/3"
-                              />
+                                className={`mt-1 block  border border-gray-300 rounded-md m-1 p-1 ${
+                                  isEditing ? "bg-white" : "bg-transparent"
+                                }`}
+                              >
+                                <option value="1st">1st semester</option>
+                                <option value="2nd">2nd semester</option>
+                                <option value="3rd">3rd semester</option>
+                                <option value="4th">4th semester</option>
+                                <option value="5th">5th semester</option>
+                                <option value="6th">6th semester</option>
+                                <option value="7th">7th semester</option>
+                                <option value="8th">8th semester</option>
+                              </select>
                               <input
                                 type="number"
                                 value={semesterData.cgpa}
@@ -1124,8 +1175,8 @@ function Home() {
                     >
                       {isEditing ? (
                         <>
-                          <input
-                            type="text"
+                          <select
+                            id="semester"
                             value={backlog.semester}
                             onChange={(e) =>
                               handleBacklogChange(
@@ -1134,9 +1185,22 @@ function Home() {
                                 e.target.value
                               )
                             }
+                            disabled={!isEditing}
+                            required
                             placeholder="Semester"
-                            className="border border-gray-300 rounded p-1 mr-2 mb-2 md:mb-0 md:w-1/4"
-                          />
+                            className={`mt-1 block  border border-gray-300 rounded-md m-1 p-1 ${
+                              isEditing ? "bg-white" : "bg-transparent"
+                            }`}
+                          >
+                            <option value="1st">1st semester</option>
+                            <option value="2nd">2nd semester</option>
+                            <option value="3rd">3rd semester</option>
+                            <option value="4th">4th semester</option>
+                            <option value="5th">5th semester</option>
+                            <option value="6th">6th semester</option>
+                            <option value="7th">7th semester</option>
+                            <option value="8th">8th semester</option>
+                          </select>
                           <input
                             type="number"
                             value={backlog.count}

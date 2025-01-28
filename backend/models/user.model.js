@@ -86,7 +86,7 @@ const userSchema = new mongoose.Schema(
           },
         ],
       },
-      studentType: { type: String, enum: ["Regular", "DSY"], default: null },
+      studentType: { type: String, enum: ["Regular", "DSY"], default: "Regular" },
       achievements: [String],
       skills: [String],
       currentStatus: {

@@ -121,7 +121,7 @@ export const loginUser  = async (req, res) => {
     }
 
     const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
-      expiresIn: "1d",
+      expiresIn: "31d",
     });
 
     res.cookie("mpsp", token, {

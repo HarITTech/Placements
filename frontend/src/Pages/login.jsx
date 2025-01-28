@@ -26,6 +26,11 @@ const Login = () => {
     dispatch(loginUser({ email, password }));
   };
 
+  useEffect(() => {
+    localStorage.clear(); // Clear all local storage
+    Cookies.remove("mpsp"); // Remove specific cookie
+  }, []);
+
   // Toast Notifications and Error Handling
   useEffect(() => {
     if (error) {
