@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getEligibleJobs } from "../../redux/jobSlice"; // Adjust the path as necessary
 import { Link } from "react-router-dom"; // Import Link
-import { ChevronDown, SlidersHorizontal, Search, BellRing } from "lucide-react";
+import { ChevronDown, SlidersHorizontal, Search } from "lucide-react";
 import Loading from "../../component/Loading";
 import FilterDropdown from "./filterdropdown";
 import DOMPurify from "dompurify";
@@ -12,7 +12,6 @@ export function JobData() {
   const { jobs, loading, error } = useSelector((state) => state.jobs);
 
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState({
     selectedRole: "",
@@ -83,7 +82,6 @@ export function JobData() {
             />
           )}
         </div>
-
       </div>
 
       {/* Job Cards */}
@@ -93,8 +91,19 @@ export function JobData() {
         </div>
       ) : error ? (
         <div className="text-center text-red-600">Error: {error.message}</div>
+      ) : filteredJobs.length === 0 ? (
+        <div className="text-center">
+            <div className="p-4 text-gray-600 h-full flex items-center justify-center">
+                <img
+                  className="rounded-lg h-full  w-auto mx-auto"
+                  src="https://assets-v2.lottiefiles.com/a/051bbc5e-1178-11ee-8597-4717795896d7/oMojybDy7p.gif"
+                  alt="No applied jobs"
+                />
+              </div>
+          <p className="text-gray-600">No jobs available at the moment.</p>
+        </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredJobs
             .filter((job) => job.type === "job")
             .map((job) => (
