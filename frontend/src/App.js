@@ -24,6 +24,7 @@ import Event from "./Pages/home/Event";
 import Highlight from "./Pages/home/Highlight";
 import Training from "./Pages/home/Training";
 import Loading from "./component/Loading";
+import SmallSidebar from "./component/SmallSidebar";
 
 function App() {
   const { token } = useSelector((state) => state.user);
@@ -141,15 +142,18 @@ function App() {
             )
           }
         />
-        <Route
+         <Route
           path="/"
           element={
             <ProtectedRoute allowedRoles={["student"]}>
-              <div className="flex">
-                <Sidebar />
-                <main className="flex-1 bg-gray-200 p-3 rounded-l-3xl">
-                  <Home />
-                </main>
+              <div className="flex flex-col">
+                <SmallSidebar /> {/* Render SmallSidebar for small screens */}
+                <div className="flex">
+                  <Sidebar /> {/* Render Sidebar for larger screens */}
+                  <main className="flex-1 bg-gray-200 p-3 rounded-l-3xl">
+                    <Home />
+                  </main>
+                </div>
               </div>
             </ProtectedRoute>
           }
@@ -160,11 +164,14 @@ function App() {
             <ProtectedRoute
               allowedRoles={["student", "tnp_admin", "global_admin"]}
             >
+              <div className="flex flex-col">
+              <SmallSidebar /> {/* Render SmallSidebar for small screens */}
               <div className="flex">
                 <Sidebar />
-                <main className="flex-1  bg-gray-200 p-6 rounded-l-3xl">
+                <main className="flex-1  bg-gray-200 p-2 rounded-l-3xl">
                   <Job />
                 </main>
+                </div>
               </div>
             </ProtectedRoute>
           }
@@ -175,11 +182,14 @@ function App() {
             <ProtectedRoute
               allowedRoles={["student", "tnp_admin", "global_admin"]}
             >
+              <div className="flex flex-col">
+              <SmallSidebar /> {/* Render SmallSidebar for small screens */}
               <div className="flex">
                 <Sidebar />
-                <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
+                <main className="flex-1 bg-gray-200 p-2 rounded-l-3xl">
                   <JobDetails />
                 </main>
+                </div>
               </div>
             </ProtectedRoute>
           }
@@ -190,11 +200,14 @@ function App() {
             <ProtectedRoute
               allowedRoles={["student", "tnp_admin", "global_admin"]}
             >
+              <div className="flex flex-col">
+              <SmallSidebar /> {/* Render SmallSidebar for small screens */}
               <div className="flex">
                 <Sidebar />
-                <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
+                <main className="flex-1 bg-gray-200 p-2 rounded-l-3xl">
                   <Internship />
                 </main>
+                </div>
               </div>
             </ProtectedRoute>
           }
@@ -206,11 +219,14 @@ function App() {
             <ProtectedRoute
               allowedRoles={["student", "tnp_admin", "global_admin"]}
             >
+              <div className="flex flex-col">
+              <SmallSidebar /> {/* Render SmallSidebar for small screens */}
               <div className="flex">
                 <Sidebar />
-                <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
+                <main className="flex-1 bg-gray-200 p-3 rounded-l-3xl">
                   <Training />
                 </main>
+                </div>
               </div>
             </ProtectedRoute>
           }
@@ -222,11 +238,14 @@ function App() {
             <ProtectedRoute
               allowedRoles={["student", "tnp_admin", "global_admin"]}
             >
+              <div className="flex flex-col">
+              <SmallSidebar /> {/* Render SmallSidebar for small screens */}
               <div className="flex">
                 <Sidebar />
                 <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
                   <Notification />
                 </main>
+                </div>
               </div>
             </ProtectedRoute>
           }
@@ -235,11 +254,14 @@ function App() {
           path="/event"
           element={
             <ProtectedRoute allowedRoles={["student"]}>
+              <div className="flex flex-col">
+              <SmallSidebar /> {/* Render SmallSidebar for small screens */}
               <div className="flex">
                 <Sidebar />
                 <main className="flex-1 bg-gray-200 p-6 rounded-l-3xl">
                   <Event />
                 </main>
+                </div>
               </div>
             </ProtectedRoute>
           }
