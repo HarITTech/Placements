@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema(
       collegeID: String,
       branch: {
         type: String,
-        enum: ["CSE", "IT", "Aero", "Bio", "Mech", "EE", "ECE"],
+        enum: ["CSE", "IT", "Aero", "Bio", "Mech", "EE", "ECE", "CE"],
       },
       year: {
         type: String,
@@ -86,7 +86,12 @@ const userSchema = new mongoose.Schema(
           },
         ],
       },
-      studentType: { type: String, enum: ["Regular", "DSY"], default: "Regular" },
+      studentType: { type: String, enum: ["Regular", "DSY"] },
+      courses: {
+        type: [String], // Array of strings to hold course names
+        enum: ["BTech", "MTech", "MCA", "Poly"],
+        default: [],
+    },
       achievements: [String],
       skills: [String],
       currentStatus: {
