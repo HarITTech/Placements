@@ -139,6 +139,8 @@ function Users() {
     navigate(`/tadmin/userprofile/${userId}`); // Step 3: Navigate to UserProfile with userId
   };
   
+  const sortedUsers = filteredUsers.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+
 
   return (
     <div className="relative flex flex-col flex-1 bg-[#A3B5C0] min-h-screen rounded-l-[35px]">
@@ -196,7 +198,7 @@ function Users() {
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((user, index) => (
+                {sortedUsers.map((user, index) => (
                   <tr
                     key={user._id} onClick={() => handleUserClick(user._id)} 
                     className={`${

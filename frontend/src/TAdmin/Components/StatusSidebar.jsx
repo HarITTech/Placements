@@ -7,6 +7,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaSortAmountDown } from "react-icons/fa"; // Import a sorting icon
 import debounce from "lodash.debounce";
 import { useNavigate } from "react-router-dom";
+import { VscSettings } from "react-icons/vsc";
 
 const StatusSidebar = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
@@ -20,6 +21,7 @@ const StatusSidebar = ({ isOpen, onClose }) => {
   const selectRef = useRef(null); // Ref to the select element
   const hasFetched = useRef(true);
   const sidebarRef = useRef(null);
+  const [selectedBranch, setSelectedBranch] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Memoize the debounced fetchData function
@@ -63,7 +65,7 @@ const StatusSidebar = ({ isOpen, onClose }) => {
 
   const handleUserClick = (userId) => {
     // console.log();
-    
+
     navigate(`/tadmin/userprofile/${userId}`); // Step 3: Navigate to UserProfile with userId
   };
 
@@ -91,6 +93,9 @@ const StatusSidebar = ({ isOpen, onClose }) => {
     .filter((detail) =>
       detail.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
+    .filter(
+      (detail) => (selectedBranch ? detail.branch === selectedBranch : true) // Filter by selected branch
+    )
     .sort((a, b) => {
       if (sortOrder === "asc") {
         return a.profileCompletion - b.profileCompletion;
@@ -98,6 +103,10 @@ const StatusSidebar = ({ isOpen, onClose }) => {
         return b.profileCompletion - a.profileCompletion;
       }
     });
+
+  const handleBranchChange = (e) => {
+    setSelectedBranch(e.target.value);
+  };
 
   const handleSortButtonClick = () => {
     setIsDropdownOpen(!isDropdownOpen); // Toggle dropdown visibility
@@ -156,13 +165,35 @@ const StatusSidebar = ({ isOpen, onClose }) => {
         </div>
         <div className="p-5">
           {/* Search Bar */}
-          <input
-            type="text"
-            placeholder="Search by Name..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full p-2 mt-1 mb-5 bg-[#ffffffac] border-[rgba(33,86,105,0.758)] placeholder:text-[rgb(33,86,105)] placeholder:font- border-[1px] rounded-[12px] focus:outline-none focus:border-[2px] focus:border-[rgb(22,22,59)]"
-          />
+          <div className="flex items-center space-x-2 mb-5">
+            {" "}
+            {/* Flex container for alignment */}
+            <input
+              type="text"
+              placeholder="Search by Name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1 p-2 bg-[#ffffffac] border-[rgba(33,86,105,0.758)] placeholder:text-[rgb(33,86,105)] placeholder:font- border-[1px] rounded-[12px] focus:outline-none focus:border-[2px] focus:border-[rgb(22,22,59)]"
+            />
+            {/* Branch Dropdown */}
+            <select
+              id="branch"
+              value={selectedBranch}
+              onChange={handleBranchChange}
+              className="border-[1px] border-gray-500 bg-transparent rounded-lg p-2" // Adjust padding as needed
+            >
+              <option value="">Select Branch</option>
+              <option value="CSE">CSE</option>
+              <option value="IT">IT</option>
+              <option value="Aero">Aero</option>
+              <option value="Bio">Bio</option>
+              <option value="Mech">Mech</option>
+              <option value="EE">EE</option>
+              <option value="ECE">ECE</option>
+              <option value="CE">CE</option>
+            </select>
+          </div>
+
           {/* Sort Dropdown */}
 
           <div className="overflow-y-auto h-[calc(100vh-64px)]">
@@ -174,12 +205,15 @@ const StatusSidebar = ({ isOpen, onClose }) => {
               <div>
                 {filteredAndSortedDetails.map((detail) => (
                   <div
-                    key={detail.id} onClick={() => handleUserClick(detail.id)} 
+                    key={detail.id}
+                    onClick={() => handleUserClick(detail.id)}
                     className="flex justify-between items-center p-3 border-b border-[rgba(33,86,105,0.758)] hover:text-blue-600 cursor-pointer hover:bg-[#ffffff54] transition-colors duration-200"
                   >
                     <div className="flex-1 flex flex-col">
                       <span className="font-medium">{detail.name}</span>
-                      <span className="text-xs text-gray-600 font-sans">{detail.email}</span>
+                      <span className="text-xs text-gray-600 font-sans">
+                        {detail.email}
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-6 mr-2">
