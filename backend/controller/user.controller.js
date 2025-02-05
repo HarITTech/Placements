@@ -366,6 +366,7 @@ export const getProfileCompletionDetails = async (req, res) => {
           student.profile.lastName || ""
         }`,
         email: student.email,
+        branch: student.profile.branch,
         profileCompletion: student.profileCompletion,
       }));
 
