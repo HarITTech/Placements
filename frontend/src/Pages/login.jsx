@@ -84,8 +84,7 @@ const Login = () => {
             className="text-black font-normal text-sm sm:text-base "
             scrollamount="10"
           >
-            Update your profile to at least 80% completion before 1st February
-            2025 to remain eligible for all benefits... For any query or help,
+            Update your profile to at least above 80% completion to remain eligible for all benefits... For any query or help,
             contact us at <span className="font-medium text-blue-600">info@harittech.in</span>{" "}
             or message us on{" "}
             <a

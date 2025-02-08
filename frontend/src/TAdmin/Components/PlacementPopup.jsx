@@ -1,59 +1,43 @@
-import React, { useState, useEffect } from "react";
-import { FaRankingStar, FaUserCheck } from "react-icons/fa6";
-import { HiOutlineBuildingOffice2 } from "react-icons/hi2";
-import { MdDeleteForever } from "react-icons/md";
-import { IoImagesOutline } from "react-icons/io5";
+import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { IoChevronBackOutline } from "react-icons/io5";
-import { FaAnglesRight } from "react-icons/fa6";
-import { PiStudentBold } from "react-icons/pi";
-import { MdOutlineFeedback } from "react-icons/md";
-import { HiArchiveBoxXMark } from "react-icons/hi2";
-import { IoCheckmarkDoneCircle } from "react-icons/io5";
-import { IoIosCloseCircle } from "react-icons/io";
-import { FaCircleCheck } from "react-icons/fa6";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  addPlacement,
-  getPlacementsForJob,
-  updateLogo,
-} from "../../redux/jobSlice";
+import { useDispatch } from "react-redux";
+import { fetchUserById } from "../../redux/userSlice"; // Import the thunk
 import toast from "react-hot-toast";
-import DOMPurify from "dompurify";
 
 const PlacementPopup = ({ onClose, job }) => {
   const dispatch = useDispatch();
-  
-  const [placements, setPlacements] = useState({ }); // New state for placements
-  const [fetchPlacements, setFetchPlacements] = useState(false); // New state to track if placements are fetched
+  const [userDetails, setUserDetails] = useState({}); // State to hold user details
 
+  // Fetch user details for each student in placements
   useEffect(() => {
-    if (fetchPlacements) {
-      const fetchPlacementsData = async () => {
-        try {
-          const resultAction = dispatch(getPlacementsForJob(job._id));
-          if (getPlacementsForJob.fulfilled.match(resultAction)) {
-            setPlacements(resultAction.payload.placements); // Ensure this matches the backend response
-          } else {
-            toast.error("Failed to fetch placements.");
-          }
-        } catch (error) {
-          toast.error("Error fetching placements.");
+    const fetchUserDetails = async () => {
+      const userPromises = job.placements.map(async (placement) => {
+        const resultAction = await dispatch(fetchUserById(placement.studentId));
+        if (fetchUserById.fulfilled.match(resultAction)) {
+          return resultAction.payload; // Return the user data
+        } else {
+          toast.error(`Failed to fetch user with ID: ${placement.studentId}`);
+          return null; // Return null if fetching fails
         }
-      };
-      fetchPlacementsData();
-    }
-  }, [dispatch, job._id, fetchPlacements]);
+      });
 
-  const handleFetchPlacements = (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-    setFetchPlacements(true);
-  };
+      const users = await Promise.all(userPromises);
+      const validUsers = users.filter(user => user !== null); // Filter out null values
+      const userMap = validUsers.reduce((acc, user) => {
+        acc[user._id] = user; // Map user ID to user object
+        return acc;
+      }, {});
+
+      setUserDetails(userMap); // Set the user details in state
+    };
+
+    fetchUserDetails();
+  }, [dispatch, job.placements]);
 
   return (
     <div className="fixed p-6 inset-0 bg-[#a6c0cf80] backdrop-blur-[9px] flex justify-center z-50">
-      <div className="bg-gradient-to-br from-[#ffffff30] via-[#a6c0cfa5] to-[#00214644]  backdrop-blur-[4px] shadow-lg rounded-3xl w-[90%] h-full relative overflow-y-auto scrollbar-hide">
+      <div className="bg-gradient-to-br from-[#ffffff30] via-[#a6c0cfa5] to-[#00214644] backdrop-blur-[4px] shadow-lg rounded-3xl w-[90%] h-full relative overflow-y-auto scrollbar-hide">
         <div className="relative p-5">
           <button
             className="absolute top-4 left-4 text-[rgb(22,22,59)] pl-[2px] pr-[6px] py-1 rounded-full hover:bg-[#ffffff86]"
@@ -73,31 +57,52 @@ const PlacementPopup = ({ onClose, job }) => {
             Placement Details
           </h2>
 
-          <button
-            className="bg-[#A6C0CF] shadow-lg px-4 py-1 rounded-xl font-bold text-[rgb(22,22,59)] hover:bg-[#80a7be] border-[1px] border-[#517488]"
-            onClick={handleFetchPlacements}
-          >
-            Get Placements
-          </button>
-
-          {placements.length > 0 ? (
-            placements.map((placement) => (
-              <div
-                key={placement.studentId}
-                className="mb-4 p-4 border rounded -lg shadow-md"
-              >
-                <h3 className="text-lg font-semibold">
-                  Student ID: {placement.studentId}
-                </h3>
-                <p>Email: {placement.email}</p>
-                <p>First Name: {placement.firstName}</p>
-                <p>Last Name: {placement.lastName}</p>
-                <p>Package: ₹{placement.package}</p>
-                <p>
-                  Placed On: {new Date(placement.placedOn).toLocaleDateString()}
-                </p>
-              </div>
-            ))
+          {job.placements.length > 0 ? (
+            <table className="min-w-full bg-white border rounded-lg shadow-md border-gray-300">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="py-2 px-4 border">Profile Pic</th>
+                  <th className="py-2 px-4 border">First Name</th>
+                  <th className="py-2 px-4 border">Last Name</th>
+                  <th className="py-2 px-4 border">Email</th>
+                  <th className="py-2 px-4 border">Branch</th>
+                  <th className="py-2 px-4 border">Semester</th>
+                  <th className="py-2 px-4 border">Package</th>
+                  <th className="py-2 px-4 border">Placed On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {job.placements.map((placement) => {
+                  const user = userDetails[placement.studentId]; // Get user details by studentId
+                  return (
+                    <tr key={placement.studentId} className="hover:bg-gray-100">
+                      <td className="py-2 px-4 border text-center">
+                        {user ? (
+                          <img
+                            src={user.profile.profilePic || "default-profile-pic-url"} // Use a default image if none exists
+                            alt={`${user.profile.firstName} ${user.profile.lastName}`}
+                            className="w-10 h-10 rounded-full mx-auto"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gray-300 mx-auto"></div>
+                        )}
+                      </td>
+                      <td className="py-2 px-4 border text-center">{user ? user.profile.firstName : "Loading..."}</td>
+                      <td className="py-2 px-4 border text-center">{user ? user.profile.lastName : "Loading..."}</td>
+                      <td className="py-2 px-4 border text-center">{user ? user.email : "Loading..."}</td>
+                      <td className="py-2 px-4 border text-center">{user ? user.profile.branch : "Loading..."}</td>
+                      <td className="py-2 px-4 border text-center">{user ? user.profile.semester : "Loading..."}</td>
+                      <td className="py-2 px-4 border text-center text-green-600 font-bold">
+                        ₹{placement.packageAmount}
+                      </td>
+                      <td className="py-2 px-4 border text-center text-blue-600 font-bold">
+                        {new Date(placement.placedOn).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           ) : (
             <p>No placements found for this job.</p>
           )}

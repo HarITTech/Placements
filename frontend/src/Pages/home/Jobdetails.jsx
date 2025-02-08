@@ -84,9 +84,9 @@ const JobDetails = () => {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
             transition={{ type: "spring", damping: 20 }}
-            className="fixed right-0 top-0 z-50 h-full w-full max-w-2xl bg-white p-6 shadow-lg rounded-lg"
+            className="fixed right-0 top-0 z-50 h-full w-full max-w-2xl bg-white shadow-lg rounded-lg overflow-hidden"
           >
-            <div className="relative h-full">
+            <div className="h-full overflow-y-auto p-6">
               <button
                 onClick={() => window.history.back()}
                 className="absolute right-4 top-4 p-2 text-gray-600 hover:text-gray-800"
@@ -99,7 +99,11 @@ const JobDetails = () => {
                 <div className="flex items-center gap-10 p-2">
                   <div className="h-32 w-32 bg-gray-100  rounded-full flex items-center object-cover justify-center">
                     <img
-                      src={jobDetails.logo || "/placeholder-logo.png"}
+                      src={
+                        jobDetails.logo && jobDetails.logo.trim() !== ""
+                          ? jobDetails.logo
+                          : "https://png.pngtree.com/png-vector/20221014/ourmid/pngtree-briefcase-icon-vector-isolated-isolated-man-vector-vector-png-image_34227414.png"
+                      }
                       alt="Company logo"
                       className="h-24 w-24 object-fill"
                     />

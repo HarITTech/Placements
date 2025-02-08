@@ -171,7 +171,7 @@ export const createStudent = createAsyncThunk(
     } catch (error) {
       console.log("Error response:", error.response); // Log the full error response
       return rejectWithValue(
-        error.response?.data || "Failed to create student"
+        error.response?.data?.message || "Failed to create student"
       );
     }
   }

@@ -7,6 +7,8 @@ import { AiFillSchedule } from "react-icons/ai";
 import { jwtDecode } from "jwt-decode";
 import CountUp from "react-countup";
 import { getAllJobs } from "../../redux/jobSlice";
+import DynamicTablePDF from "../../component/TablePDF";
+import { PDFDownloadLink } from "@react-pdf/renderer";
 
 const Content = () => {
   const dispatch = useDispatch();
@@ -14,17 +16,59 @@ const Content = () => {
   const [loading, setLoading] = useState(false);
   const [totalStudents, setTotalStudents] = useState(0);
   const [totalJobs, setTotalJobs] = useState(0);
-
-
+  const [totalPlacedStudents, setTotalPlacedStudents] = useState(0);
+  const [showPDFModal, setShowPDFModal] = useState(false);
+  const [placedStudentsData, setPlacedStudentsData] = useState([]);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
     if (collegeUsers.length > 0) {
       setTotalStudents(collegeUsers.length);
+
+      // Filter for placed students with valid placement details
+      const placedStudents = collegeUsers.filter((user) =>
+        user.profile.appliedJobsHistory.some(
+          (job) =>
+            job.placement &&
+            job.placement.packageAmount !== null &&
+            job.placement.placedOn !== null
+        )
+      );
+
+      setTotalPlacedStudents(placedStudents.length);
     }
   }, [collegeUsers]);
-  
 
-  
+  const handleExport = () => {
+    const placedStudents = collegeUsers.filter((user) =>
+      user.profile.appliedJobsHistory.some(
+        (job) => job.placement && job.placement.packageAmount !== null
+      )
+    );
+
+    if (placedStudents.length > 0) {
+      const formattedData = placedStudents.map((user) => ({
+        Name: `${user.profile?.firstName || ""} ${
+          user.profile?.lastName || "N/A"
+        }`,
+        Branch: user.profile?.branch || "N/A",
+        Semester: `${user.profile?.year || "N/A"}/${
+          user.profile?.semester || "N/A"
+        }`,
+        Package:
+          user.profile.appliedJobsHistory.find((job) => job.placement)
+            ?.placement.packageAmount || "N/A",
+        PlacedOn:
+          user.profile.appliedJobsHistory.find((job) => job.placement)
+            ?.placement.placedOn || "N/A",
+      }));
+
+      setPlacedStudentsData(formattedData);
+      setShowPDFModal(true);
+    } else {
+      alert("No placed students available for export.");
+    }
+  };
 
   return (
     <div className="flex flex-col items-center mt-4">
@@ -40,27 +84,33 @@ const Content = () => {
         </div>
         <div className="flex items-center justify-start bg-gradient-to-b from-[#709ABA] to-[#213e60] rounded-md p-4 gap-3 h-[100px] shadow-md transition-transform duration-200 hover:scale-95">
           <PiStudentFill className="text-4xl text-gray-300 border border-gray-300 rounded-md p-1" />
-          <div className="text-gray-300 flex flex-col">
+          <div onClick={handleExport} onMouseEnter={() => setShowTooltip(true)} 
+      onMouseLeave={() => setShowTooltip(false)} className="text-gray-300 cursor-pointer flex flex-col">
             <h2 className="text-[18px] font-semibold m-0">Placed Student's</h2>
             <h3 className="text-[24px] font-bold m-0">
-              <CountUp
-                start={0}
-                end={
-                  collegeUsers.filter((user) =>
-                    user.profile.appliedJobsHistory.some((job) => job.placement)
-                  ).length
-                }
-                duration={2}
-              />
+              <CountUp start={0} end={totalPlacedStudents} duration={2} />
+
             </h3>
+            {showPDFModal && (
+              <DynamicTablePDF
+                data={placedStudentsData}
+                headers={["Name", "Branch", "Semester", "Package", "PlacedOn"]}
+                title="Placed Students"
+                subtitle="List of students who have been placed."
+                onClose={() => setShowPDFModal(false)}
+              />
+            )}
+             {showTooltip && (
+        <div className="absolute bg-gray-700 text-white text-sm shadow-sm opacity-70 rounded p-1 -top-16 left-1/2 transform -translate-x-1/2">
+          Export placed student
+        </div>
+      )}
           </div>
         </div>
         <div className="flex items-center justify-start bg-gradient-to-b from-[#709ABA] to-[#213e60] rounded-md p-4 gap-3 h-[100px] shadow-md transition-transform duration-200 hover:scale-95">
           <FaUserMinus className="text-4xl text-gray-300 border border-gray-300 rounded-md p-1" />
           <div className="text-gray-300 flex flex-col">
-            <h2 className="text-[18px] font-semibold m-0">
-              Total Posts
-            </h2>
+            <h2 className="text-[18px] font-semibold m-0">Total Posts</h2>
             <h3 className="text-[24px] font-bold m-0">0</h3>
           </div>
         </div>

@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema(
       phoneNum: String,
       userEmail: { type: String, unique: true, lowercase: true },
       collegeID: String,
+      subcollege: { type: String, default: null },
       branch: {
         type: String,
         enum: ["CSE", "IT", "Aero", "Bio", "Mech", "EE", "ECE", "CE"],
