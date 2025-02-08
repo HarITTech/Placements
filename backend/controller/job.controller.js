@@ -924,3 +924,39 @@ export const fetchAppliedJobs = async (req, res) => {
     });
   }
 };
+
+
+// Fetch Job by ID
+export const fetchJobById = async (req, res) => {
+  try {
+    // Check if req.user is defined
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized. Please log in." });
+    }
+
+    const { jobId } = req.params;
+
+    // Check if the user is either a TNP Admin or the creator of the job
+    if (req.user.role !== "tnp_admin") {
+      const job = await Job.findById(jobId);
+      if (!job || job.createdBy.toString() !== req.user._id.toString()) {
+        return res.status(403).json({
+          message: "Access denied. You are not authorized to view this job.",
+        });
+      }
+    }
+
+    // Fetch the job by jobId
+    const job = await Job.findById(jobId).populate("createdBy", "name");
+    if (!job) {
+      return res.status(404).json({ message: "Job not found." });
+    }
+
+    res.status(200).json({ job });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch job details.",
+      error: error.message,
+    });
+  }
+};

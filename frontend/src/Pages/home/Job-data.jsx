@@ -46,6 +46,15 @@ export function JobData() {
     );
   });
 
+  // Utility function to truncate text
+  const truncateText = (text, maxWords) => {
+    const words = text.trim().split(/\s+/);
+    if (words.length > maxWords) {
+      return words.slice(0, maxWords).join(" ") + "...";
+    }
+    return text;
+  };
+
   return (
     <main className="flex-1 p-6 bg-transparent">
       {/* Search Filter Bar */}
@@ -93,13 +102,13 @@ export function JobData() {
         <div className="text-center text-red-600">Error: {error.message}</div>
       ) : filteredJobs.length === 0 ? (
         <div className="text-center">
-            <div className="p-4 text-gray-600 h-full flex items-center justify-center">
-                <img
-                  className="rounded-lg h-full  w-auto mx-auto"
-                  src="https://assets-v2.lottiefiles.com/a/051bbc5e-1178-11ee-8597-4717795896d7/oMojybDy7p.gif"
-                  alt="No applied jobs"
-                />
-              </div>
+          <div className="p-4 text-gray-600 h-full flex items-center justify-center">
+            <img
+              className="rounded-lg h-full  w-auto mx-auto"
+              src="https://assets-v2.lottiefiles.com/a/051bbc5e-1178-11ee-8597-4717795896d7/oMojybDy7p.gif"
+              alt="No applied jobs"
+            />
+          </div>
           <p className="text-gray-600">No jobs available at the moment.</p>
         </div>
       ) : (
@@ -109,20 +118,33 @@ export function JobData() {
             .map((job) => (
               <div
                 key={job._id}
-                className="relative p-4 bg-[#D9D9D9] shadow-sm rounded-lg flex flex-col"
+                className="relative p-4 bg-[#f4f0f0] shadow-sm rounded-lg flex flex-col"
               >
                 <div className="mb-4 flex items-start gap-4">
                   {/* Company Logo */}
                   <img
-                    src={`${job.logo}` || "default-logo.png"} // Update with your dynamic logo path
+                    src={
+                      job.logo
+                        ? job.logo
+                        : "https://png.pngtree.com/png-vector/20221014/ourmid/pngtree-briefcase-icon-vector-isolated-isolated-man-vector-vector-png-image_34227414.png"
+                    }
                     alt={`${job.company} logo`}
-                    className="h-16 w-16 rounded-lg object-fill"
+                    className="h-16 w-16 rounded-lg object-fill border-[1px]"
                   />
+
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold">{job.title}</h3>
+                    <h3 className="text-lg font-semibold text-blue-600">
+                      {truncateText(job.title, 15)}
+                    </h3>
                     <p className="text-sm text-gray-600">
                       in {job.company} •{" "}
-                      {new Date(job.createdAt).toLocaleString()}
+                      <span className="text-green-600 font-semibold">
+                        {new Date(job.jobDate).toLocaleDateString("en-GB", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
                     </p>
                   </div>
                 </div>
@@ -130,7 +152,9 @@ export function JobData() {
                 <div
                   className="text-gray-600"
                   dangerouslySetInnerHTML={{
-                    __html: DOMPurify.sanitize(job.description),
+                    __html: DOMPurify.sanitize(
+                      truncateText(job.description, 30)
+                    ),
                   }}
                 ></div>
                 {/* Tags and Location */}

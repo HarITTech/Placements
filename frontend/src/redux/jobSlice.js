@@ -11,7 +11,9 @@ export const createJob = createAsyncThunk(
       const response = await axiosInstance.post("/jobs/create", jobData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to create job.");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to create job."
+      );
     }
   }
 );
@@ -34,10 +36,15 @@ export const showEligibleStudents = createAsyncThunk(
   "jobs/showEligibleStudents",
   async (criteria, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post("/jobs/eligible-students", criteria);
+      const response = await axiosInstance.post(
+        "/jobs/eligible-students",
+        criteria
+      );
       return response.data; // Return the list of eligible students
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch eligible students.");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch eligible students."
+      );
     }
   }
 );
@@ -86,10 +93,14 @@ export const createRounds = createAsyncThunk(
   "jobs/createRounds",
   async ({ jobId, rounds }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/jobs/${jobId}/rounds`, { rounds });
+      const response = await axiosInstance.post(`/jobs/${jobId}/rounds`, {
+        rounds,
+      });
       return response.data; // Response includes the updated job with new rounds
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to create rounds.");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to create rounds."
+      );
     }
   }
 );
@@ -97,12 +108,20 @@ export const createRounds = createAsyncThunk(
 // Update Round Results
 export const updateRoundResults = createAsyncThunk(
   "jobs/updateRoundResults",
-  async ({ jobId, roundId, qualifiedStudents, unqualifiedStudents, absentStudents }, { rejectWithValue }) => {
+  async (
+    { jobId, roundId, qualifiedStudents, unqualifiedStudents, absentStudents },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axiosInstance.put(`/jobs/${jobId}/rounds/${roundId}`, { qualifiedStudents, unqualifiedStudents, absentStudents });
+      const response = await axiosInstance.put(
+        `/jobs/${jobId}/rounds/${roundId}`,
+        { qualifiedStudents, unqualifiedStudents, absentStudents }
+      );
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update round results.");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update round results."
+      );
     }
   }
 );
@@ -113,14 +132,20 @@ export const updateLogo = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const jobId = formData.get("jobId"); // Extract jobId from FormData
-      const response = await axiosInstance.put(`/jobs/${jobId}/logo`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data", // Required for file uploads
-        },
-      });
+      const response = await axiosInstance.put(
+        `/jobs/${jobId}/logo`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data", // Required for file uploads
+          },
+        }
+      );
       return response.data; // Response with updated logo URL
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update logo.");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to update logo."
+      );
     }
   }
 );
@@ -129,10 +154,15 @@ export const addPlacement = createAsyncThunk(
   "jobs/addPlacement",
   async ({ jobId, studentId, packageAmount }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(`/jobs/placement/${jobId}`, { studentId, packageAmount });
+      const response = await axiosInstance.post(`/jobs/placement/${jobId}`, {
+        studentId,
+        packageAmount,
+      });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to add placement.");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to add placement."
+      );
     }
   }
 );
@@ -145,7 +175,9 @@ export const getPlacementsForJob = createAsyncThunk(
       const response = await axiosInstance.get(`/jobs/placement/${jobId}`);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data || "Failed to fetch placements.");
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch placements."
+      );
     }
   }
 );
@@ -158,11 +190,27 @@ export const fetchAppliedJobs = createAsyncThunk(
       const response = await axiosInstance.get("/jobs/applied");
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to fetch applied jobs.");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch applied jobs."
+      );
     }
   }
 );
 
+// Fetch Job by ID
+export const fetchJobById = createAsyncThunk(
+  "jobs/fetchJobById",
+  async (jobId, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(`/jobs/find/${jobId}`);
+      return response.data; // Return the job details
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch job details."
+      );
+    }
+  }
+);
 
 // Slice
 const jobsSlice = createSlice({
@@ -202,7 +250,19 @@ const jobsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-
+      // Fetch Job by ID
+      .addCase(fetchJobById.pending, (state) => {
+        state.loading = true; // Set loading to true
+        state.error = null; // Clear any previous errors
+      })
+      .addCase(fetchJobById.fulfilled, (state, action) => {
+        state.loading = false; // Set loading to false
+        state.jobDetails = action.payload.job; // Store the fetched job details
+      })
+      .addCase(fetchJobById.rejected, (state, action) => {
+        state.loading = false; // Set loading to false
+        state.error = action.payload; // Store the error message
+      })
       // Get All Jobs
       .addCase(getAllJobs.pending, (state) => {
         state.loading = true;
@@ -235,7 +295,9 @@ const jobsSlice = createSlice({
       })
       .addCase(deleteJob.fulfilled, (state, action) => {
         state.loading = false;
-        state.jobs = state.jobs.filter(job => job._id !== action.payload.jobId);
+        state.jobs = state.jobs.filter(
+          (job) => job._id !== action.payload.jobId
+        );
       })
       .addCase(deleteJob.rejected, (state, action) => {
         state.loading = false;
@@ -264,7 +326,7 @@ const jobsSlice = createSlice({
       .addCase(createRounds.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        const job = state.jobs.find(job => job._id === action.payload.jobId);
+        const job = state.jobs.find((job) => job._id === action.payload.jobId);
         if (job) {
           job.rounds = action.payload.rounds;
         }
@@ -282,12 +344,15 @@ const jobsSlice = createSlice({
       })
       .addCase(updateRoundResults.fulfilled, (state, action) => {
         state.loading = false;
-        const job = state.jobs.find(job => job._id === action.payload.jobId);
+        const job = state.jobs.find((job) => job._id === action.payload.jobId);
         if (job) {
-          const round = job.rounds.find((round) => round._id === action.payload.round._id);
+          const round = job.rounds.find(
+            (round) => round._id === action.payload.round._id
+          );
           if (round) {
             round.qualifiedStudents = action.payload.round.qualifiedStudents;
-            round.unqualifiedStudents = action.payload.round.unqualifiedStudents;
+            round.unqualifiedStudents =
+              action.payload.round.unqualifiedStudents;
             round.absentStudents = action.payload.round.absentStudents;
           }
         }
@@ -305,7 +370,9 @@ const jobsSlice = createSlice({
       .addCase(updateLogo.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        const updatedJob = state.jobs.find((job) => job._id === action.meta.arg.jobId);
+        const updatedJob = state.jobs.find(
+          (job) => job._id === action.meta.arg.jobId
+        );
         if (updatedJob) {
           updatedJob.logo = action.payload.logo;
         }
@@ -361,18 +428,18 @@ const jobsSlice = createSlice({
         state.error = action.payload;
       })
       // Fetch Applied Jobs
-    .addCase(fetchAppliedJobs.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(fetchAppliedJobs.fulfilled, (state, action) => {
-      state.appliedJobs = action.payload.appliedJobs; // Ensure this matches the backend response
-      state.loading = false;
-    })
-    .addCase(fetchAppliedJobs.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    });
+      .addCase(fetchAppliedJobs.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAppliedJobs.fulfilled, (state, action) => {
+        state.appliedJobs = action.payload.appliedJobs; // Ensure this matches the backend response
+        state.loading = false;
+      })
+      .addCase(fetchAppliedJobs.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      });
   },
 });
 

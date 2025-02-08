@@ -8,6 +8,8 @@ import { FaSortAmountDown } from "react-icons/fa"; // Import a sorting icon
 import debounce from "lodash.debounce";
 import { useNavigate } from "react-router-dom";
 import { VscSettings } from "react-icons/vsc";
+import { FaFilePdf } from "react-icons/fa6";
+import TablePDF from '../../component/TablePDF'; 
 
 const StatusSidebar = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
@@ -22,7 +24,9 @@ const StatusSidebar = ({ isOpen, onClose }) => {
   const hasFetched = useRef(true);
   const sidebarRef = useRef(null);
   const [selectedBranch, setSelectedBranch] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for PDF modal
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false); 
+  const [pdfUsers, setPdfUsers] = useState([]); 
 
   // Memoize the debounced fetchData function
   const fetchData = useCallback(
@@ -74,9 +78,10 @@ const StatusSidebar = ({ isOpen, onClose }) => {
       try {
         await dispatch(deleteUser(userId)).unwrap();
         toast.success("User  deleted successfully!");
+        navigate(`/tadmin/users`);
         window.location.reload(); // Refresh the page after successful deletion
       } catch (error) {
-        toast.error(error.message || "Failed to delete user");
+        toast.error(`${error}`, { position: "top-center" });
       }
     }
   };
@@ -91,7 +96,8 @@ const StatusSidebar = ({ isOpen, onClose }) => {
   // Filter and sort profile completion details
   const filteredAndSortedDetails = profileCompletionDetails
     .filter((detail) =>
-      detail.name.toLowerCase().includes(searchTerm.toLowerCase())
+      detail.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    detail.email.toLowerCase().includes(searchTerm.toLowerCase()) 
     )
     .filter(
       (detail) => (selectedBranch ? detail.branch === selectedBranch : true) // Filter by selected branch
@@ -117,6 +123,11 @@ const StatusSidebar = ({ isOpen, onClose }) => {
     setIsDropdownOpen(false); // Close dropdown after selection
   };
 
+  const handlePdfClick = () => {
+    setPdfUsers(filteredAndSortedDetails); // Set users for PDF
+    setIsPdfModalOpen(true); // Open PDF modal
+  };
+
   return (
     <div
       className={`fixed top-0 z-50 left-[-20px] w-full h-full backdrop-blur-[6px] flex justify-center items-center ${
@@ -137,6 +148,12 @@ const StatusSidebar = ({ isOpen, onClose }) => {
               className="p-2 bg-transparent rounded hover:bg-[#ffffffbf] focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <FaSortAmountDown className="text-[rgba(22,22,59)]" />
+            </button>
+            <button
+            onClick={handlePdfClick}
+              className="p-2 bg-transparent rounded hover:bg-[#ffffffbf] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <FaFilePdf  className="text-[rgba(22,22,59)]" />
             </button>
             {isDropdownOpen && (
               <div className="absolute right-3 justify-items-center items-center font-medium w-[130px] border-b-[1px] border-[rgba(33,86,105,0.758)] bg-[#ffffffc9] backdrop-blur-[6px] border rounded-[10px] rounded-se-none shadow-lg z-50">
@@ -239,6 +256,10 @@ const StatusSidebar = ({ isOpen, onClose }) => {
           </div>
         </div>
       </div>
+      {/* Render PDF Modal */}
+      {isPdfModalOpen && (
+        <TablePDF users={pdfUsers} onClose={() => setIsPdfModalOpen(false)} />
+      )}
     </div>
   );
 };

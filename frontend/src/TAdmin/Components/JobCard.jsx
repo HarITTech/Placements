@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import Popup from "./AppliedPopup";
 import { MdModeEdit } from "react-icons/md";
 import PlacementPopup from "./PlacementPopup";
+import { GiPodiumWinner } from "react-icons/gi";
 
 
 const JobCard = ({ job }) => {
@@ -153,7 +154,7 @@ const JobCard = ({ job }) => {
               className="flex items-center gap-1 px-2 py-0.5 pr-3 bg-[#A6C0CF] shadow-md text-[#16163b] border border-[#517488] rounded-xl text-[15px] font-medium hover:bg-[#80a7be]"
               onClick={() => setIsPlacementPopupOpen(true)}
             >
-              <MdModeEdit /> Placements
+              <GiPodiumWinner /> Placements
             </button>
           </div>
         </div>

@@ -7,7 +7,7 @@ import {
   IoThumbsUpOutline,
 } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
-import { FaRankingStar } from "react-icons/fa6";
+import { FaFilePdf, FaRankingStar } from "react-icons/fa6";
 import { FaAnglesRight } from "react-icons/fa6";
 import { IoCreate } from "react-icons/io5";
 import { PiStudentBold } from "react-icons/pi";
@@ -26,6 +26,7 @@ import {
 } from "../../redux/jobSlice";
 import toast from "react-hot-toast";
 import { deleteFeedback, getFeedbacksForJob } from "../../redux/feedbackSlice";
+import DynamicTablePDF from "../../component/TablePDF";
 
 const AppliedPopup = ({ onClose, job }) => {
   const dispatch = useDispatch();
@@ -120,6 +121,9 @@ const AppliedPopup = ({ onClose, job }) => {
   const [fetchFeedback, setFetchFeedback] = useState(false);
   const [showPlacedResult, setShowPlacedResult] = useState(false);
   const [showGetResultSection, setShowGetResultSection] = useState({});
+
+  const [showPDFModal, setShowPDFModal] = useState(false);
+  const [pdfData, setPdfData] = useState([]);
 
   const handleCreateRound = async () => {
     if (window.confirm("Are you sure you want to create a new round?")) {
@@ -377,8 +381,50 @@ const AppliedPopup = ({ onClose, job }) => {
     }
   };
 
+   // Function to format data for PDF export
+   const formatDataForPDF = () => {
+    const eligibleStudentsData = job.eligibleStudents.map((student) => ({
+      Name: `${student.firstName || "No Name"} ${student.lastName || ""}`,
+      Branch: student.branch || "No Branch",
+      Semester: student.semester || "N/A",
+    }));
+
+    const appliedStudentsData = job.appliedStudents.map((student) => ({
+      Name: `${student.firstName || "No Name"} ${student.lastName || ""}`,
+      Branch: student.branch || "No Branch",
+      Semester: student.semester || "N/A",
+    }));
+
+    return {
+      eligibleStudents: eligibleStudentsData,
+      appliedStudents: appliedStudentsData,
+    };
+  };
+
+  // Function to handle export of eligible students
+  const handleExportEligible = () => {
+    const { eligibleStudents } = formatDataForPDF();
+    if (eligibleStudents.length > 0) {
+      setPdfData(eligibleStudents);
+      setShowPDFModal(true);
+    } else {
+      toast.error("No eligible students available for export.");
+    }
+  };
+
+  // Function to handle export of applied students
+  const handleExportApplied = () => {
+    const { appliedStudents } = formatDataForPDF();
+    if (appliedStudents.length > 0) {
+      setPdfData(appliedStudents);
+      setShowPDFModal(true);
+    } else {
+      toast.error("No applied students available for export.");
+    }
+  };
+
   return (
-    <div className="fixed p-6 inset-0 bg-[#a6c0cf80] backdrop-blur-[9px] flex justify-center z-50">
+    <div className="fixed p-6 inset-0 bg-[#a6c0cf80] backdrop-blur-[9px] flex justify-center z-40">
       <div className="bg-gradient-to-br from-[#ffffff30] via-[#a6c0cfa5] to-[#00214644]  backdrop-blur-[4px] shadow-lg rounded-3xl w-[90%] h-full relative overflow-y-auto scrollbar-hide">
         <div className="relative p-5">
           <button
@@ -400,7 +446,14 @@ const AppliedPopup = ({ onClose, job }) => {
           </h2>
           <div className="grid grid-cols-2 gap-7">
             <div className="bg-[#ffffff38] p-5 rounded-[20px] shadow-md">
-              <h3 className="text-xl font-semibold mb-2">Eligible Students</h3>
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-xl font-semibold">Eligible Students</h3>
+                <button className="flex items-center gap-1 hover:bg-gray-50 rounded-md p-1" onClick={handleExportEligible}>
+                  <FaFilePdf className="text-[17px]" />
+                  Export
+                </button>
+              </div>
+
               <div className="w-auto h-[270px] overflow-y-auto scrollbar-hide rounded-[12px]">
                 <table className="table-auto w-full border-collapse bg-[#cdd9e156] backdrop-blur-sm shadow-md rounded-[12px] overflow-hidden">
                   <thead className="bg-[#ffffffa1] border border-[#ecedef]">
@@ -435,7 +488,14 @@ const AppliedPopup = ({ onClose, job }) => {
               </div>
             </div>
             <div className="bg-[#ffffff38] p-5 rounded-[20px] shadow-md w-auto h-[350px] ">
-              <h3 className="text-xl font-semibold mb-2">Applied Students</h3>
+
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-xl font-semibold">Applied Students</h3>
+                <button className="flex items-center gap-1 hover:bg-gray-50 rounded-md p-1" onClick={handleExportApplied}>
+                  <FaFilePdf className="text-[17px]" />
+                  Export
+                </button>
+              </div>
               <div className="w-auto h-[270px] overflow-y-auto scrollbar-hide rounded-[12px]">
                 <table className="table-auto w-full border-collapse bg-[#cdd9e156] backdrop-blur-sm shadow-md rounded-[12px]">
                   <thead className="bg-[#ffffffa1] border border-[#ecedef]">
@@ -1158,6 +1218,19 @@ const AppliedPopup = ({ onClose, job }) => {
           </div>
         </div>
       </div>
+
+      {/* PDF Preview Modal */}
+      {showPDFModal && (
+            <DynamicTablePDF
+              data={pdfData}
+              headers={["Name", "Branch", "Semester","Selected","Unselected","Absent"]}
+              logo= {job.logo}
+              title={job.title}
+              subtitle={job.company}
+              onClose={() => setShowPDFModal(false)}
+            />
+          )}
+
     </div>
   );
 };

@@ -14,6 +14,7 @@ import {
   addPlacement,
   getPlacementsForJob,
   fetchAppliedJobs,
+  fetchJobById,
 } from "../controller/job.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 import upload from "../cloud/multerConfig.js";
@@ -44,5 +45,6 @@ router.post("/placement/:jobId",protect, addPlacement);
 router.get("/placement/:jobId",protect, getPlacementsForJob);
 
 router.get("/applied",protect, fetchAppliedJobs);
+router.get('/find/:jobId',protect, fetchJobById);
 
 export default router;

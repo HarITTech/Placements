@@ -85,6 +85,46 @@ export const createStudent = async (req, res) => {
     });
     await student.save();
 
+    // 3. Send login credentials to the new Student
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Your Student Account Credentials",
+      html: `
+         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <img src="https://res.cloudinary.com/dihc0jxm8/image/upload/v1736521415/default/file_1736521413798.jpg" alt="TNP Portal Logo" style="width: 150px; height: auto;">
+        <h1 style="font-size: 24px; color: #333;">Welcome to TNP Portal</h1>
+      </div>
+      <h2 style="font-size: 20px; color: #333; text-align: center;">Your Account Has Been Created</h2>
+      <p style="font-size: 16px; text-align: center;">Your account has been created successfully. Here are your login credentials:</p>
+      <p style="font-size: 16px; text-align: center;"><strong>Email:</strong> ${email}</p>
+      <p style="font-size: 16px; text-align: center;"><strong>Password:</strong> ${password}</p>
+      <p style="font-size: 16px; text-align: center; color: red; font-weight: bold;">⚠ Important Instructions:</p>
+      <ul style="font-size: 14px; text-align: left; margin: 10px 20px;">
+        <li>Complete your profile within <strong>two days</strong>.</li>
+        <li>If you are an <strong>AGPEC</strong> or <strong>VMIT</strong> student, select your sub-college.</li>
+        <li><strong>Change your password</strong> immediately using the "Forgot Password" option.</li>
+        <li>All your activities on this portal are being <strong>monitored</strong>.</li>
+      </ul>
+      <p style="font-size: 16px; font-weight: bold; text-align: center; margin-top: 20px;">Regards,</p>
+      <p style="font-size: 16px; text-align: center; font-weight: bold;">Training and Placement Department</p>
+      <hr style="margin: 20px 0;">
+      <div style="text-align: center; margin-top: 20px;">
+        <p style="font-size: 14px;">Follow us on</p>
+        <a href="https://www.linkedin.com/company/harit-tech-solution/posts/?feedView=all" style="margin: 0 10px;">LinkedIn</a>
+        <a href="http://www.harittech.in" style="margin: 0 10px;">Website</a>
+        <a href="mailto:info@harittech.in" style="margin: 0 10px;">Email</a>
+      </div>
+      <footer style="margin-top: 20px; font-size: 12px; text-align: center; color: #777;">
+        <p>&copy; ${new Date().getFullYear()} HarIT Tech Solution. All rights reserved.</p>
+      </footer>
+    </div>
+      `,
+    };
+
+    await sendResetPasswordEmail(mailOptions);
+
     res.status(201).json({ message: "Student created successfully", student });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
@@ -92,7 +132,7 @@ export const createStudent = async (req, res) => {
 };
 
 // User Login
-export const loginUser  = async (req, res) => {
+export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -490,15 +530,15 @@ export const resetPassword = async (req, res) => {
   }
 };
 
-
-
-export const blockUser  = async (req, res) => {
+export const blockUser = async (req, res) => {
   const { userId, days } = req.body; // Expecting userId and days to block
 
   try {
     // Ensure role-based access
     if (req.user.role !== "tnp_admin") {
-      return res.status(403).json({ message: "Only TNP Admins can block users" });
+      return res
+        .status(403)
+        .json({ message: "Only TNP Admins can block users" });
     }
 
     // Find the user to block
@@ -543,13 +583,15 @@ export const blockUser  = async (req, res) => {
   }
 };
 
-export const unblockUser  = async (req, res) => {
+export const unblockUser = async (req, res) => {
   const { userId } = req.body; // Expecting userId to unblock
 
   try {
     // Ensure role-based access
     if (req.user.role !== "tnp_admin") {
-      return res.status(403).json({ message: "Only TNP Admins can unblock users" });
+      return res
+        .status(403)
+        .json({ message: "Only TNP Admins can unblock users" });
     }
 
     // Find the user to unblock
