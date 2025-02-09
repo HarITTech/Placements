@@ -211,6 +211,10 @@ const UserProfile = () => {
                 <h3 className="text-[14px] font-medium ml-2 mt-2 px-6 py-1 border-b-[2px] border-[rgba(33,86,105,0.758)] rounded-[5px] bg-gradient-to-b from-transparent via-transparent to-[rgba(141,168,178,0.868)] text-[#16163b]">{student?.profile?.collegeID}</h3>
               </div>
               <div className="flex items-center">
+                <label className="text-[16px] font-bold ml-5 mt-2 text-[#16163b]">Sub College:</label>
+                <h3 className="text-[14px] font-medium ml-2 mt-2 px-6 py-1 border-b-[2px] border-[rgba(33,86,105,0.758)] rounded-[5px] bg-gradient-to-b from-transparent via-transparent to-[rgba(141,168,178,0.868)] text-[#16163b]">{student?.profile?.subcollege || "NA"}</h3>
+              </div>
+              <div className="flex items-center">
                 <label className="text-[16px] font-bold ml-5 mt-2 text-[#16163b]">Branch:</label>
                 <h3 className="text-[14px] font-medium ml-2 mt-2 px-6 py-1 border-b-[2px] border-[rgba(33,86,105,0.758)] rounded-[5px] bg-gradient-to-b from-transparent via-transparent to-[rgba(141,168,178,0.868)] text-[#16163b]">{student?.profile?.branch}</h3>
               </div>

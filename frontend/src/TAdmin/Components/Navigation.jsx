@@ -95,7 +95,7 @@ const Navigation = () => {
           }
         >
           <FaUsers className="text-xl text-[#dddddd]" />
-          <h2 className="text-xl font-bold text-[#dddddd]">Users</h2>
+          <h2 className="text-xl font-bold text-[#dddddd]">Students</h2>
         </NavLink>
         <NavLink
           to="/tadmin/posts"

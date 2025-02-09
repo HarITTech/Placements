@@ -335,6 +335,7 @@ function Users() {
        {isPDFPreviewOpen && (
         <DynamicTablePDF
           data={pdfData}
+          logo= "https://cdn.universitykart.com//Content/upload/admin/regycmyd.21e.jpeg"
           headers={["Name", "CollegeID", "Branch", "YearSem", "CGPA", "Phone"]}
           title="All Students Data"
           subtitle="List of all students in the college."

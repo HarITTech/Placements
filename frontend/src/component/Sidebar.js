@@ -139,7 +139,7 @@ const Sidebar = () => {
               }`}
             >
               <Briefcase className="h-5 w-5" />
-              <h1 className="text-xl font-bold">Job's</h1>
+              <h1 className="text-xl font-bold">Jobs</h1>
             </NavLink>
             <NavLink
               to="/training"

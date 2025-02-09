@@ -8,7 +8,7 @@ const Training = () => {
   const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    const countdownDate = new Date("2025-02-14T00:00:00").getTime();
+    const countdownDate = new Date("2025-02-19T00:00:00").getTime();
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
