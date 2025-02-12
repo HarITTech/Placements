@@ -106,7 +106,7 @@ const Navigation = () => {
           }
         >
           <BsPostcardFill className="text-xl text-[#dddddd]" />
-          <h2 className="text-xl font-bold text-[#dddddd]">Post's</h2>
+          <h2 className="text-xl font-bold text-[#dddddd]">Posts</h2>
         </NavLink>
         <NavLink
           to="/tadmin/status"

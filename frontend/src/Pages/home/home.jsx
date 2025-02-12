@@ -616,541 +616,721 @@ function Home() {
 
   return (
     <div className="min-h-screen bg-gray-200 py-6 px-4">
-  {loading ? (
-    <div>
-      <Loading />
-    </div>
-  ) : (
-    <div className="w-full mx-auto border-[2px] border-gray-600 bg-opacity-40 bg-white backdrop-blur-md rounded-lg shadow-lg p-6">
-      {/* Profile Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between border-b-2 border-gray-300 pb-4 mb-6">
-        <div className="flex items-center gap-6">
-          <div className="relative h-32 w-32 min-h-[128px] min-w-[128px] overflow-hidden border-[3px] border-gray-600 rounded-md bg-gray-200 group">
-            {/* Profile Picture */}
-            {user?.profile?.profilePic ? (
-              <img
-                src={user.profile.profilePic}
-                alt="Profile"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full w-full">
-                <span className="text-gray-500 text-md text-center font-semibold">
-                  Upload Profile Picture
-                </span>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        <div className="w-full mx-auto border-[2px] border-gray-600 bg-opacity-40 bg-white backdrop-blur-md rounded-lg shadow-lg p-6">
+          {/* Profile Section */}
+          <div className="flex flex-col md:flex-row items-center justify-between border-b-2 border-gray-300 pb-4 mb-6">
+            <div className="flex items-center gap-6">
+              <div className="relative h-32 w-32 min-h-[128px] min-w-[128px] overflow-hidden border-[3px] border-gray-600 rounded-md bg-gray-200 group">
+                {/* Profile Picture */}
+                {user?.profile?.profilePic ? (
+                  <img
+                    src={user.profile.profilePic}
+                    alt="Profile"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center h-full w-full">
+                    <span className="text-gray-500 text-md text-center font-semibold">
+                      Upload Profile Picture
+                    </span>
+                  </div>
+                )}
+
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ">
+                  <label
+                    htmlFor="profilePicInput"
+                    className="flex flex-col items-center cursor-pointer text-white"
+                  >
+                    <IoImagesOutline className="font-bold text-2xl" />
+                    <span className="text-lg font-semibold">Upload</span>
+                  </label>
+                </div>
+
+                {/* Progress Bar */}
+                {uploadProgress > 0 && (
+                  <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center">
+                    <span className="text-white mb-2 text-sm font-semibold animate-pulse">
+                      {uploadProgress}%
+                    </span>
+                    <div className="w-3/4 bg-gray-300 rounded-full h-6 shadow-inner">
+                      <div
+                        className="bg-gradient-to-r from-green-400 to-green-600 h-6 rounded-full shadow-md transition-all"
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+
+                <input
+                  id="profilePicInput"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProfilePicChange}
+                  className="hidden"
+                />
               </div>
-            )}
 
-            {/* Hover Overlay */}
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity ">
-              <label
-                htmlFor="profilePicInput"
-                className="flex flex-col items-center cursor-pointer text-white"
-              >
-                <IoImagesOutline className="font-bold text-2xl" />
-                <span className="text-lg font-semibold">Upload</span>
-              </label>
-            </div>
-
-            {/* Progress Bar */}
-            {uploadProgress > 0 && (
-              <div className="absolute inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center">
-                <span className="text-white mb-2 text-sm font-semibold animate-pulse">
-                  {uploadProgress}%
-                </span>
-                <div className="w-3/4 bg-gray-300 rounded-full h-6 shadow-inner">
-                  <div
-                    className="bg-gradient-to-r from-green-400 to-green-600 h-6 rounded-full shadow-md transition-all"
-                    style={{ width: `${uploadProgress}%` }}
-                  ></div>
+              <div className="flex flex-col">
+                <h1 className="lg:text-3xl text-xl font-bold text-gray-800">
+                  {formData.studentName}
+                </h1>
+                <div>
+                  <span className="font-bold text-xs text-blue-600">
+                    {formData.email}
+                  </span>{" "}
+                  <p className="lg:text-md text-sm mt-1 font-bold text-green-600">
+                    {formData.collegename}{" "}
+                  </p>
+                  <p className="lg:text-md text-sm mt-1 font-bold text-gray-600">
+                    {formData.branch}{" "}
+                  </p>
                 </div>
               </div>
-            )}
-
-            <input
-              id="profilePicInput"
-              type="file"
-              accept="image/*"
-              onChange={handleProfilePicChange}
-              className="hidden"
-            />
-          </div>
-
-          <div className="flex flex-col">
-            <h1 className="lg:text-3xl text-xl font-bold text-gray-800">
-              {formData.studentName}
-            </h1>
-            <div>
-              <span className="font-bold text-xs text-blue-600">
-                {formData.email}
-              </span>{" "}
-              <p className="lg:text-md text-sm mt-1 font-bold text-green-600">
-                {formData.collegename}{" "}
-              </p>
-              <p className="lg:text-md text-sm mt-1 font-bold text-gray-600">
-                {formData.branch}{" "}
-              </p>
             </div>
-          </div>
-        </div>
-        <div className="flex gap-4 mt-4 md:mt-0">
-          <button
-            onClick={toggleEditMode}
-            className={`relative flex items-center justify-center mt-4 gap-2 py-3 px-6 text-lg font-medium rounded-lg transition-all duration-300 ease-in-out border-2 ${
-              isEditing
-                ? "bg-green-500 text-white border-green-500 hover:bg-transparent hover:text-green-500"
-                : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100 hover:text-black"
-            }`}
-          >
-            {isEditing ? (
-              <>
-                <MdSave className="text-xl" /> Save
-              </>
-            ) : (
-              <>
-                <MdModeEdit className="text-xl" /> Edit
-              </>
-            )}
-          </button>
-
-          <button
-            onClick={handlePreviewPDF}
-            className="relative flex items-center justify-center gap-2 mt-4 py-3 px-6 bg-sky-400 text-white text-lg font-medium rounded-lg border-2 border-gray-200 transition-all duration-300 ease-in-out hover:bg-transparent hover:text-sky-500 hover:border-sky-500"
-          >
-            Export
-          </button>
-        </div>
-      </div>
-
-      {/* Profile Details Section */}
-      <div className="mt-8 border-b-2 border-gray-300 pb-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Profile Details</h2>
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Profile Fields */}
-          {[
-            { label: "First Name", id: "firstname", required: true },
-            { label: "Last Name", id: "lastname", required: true },
-            { label: "Gender", id: "gender", required: true, type: "select", options: ["Male", "Female", "Other"] },
-            { label: "Date of Birth", id: "dob", type: "date", required: true },
-            { label: "Address", id: "address" },
-            { label: "Phone Number", id: "phone", required: true, placeholder: "Enter 10-digit phone number" },
-            { label: "Sub College", id: "subcollege", required: true, type: "select", options: ["Not Available", "Abha Gaikwad-Patil College of Engineering", "V.M Institute of Engineering and Technology"] },
-            { label: "Degree", id: "courses", required: true, type: "select", options: ["NA", "BTech", "MTech", "MCA", "Poly"] },
-            { label: "Current Year", id: "year", required: true, type: "select", options: ["1st", "2nd", "3rd", "4th"] },
-            { label: "Student Type", id: "studentType", required: true, type: "select", options: ["NA", "Regular", "DSY"] },
-            { label: "Session", id: "session", required: true, type: "select", options: ["No Session", "2023-2024", "2024-2025", "2025-2026"] },
-            { label: "Current Semester", id: "semester", required: true, type: "select", options: ["1st", "2nd", "3rd ", "4th", "5th", "6th", "7th", "8th"] },
-            { label: "Gap Between", id: "gap" },
-            { label: "College ID", id: "tbtId", required: true },
-            { label: "Branch", id: "branch", required: true, type: "select", options: ["Select Branch", "CSE", "IT", "Aero", "Bio", "Mech", "EE", "ECE", "CE"] },
-          ].map(({ label, id, required, type, options, placeholder }) => (
-            <div key={id}>
-              <label className="block text-md font-semibold text-gray-700">
-                {label} {required && <span className="text-red-500">*</span>}
-              </label>
-              {type === "select" ? (
-                <select
-                  id={id}
-                  value={formData[id]}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  required={required}
-                  className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${isEditing ? "bg-white" : "bg-transparent"}`}
-                >
-                  {options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              ) : (
-                <input
-                  id={id}
-                  type={type || "text"}
-                  value={formData[id]}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  required={required}
-                  placeholder={placeholder}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Academic Details Section */}
-      <div className="mt-8 border-b-2 border-gray-300 pb-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Academic Details</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-          <div>
-            <label className="block text-md font-semibold text-gray-700">10th School</label>
-            <input
-              id="tenthSchool"
-              value={formData.tenthSchool}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-            />
-          </div>
-          <div>
-            <label className="block text-md font-semibold text-gray-700">10th Score</label>
-            <input
-              id="tenthScore"
-              value={formData.tenthScore}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-            />
-          </div>
-          {formData.studentType === "Regular" && (
-            <>
-              <div>
-                <label className="block text-md font-semibold text-gray-700">12th School</label>
-                <input
-                  id="twelfthSchool"
-                  value={formData.twelfthSchool}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                />
-              </div>
-              <div>
-                <label className="block text-md font-semibold text-gray-700">12th Score</label>
-                <input
-                  id="twelfthScore"
-                  value={formData.twelfthScore}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                />
-              </div>
-            </>
-          )}
-          {formData.studentType === "DSY" && (
-            <>
-              <div>
-                <label className="block text-md font-semibold text-gray-700">Diploma College</label>
-                <input
-                  id="diplomacollege"
-                  value={formData.diplomacollege}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                />
-              </div>
-              <div>
-                <label className="block text-md font-semibold text-gray-700">Diploma Score</label>
-                <input
-                  id="diplomacollegeScore"
-                  value={formData.diplomacollegeScore}
-                  onChange={handleChange}
-                  disabled={!isEditing}
-                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-                />
-              </div>
-            </>
-          )}
-          <div>
-            <label className="block text-md font-semibold text-gray-700">JEE Score</label>
-            <input
-              id="jee"
-              type="number"
-              value={formData.jee}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-            />
-          </div>
-          <div>
-            <label className="block text-md font-semibold text-gray-700">MHT CET Score</label>
-            <input
-              id="mhtcet"
-              type="number"
-              value={formData.mhtcet}
-              onChange={handleChange}
-              disabled={!isEditing}
-              className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-            />
-          </div>
-
-          {/* CGPA Section */}
-          <div className="p-4">
-            <h3 className="text-md font-semibold text-gray-700">Semester-wise SGPA</h3>
-            {isEditing && (
+            <div className="flex gap-4 mt-4 md:mt-0">
               <button
-                onClick={addCgpa}
-                className="mt-2 bg-sky-400 text-white py-1 px-2 rounded"
+                onClick={toggleEditMode}
+                className={`relative flex items-center justify-center mt-4 gap-2 py-3 px-6 text-lg font-medium rounded-lg transition-all duration-300 ease-in-out border-2 ${
+                  isEditing
+                    ? "bg-green-500 text-white border-green-500 hover:bg-transparent hover:text-green-500"
+                    : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100 hover:text-black"
+                }`}
               >
-                Add SGPA
+                {isEditing ? (
+                  <>
+                    <MdSave className="text-xl" /> Save
+                  </>
+                ) : (
+                  <>
+                    <MdModeEdit className="text-xl" /> Edit
+                  </>
+                )}
               </button>
-            )}
-            <ul className="list-disc ml-6 p-2">
-              {formData.cgpa.map((cgpaObj, index) => (
-                <div key={index}>
-                  {isEditing
-                    ? cgpaObj.semesters.map((semesterData, semIndex) => (
-                        <div
-                          key={semIndex}
-                          className="flex flex-col sm:flex-row items-center mb-2"
-                        >
-                          <select
-                            id="semester"
-                            value={semesterData.semester}
-                            onChange={(e) =>
-                              handleCgpaChange(
-                                index,
-                                semIndex,
-                                "semester",
-                                e.target.value
-                              )
-                            }
-                            disabled={!isEditing}
-                            required
-                            className={`mt-1 block border border-gray-300 rounded-md m-1 p-1 ${
-                              isEditing ? "bg-white" : "bg-transparent"
-                            }`}
-                          >
-                            <option value="1st">1st semester</option>
-                            <option value="2nd">2nd semester</option>
-                            <option value="3rd">3rd semester</option>
-                            <option value="4th">4th semester</option>
-                            <option value="5th">5th semester</option>
-                            <option value="6th">6th semester</option>
-                            <option value="7th">7th semester</option>
-                            <option value="8th">8th semester</option>
-                          </select>
-                          <input
-                            type="number"
-                            value={semesterData.cgpa}
-                            onChange={(e) =>
-                              handleCgpaChange(
-                                index,
-                                semIndex,
-                                "cgpa",
-                                e.target.value
-                              )
-                            }
-                            placeholder="SGPA"
-                            className="border border-gray-300 rounded p-1 mr-2 mb-2 sm:mb-0 sm:w-1/3"
-                          />
-                          <button
-                            onClick={() => removeCgpa(index)}
-                            className="bg-red-600 text-white py-1 px-2 rounded"
-                          >
-                            <MdDelete />
-                          </button>
-                        </div>
-                      ))
-                    : cgpaObj.semesters.map((semesterData, semIndex) => (
-                        <li key={semIndex}>
-                          <span className="font-normal">
-                            {semesterData.semester} Semester:{" "}
-                          </span>
-                          <span className="font-semibold text-sky-600">
-                            {semesterData.cgpa} SGPA
-                          </span>
-                        </li>
+
+              <button
+                onClick={handlePreviewPDF}
+                className="relative flex items-center justify-center gap-2 mt-4 py-3 px-6 bg-sky-400 text-white text-lg font-medium rounded-lg border-2 border-gray-200 transition-all duration-300 ease-in-out hover:bg-transparent hover:text-sky-500 hover:border-sky-500"
+              >
+                Export
+              </button>
+            </div>
+          </div>
+
+          {/* Profile Details Section */}
+          <div className="mt-8 border-b-2 border-gray-300 pb-4 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">
+              Profile Details
+            </h2>
+            <div className="grid mt-2 gap-6 md:grid-cols-2">
+              {/* Profile Fields */}
+              {[
+                { label: "First Name", id: "firstname", required: true },
+                { label: "Last Name", id: "lastname", required: true },
+                {
+                  label: "Gender",
+                  id: "gender",
+                  required: true,
+                  type: "select",
+                  options: ["Male", "Female", "Other"],
+                },
+                {
+                  label: "Date of Birth",
+                  id: "dob",
+                  type: "date",
+                  required: true,
+                },
+                { label: "Address", id: "address" },
+                {
+                  label: "Phone Number",
+                  id: "phone",
+                  required: true,
+                  placeholder: "Enter 10-digit phone number",
+                },
+                {
+                  label: "Sub College",
+                  id: "subcollege",
+                  required: true,
+                  type: "select",
+                  options: [
+                    "Not Available",
+                    "Abha Gaikwad-Patil College of Engineering",
+                    "V.M Institute of Engineering and Technology",
+                  ],
+                },
+                {
+                  label: "Degree",
+                  id: "courses",
+                  required: true,
+                  type: "select",
+                  options: ["NA", "BTech", "MTech", "MCA", "Poly"],
+                },
+                {
+                  label: "Current Year",
+                  id: "year",
+                  required: true,
+                  type: "select",
+                  options: ["1st", "2nd", "3rd", "4th"],
+                },
+                {
+                  label: "Student Type",
+                  id: "studentType",
+                  required: true,
+                  type: "select",
+                  options: ["NA", "Regular", "DSY"],
+                },
+                {
+                  label: "Session",
+                  id: "session",
+                  required: true,
+                  type: "select",
+                  options: [
+                    "No Session",
+                    "2023-2024",
+                    "2024-2025",
+                    "2025-2026",
+                  ],
+                },
+                {
+                  label: "Current Semester",
+                  id: "semester",
+                  required: true,
+                  type: "select",
+                  options: [
+                    "1st",
+                    "2nd",
+                    "3rd ",
+                    "4th",
+                    "5th",
+                    "6th",
+                    "7th",
+                    "8th",
+                  ],
+                },
+                { label: "Gap Between", id: "gap" },
+                { label: "College ID", id: "tbtId", required: true },
+                {
+                  label: "Branch",
+                  id: "branch",
+                  required: true,
+                  type: "select",
+                  options: [
+                    "Select Branch",
+                    "CSE",
+                    "IT",
+                    "Aero",
+                    "Bio",
+                    "Mech",
+                    "EE",
+                    "ECE",
+                    "CE",
+                  ],
+                },
+              ].map(({ label, id, required, type, options, placeholder }) => (
+                <div key={id}>
+                  <label className="block text-md font-semibold text-gray-700">
+                    {label}{" "}
+                    {required && <span className="text-red-500">*</span>}
+                  </label>
+                  {type === "select" ? (
+                    <select
+                      id={id}
+                      value={formData[id]}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      required={required}
+                      className={`mt-1 block w-full border border-gray-300 rounded-lg p-3 ${
+                        isEditing ? "bg-white" : "bg-transparent"
+                      }`}
+                    >
+                      {options.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
                       ))}
-                </div>
-              ))}
-            </ul>
-          </div>
-
-          {/* Backlog Section */}
-          <div>
-            <h3 className="text-md font-semibold text-gray-700">Backlogs</h3>
-            {isEditing && (
-              <button
-                onClick={addBacklog}
-                className="mt-2 bg-sky-400 text-white py-1 px-2 rounded"
-              >
-                Add Backlog
-              </button>
-            )}
-            <ul className="list-disc ml-6 p-2">
-              {formData.backlogs.map((backlog, index) => (
-                <div
-                  key={index}
-                  className="flex flex-col md:flex-row items-center mb-2"
-                >
-                  {isEditing ? (
-                    <>
-                      <select
-                        id="semester"
-                        value={backlog.semester}
-                        onChange={(e) =>
-                          handleBacklogChange(
-                            index,
-                            "semester",
-                            e.target.value
-                          )
-                        }
-                        disabled={!isEditing}
-                        required
-                        className={`mt-1 block border border-gray-300 rounded-md m-1 p-1 ${
-                          isEditing ? "bg-white" : "bg-transparent"
-                        }`}
-                      >
-                        <option value="1st">1st semester</option>
-                        <option value="2nd">2nd semester</option>
-                        <option value="3rd">3rd semester</option>
-                        <option value="4th">4th semester</option>
-                        <option value="5th">5th semester</option>
-                        <option value="6th">6th semester</option>
-                        <option value="7th">7th semester</option>
-                        <option value="8th">8th semester</option>
-                      </select>
-                      <input
-                        type="number"
-                        value={backlog.count}
-                        onChange={(e) =>
-                          handleBacklogChange(
-                            index,
-                            "count",
-                            e.target.value
-                          )
-                        }
-                        placeholder="Count"
-                        className="border border-gray-300 rounded p-1 mr-2 mb-2 md:mb-0 md:w-1/4"
-                      />
-                      <input
-                        type="number"
-                        value={backlog.dead}
-                        onChange={(e) =>
-                          handleBacklogChange(index, "dead", e.target.value)
-                        }
-                        placeholder="Dead"
-                        className="border border-gray-300 rounded p-1 mr-2 mb-2 md:mb-0 md:w-1/4"
-                      />
-                      <button
-                        onClick={() => removeBacklog(index)}
-                        className="bg-red-600 text-white py-1 px-2 rounded"
-                      >
-                        <MdDelete />
-                      </button>
-                    </>
+                    </select>
                   ) : (
-                    <li className="flex items-center">
-                      <span className="font-normal">
-                        {backlog.semester} Semester:{" "}
-                      </span>
-                      <span className="font-semibold text-red-600">
-                        {backlog.count} live, {backlog.dead} dead
-                      </span>
-                    </li>
+                    <input
+                      id={id}
+                      type={type || "text"}
+                      value={formData[id]}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      required={required}
+                      placeholder={placeholder}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                    />
                   )}
                 </div>
               ))}
-            </ul>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Achievements and Skills Section */}
-      <div className="mt-8 border-b-2 border-gray-300 pb-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Achievements & Skills</h2>
-        <div className="space-y-4 mt-4">
-          <div>
-            <h3 className="block text-md font-semibold text-gray-700">Achievements</h3>
-            {isEditing ? (
+          {/* Academic Details Section */}
+          <div className="mt-8 border-b-2 border-gray-300 pb-4 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">
+              Academic Details
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
               <div>
-                <code className="text-gray-500 text-xs">
-                  ( e.g., Achievement1, Achievement2, Achievement3... )
-                </code>
-                <textarea
-                  id="achievements"
-                  value={formData.achievements}
+                <label className="block text-md font-semibold text-gray-700">
+                  10th School <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="tenthSchool"
+                  value={formData.tenthSchool}
                   onChange={handleChange}
-                  className="w-full border rounded p-2"
+                  disabled={!isEditing}
+                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
                 />
               </div>
-            ) : (
-              <ul className="list-disc ml-6 p-2">
-                {user?.profile?.achievements?.map((achievement, index) => (
-                  <li key={index} className="text-sm">
-                    {achievement}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-
-          <div>
-            <h3 className="block text-md font-semibold text-gray-700">Skills</h3>
-            {isEditing ? (
               <div>
-                <code className="text-gray-500 text-xs text-left">
-                  (e.g., Skill1, Skill2, Skill3...)
-                </code>
-                <textarea
-                  id="skills"
-                  value={formData.skills}
+                <label className="block text-md font-semibold text-gray-700">
+                  10th Score <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="tenthScore"
+                  value={formData.tenthScore}
                   onChange={handleChange}
-                  className="w-full border rounded p-2"
+                  disabled={!isEditing}
+                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
                 />
               </div>
-            ) : (
-              <ul className="list-disc ml-6 p-2">
-                {user?.profile?.skills?.map((skill, index) => (
-                  <li key={index} className="text-sm">
-                    {skill}
-                  </li>
-                ))}
-              </ul>
-            )}
+              {formData.studentType === "Regular" && (
+                <>
+                  <div>
+                    <label className="block text-md font-semibold text-gray-700">
+                      12th School <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="twelfthSchool"
+                      value={formData.twelfthSchool}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-md font-semibold text-gray-700">
+                      12th Score <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="twelfthScore"
+                      value={formData.twelfthScore}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
+                </>
+              )}
+              {formData.studentType === "DSY" && (
+                <>
+                  <div>
+                    <label className="block text-md font-semibold text-gray-700">
+                      Diploma College <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="diplomacollege"
+                      value={formData.diplomacollege}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-md font-semibold text-gray-700">
+                      Diploma Score <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      id="diplomacollegeScore"
+                      value={formData.diplomacollegeScore}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                    />
+                  </div>
+                </>
+              )}
+              <div>
+                <label className="block text-md font-semibold text-gray-700">
+                  JEE Score
+                </label>
+                <input
+                  id="jee"
+                  type="number"
+                  value={formData.jee}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                />
+              </div>
+              <div>
+                <label className="block text-md font-semibold text-gray-700">
+                  MHT CET Score
+                </label>
+                <input
+                  id="mhtcet"
+                  type="number"
+                  value={formData.mhtcet}
+                  onChange={handleChange}
+                  disabled={!isEditing}
+                  className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                />
+              </div>
+              {/* CGPA Section */}
+              <div className="p-4">
+                <h3 className="text-md font-semibold text-gray-700">
+                  Semester-wise SGPA <span className="text-red-500">*</span>
+                </h3>
+                {isEditing && (
+                  <button
+                    onClick={addCgpa}
+                    className="mt-2 bg-sky-400 text-white py-1 px-2 rounded"
+                  >
+                    Add SGPA
+                  </button>
+                )}
+
+                <div className="overflow-x-auto">
+                  <table className="min-w-full mt-2 bg-white border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-200 text-gray-600">
+                        <th className="py-2 px-4 border-b">Semester</th>
+                        <th className="py-2 px-4 border-b">SGPA</th>
+                        {isEditing && (
+                          <th className="py-2 px-4 border-b">Actions</th>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {formData.cgpa.map((cgpaObj, index) =>
+                        cgpaObj.semesters.map((semesterData, semIndex) => (
+                          <tr key={semIndex} className="hover:bg-gray-100">
+                            {isEditing ? (
+                              <>
+                                <td className="py-2 px-4 border-b">
+                                  <select
+                                    id="semester"
+                                    value={semesterData.semester}
+                                    onChange={(e) =>
+                                      handleCgpaChange(
+                                        index,
+                                        semIndex,
+                                        "semester",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="block border border-gray-300 rounded-md p-1"
+                                  >
+                                    <option value="">NA</option>
+                                    <option value="1st">1st semester</option>
+                                    <option value="2nd">2nd semester</option>
+                                    <option value="3rd">3rd semester</option>
+                                    <option value="4th">4th semester</option>
+                                    <option value="5th">5th semester</option>
+                                    <option value="6th">6th semester</option>
+                                    <option value="7th">7th semester</option>
+                                    <option value="8th">8th semester</option>
+                                  </select>
+                                </td>
+                                <td className="py-2 px-4 border-b">
+                                  <input
+                                    type="number"
+                                    value={semesterData.cgpa}
+                                    onChange={(e) =>
+                                      handleCgpaChange(
+                                        index,
+                                        semIndex,
+                                        "cgpa",
+                                        e.target.value
+                                      )
+                                    }
+                                    placeholder="SGPA"
+                                    className="border border-gray-300 rounded p-1 w-full"
+                                  />
+                                </td>
+                                <td className="py-2 px-4 border-b">
+                                  <button
+                                    onClick={() => removeCgpa(index)}
+                                    className="bg-red-600 text-white py-1 px-2 rounded"
+                                  >
+                                    <MdDelete />
+                                  </button>
+                                </td>
+                              </>
+                            ) : (
+                              <>
+                                <td className="py-2 px-4 border-b">
+                                  <span className="font-normal">
+                                    {semesterData.semester}
+                                  </span>
+                                </td>
+                                <td className="py-2 px-4 border-b">
+                                  <span className="font-semibold text-sky-600">
+                                    {semesterData.cgpa} SGPA
+                                  </span>
+                                </td>
+                              </>
+                            )}
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Backlog Section */}
+              <div>
+                <h3 className="text-md font-semibold text-gray-700">
+                  Backlogs
+                </h3>
+                {isEditing && (
+                  <button
+                    onClick={addBacklog}
+                    className="mt-2 bg-sky-400 text-white py-1 px-2 rounded"
+                  >
+                    Add Backlog
+                  </button>
+                )}
+
+                <div className="overflow-x-auto">
+                  <table className="min-w-full bg-white border mt-2 border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-200 text-gray-600">
+                        <th className="py-2 px-4 border-b">Semester</th>
+                        <th className="py-2 px-4 border-b">Live Backlogs</th>
+                        <th className="py-2 px-4 border-b">Dead Backlogs</th>
+                        {isEditing && (
+                          <th className="py-2 px-4 border-b">Actions</th>
+                        )}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {formData.backlogs.map((backlog, index) => (
+                        <tr key={index} className="hover:bg-gray-100">
+                          {isEditing ? (
+                            <>
+                              <td className="py-2 px-4 border-b">
+                                <select
+                                  id="semester"
+                                  value={backlog.semester}
+                                  onChange={(e) =>
+                                    handleBacklogChange(
+                                      index,
+                                      "semester",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="block border border-gray-300 rounded-md p-1"
+                                >
+                                  <option value="">NA</option>
+                                  <option value="1st">1st semester</option>
+                                  <option value="2nd">2nd semester</option>
+                                  <option value="3rd">3rd semester</option>
+                                  <option value="4th">4th semester</option>
+                                  <option value="5th">5th semester</option>
+                                  <option value="6th">6th semester</option>
+                                  <option value="7th">7th semester</option>
+                                  <option value="8th">8th semester</option>
+                                </select>
+                              </td>
+                              <td className="py-2 px-4 border-b">
+                                <input
+                                  type="number"
+                                  value={backlog.count}
+                                  onChange={(e) =>
+                                    handleBacklogChange(
+                                      index,
+                                      "count",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="Count"
+                                  className="border border-gray-300 rounded p-1 w-full"
+                                />
+                              </td>
+                              <td className="py-2 px-4 border-b">
+                                <input
+                                  type="number"
+                                  value={backlog.dead}
+                                  onChange={(e) =>
+                                    handleBacklogChange(
+                                      index,
+                                      "dead",
+                                      e.target.value
+                                    )
+                                  }
+                                  placeholder="Dead"
+                                  className="border border-gray-300 rounded p-1 w-full"
+                                />
+                              </td>
+                              <td className="py-2 px-4 border-b">
+                                <button
+                                  onClick={() => removeBacklog(index)}
+                                  className="bg-red-600 text-white py-1 px-2 rounded"
+                                >
+                                  <MdDelete />
+                                </button>
+                              </td>
+                            </>
+                          ) : (
+                            <>
+                              <td className="py-2 px-4 border-b">
+                                <span className="font-normal">
+                                  {backlog.semester}
+                                </span>
+                              </td>
+                              <td className="py-2 px-4 border-b">
+                                <span className="font-semibold text-red-600">
+                                  {backlog.count}
+                                </span>
+                              </td>
+                              <td className="py-2 px-4 border-b">
+                                <span className="font-semibold text-red-600">
+                                  {backlog.dead}
+                                </span>
+                              </td>
+                            </>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Achievements and Skills Section */}
+          <div className="mt-8 border-b-2 border-gray-300 pb-4 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">
+              Achievements & Skills
+            </h2>
+            <div className="space-y-4 mt-4">
+              <div>
+                <h3 className="block text-md font-semibold text-gray-700">
+                  Achievements
+                </h3>
+                {isEditing ? (
+                  <div>
+                    <code className="text-gray-500 text-xs">
+                      ( e.g., Achievement1, Achievement2, Achievement3... )
+                    </code>
+                    <textarea
+                      id="achievements"
+                      value={formData.achievements}
+                      onChange={handleChange}
+                      className="w-full border rounded p-2"
+                    />
+                  </div>
+                ) : (
+                  <ul className="list-disc ml-6 p-2">
+                    {user?.profile?.achievements?.map((achievement, index) => (
+                      <li key={index} className="text-sm">
+                        {achievement}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div>
+                <h3 className="block text-md font-semibold text-gray-700">
+                  Skills
+                </h3>
+                {isEditing ? (
+                  <div>
+                    <code className="text-gray-500 text-xs text-left">
+                      (e.g., Skill1, Skill2, Skill3...)
+                    </code>
+                    <textarea
+                      id="skills"
+                      value={formData.skills}
+                      onChange={handleChange}
+                      className="w-full border rounded p-2"
+                    />
+                  </div>
+                ) : (
+                  <ul className="list-disc ml-6 p-2">
+                    {user?.profile?.skills?.map((skill, index) => (
+                      <li key={index} className="text-sm">
+                        {skill}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Current Status Section */}
+          <div className="mt-8 border-b-2 border-gray-300 pb-4 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">Current Status</h2>
+            <div className="mt-4 grid gap-6 md:grid-cols-2">
+              {[
+                { label: "Company Name", id: "currentStatus.companyName" },
+                { label: "Position", id: "currentStatus.position" },
+                { label: "Duration", id: "currentStatus.duration" },
+                { label: "Job Type", id: "currentStatus.jobType" },
+                { label: "Location", id: "currentStatus.location" },
+                {
+                  label: "Start Date",
+                  id: "currentStatus.startDate",
+                  type: "date",
+                },
+                {
+                  label: "End Date",
+                  id: "currentStatus.endDate",
+                  type: "date",
+                },
+              ].map(({ label, id, type }) => (
+                <div key={id}>
+                  <label className="block text-md font-semibold text-gray-700">
+                    {label}
+                  </label>
+                  <input
+                    id={id}
+                    type={type || "text"}
+                    value={formData.currentStatus[id.split(".").pop()]}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Applied Jobs Section */}
+          <div className="mt-8">
+            <h2 className="text-2xl font-bold text-gray-800">Applied Jobs</h2>
+            <div className="space-y-2 mt-4">
+              {user?.profile?.appliedJobsHistory?.map((job, index) => (
+                <div
+                  key={index}
+                  className="space-y-2 bg-white/80 shadow-sm rounded-lg p-4"
+                >
+                  <p className="font-medium">
+                    <span className="font-semibold">{job.jobId.title}</span> at{" "}
+                    {job.jobId.company}
+                  </p>
+                  <p className="text-xs">
+                    Applied on: {new Date(job.appliedOn).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-
-      {/* Current Status Section */}
-      <div className="mt-8 border-b-2 border-gray-300 pb-4 mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">Current Status</h2>
-        <div className="mt-4 grid gap-6 md:grid-cols-2">
-          {[
-            { label: "Company Name", id: "currentStatus.companyName" },
-            { label: "Position", id: "currentStatus.position" },
-            { label: "Duration", id: "currentStatus.duration" },
-            { label: "Job Type", id: "currentStatus.jobType" },
- { label: "Location", id: "currentStatus.location" },
-            { label: "Start Date", id: "currentStatus.startDate", type: "date" },
-            { label: "End Date", id: "currentStatus.endDate", type: "date" },
-          ].map(({ label, id, type }) => (
-            <div key={id}>
-              <label className="block text-md font-semibold text-gray-700">{label}</label>
-              <input
-                id={id}
-                type={type || "text"}
-                value={formData.currentStatus[id.split('.').pop()]}
-                onChange={handleChange}
-                disabled={!isEditing}
-                className="mt-1 block w-full border border-gray-300 rounded-lg p-3"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Applied Jobs Section */}
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold text-gray-800">Applied Jobs</h2>
-        <div className="space-y-2 mt-4">
-          {user?.profile?.appliedJobsHistory?.map((job, index) => (
-            <div key={index} className="space-y-2 bg-white/80 shadow-sm rounded-lg p-4">
-              <p className="font-medium">
-                <span className="font-semibold">{job.jobId.title}</span> at {job.jobId.company}
-              </p>
-              <p className="text-xs">
-                Applied on: {new Date(job.appliedOn).toLocaleDateString()}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
     </div>
-  )}
-</div>
   );
 }
 

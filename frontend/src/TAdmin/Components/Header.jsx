@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaSearchengin } from "react-icons/fa6";
 import { MdTune } from "react-icons/md";
 
-const Header = ({filterCriteria, onFilterChange, onSearch}) => {
+const Header = ({ filterCriteria, onFilterChange, onSearch }) => {
   const [showFilter, setShowFilter] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -27,6 +27,10 @@ const Header = ({filterCriteria, onFilterChange, onSearch}) => {
       semester: "",
       tenthPercent: "",
       twelfthPercent: "",
+      subCollege: "",
+      courses: "",
+      studentType: "",
+      year: "",
     };
     onFilterChange(clearedFilters);
     setShowFilter(false);
@@ -35,7 +39,6 @@ const Header = ({filterCriteria, onFilterChange, onSearch}) => {
   const applyFilter = () => {
     setShowFilter(false);
   };
-
 
   return (
     <>
@@ -94,6 +97,66 @@ const Header = ({filterCriteria, onFilterChange, onSearch}) => {
                 className="flex-1 py-1 px-2 border-b-2 border-[#215669C1] rounded-md bg-transparent text-[rgb(22,22,59)] placeholder-[#215669C1] focus:outline-none focus:border-[rgb(22,22,59)]"
               />
             </div>
+
+            <div className="flex items-center gap-4">
+              <label className="font-semibold text-sm">Sub College</label>
+              <select
+                name="subCollege"
+                value={filterCriteria.subCollege}
+                onChange={handleInputChange}
+                className="flex-1 py-1 px-2 border-b-2 border-[#215669C1] rounded-md bg-transparent text-[rgb(22,22,59)] focus:outline-none placeholder-[#215669C1] focus:border-[rgb(22,22,59)]"
+              >
+                <option value="">Select </option>
+                <option value="Abha Gaikwad-Patil College of Engineering">
+                  AGPCE
+                </option>
+                <option value="V.M Institute of Engineering and Technology">
+                  VMIT
+                </option>
+                {/* Add more options as needed */}
+              </select>
+
+              <label className="font-semibold text-sm">Degree:</label>
+              <select
+                name="courses"
+                value={filterCriteria.courses}
+                onChange={handleInputChange}
+                className="flex-1 py-1 px-2 border-b-2 border-[#215669C1] rounded-md bg-transparent text-[rgb(22,22,59)] placeholder-[#215669C1] focus:outline-none focus:border-[rgb(22,22,59)]"
+              >
+                <option value="">Select Degree</option>
+                <option value="BTech">BTech</option>
+                <option value="MTech">MTech</option>
+                {/* Add more options as needed */}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <label className="font-semibold text-sm">Year:</label>
+              <select
+                name="year"
+                value={filterCriteria.year}
+                onChange={handleInputChange}
+                className="flex-1 py-1 px-2 border-b-2 border-[#215669C1] rounded-md bg-transparent text-[rgb(22,22,59)] focus:outline-none placeholder-[#215669C1] focus:border-[rgb(22,22,59)]"
+              >
+                <option value="">Select Year</option>
+                <option value="1st">1st Year</option>
+                <option value="2nd">2nd Year</option>
+                <option value="3rd">3rd Year</option>
+                <option value="4th">4th Year</option>
+              </select>
+              <label className="font-semibold text-sm">studentType:</label>
+              <select
+                name="studentType"
+                value={filterCriteria.studentType}
+                onChange={handleInputChange}
+                className="flex-1 py-1 px-2 border-b-2 border-[#215669C1] rounded-md bg-transparent text-[rgb(22,22,59)] focus:outline-none placeholder-[#215669C1] focus:border-[rgb(22,22,59)]"
+              >
+                <option value="">Select </option>
+                <option value="Regular">Regular</option>
+                <option value="DSY">DSY</option>
+              </select>
+            </div>
+
             <div className="flex items-center gap-4">
               <label className="font-semibold text-sm">Semester:</label>
               <select
@@ -103,14 +166,14 @@ const Header = ({filterCriteria, onFilterChange, onSearch}) => {
                 className="flex-1 py-1 px-2 border-b-2 border-[#215669C1] rounded-md bg-transparent text-[rgb(22,22,59)] focus:outline-none placeholder-[#215669C1] focus:border-[rgb(22,22,59)]"
               >
                 <option value="">Select Semester</option>
-                <option value="1">1st</option>
-                <option value="2">2nd</option>
-                <option value="3">3rd</option>
-                <option value="4">4th</option>
-                <option value="5">5th</option>
-                <option value="6">6th</option>
-                <option value="7">7th</option>
-                <option value="8">8th</option>
+                <option value="1st">1st semester</option>
+                <option value="2nd">2nd semester</option>
+                <option value="3rd">3rd semester</option>
+                <option value="4th">4th semester</option>
+                <option value="5th">5th semester</option>
+                <option value="6th">6th semester</option>
+                <option value="7th">7th semester</option>
+                <option value="8th">8th semester</option>
               </select>
               <label className="font-semibold text-sm">10th %:</label>
               <input
@@ -129,6 +192,7 @@ const Header = ({filterCriteria, onFilterChange, onSearch}) => {
                 className="flex-1 py-1 px-2 border-b-2 border-[#215669C1] rounded-md bg-transparent text-[rgb(22,22,59)] focus:outline-none placeholder-[#215669C1] focus:border-[rgb(22,22,59)]"
               />
             </div>
+
             <div className="flex items-center gap-4">
               <label className="font-semibold text-sm">Gender:</label>
               <select
@@ -180,73 +244,6 @@ const Header = ({filterCriteria, onFilterChange, onSearch}) => {
 };
 
 export default Header;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // import React, { useState } from "react";
 // import { FaSearchengin } from "react-icons/fa6";

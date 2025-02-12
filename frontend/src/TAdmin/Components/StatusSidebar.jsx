@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import { deleteUser, getProfileCompletionDetails } from "../../redux/userSlice";
+import { deleteUser, fetchUserById, getProfileCompletionDetails } from "../../redux/userSlice";
 import { AiOutlineClose } from "react-icons/ai";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { FaSortAmountDown } from "react-icons/fa"; // Import a sorting icon
@@ -9,7 +9,8 @@ import debounce from "lodash.debounce";
 import { useNavigate } from "react-router-dom";
 import { VscSettings } from "react-icons/vsc";
 import { FaFilePdf } from "react-icons/fa6";
-import TablePDF from '../../component/TablePDF'; 
+import TablePDF from "../../component/TablePDF";
+import DynamicTablePDF from "../../component/TablePDF";
 
 const StatusSidebar = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
@@ -23,10 +24,11 @@ const StatusSidebar = ({ isOpen, onClose }) => {
   const selectRef = useRef(null); // Ref to the select element
   const hasFetched = useRef(true);
   const sidebarRef = useRef(null);
+  const [selectedUser , setSelectedUser ] = useState(null);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // State for PDF modal
-  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false); 
-  const [pdfUsers, setPdfUsers] = useState([]); 
+  const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
+  const [pdfUsers, setPdfUsers] = useState([]);
 
   // Memoize the debounced fetchData function
   const fetchData = useCallback(
@@ -67,10 +69,13 @@ const StatusSidebar = ({ isOpen, onClose }) => {
     };
   }, [onClose]);
 
-  const handleUserClick = (userId) => {
-    // console.log();
-
-    navigate(`/tadmin/userprofile/${userId}`); // Step 3: Navigate to UserProfile with userId
+  const handleUserClick = async (userId) => {
+    try {
+      await dispatch(fetchUserById(userId)).unwrap(); // Fetch user data
+      navigate(`/tadmin/userprofile/${userId}`); // Navigate to UserProfile with userId
+    } catch (error) {
+      toast.error(`Failed to fetch user: ${error}`, { position: "top-center" });
+    }
   };
 
   const handleDelete = async (userId) => {
@@ -95,9 +100,10 @@ const StatusSidebar = ({ isOpen, onClose }) => {
 
   // Filter and sort profile completion details
   const filteredAndSortedDetails = profileCompletionDetails
-    .filter((detail) =>
-      detail.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    detail.email.toLowerCase().includes(searchTerm.toLowerCase()) 
+    .filter(
+      (detail) =>
+        detail.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        detail.email.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .filter(
       (detail) => (selectedBranch ? detail.branch === selectedBranch : true) // Filter by selected branch
@@ -123,9 +129,17 @@ const StatusSidebar = ({ isOpen, onClose }) => {
     setIsDropdownOpen(false); // Close dropdown after selection
   };
 
-  const handlePdfClick = () => {
-    setPdfUsers(filteredAndSortedDetails); // Set users for PDF
-    setIsPdfModalOpen(true); // Open PDF modal
+  const handleExport = () => {
+    const formattedData = filteredAndSortedDetails.map((detail) => ({
+      Name: detail.name,
+      Email: detail.email,
+      Branch: detail.branch,
+      ProfileCompletion: `${detail.profileCompletion}%`,
+      Message: "update your profile above 90%",
+    }));
+
+    setPdfUsers(formattedData);
+    setIsPdfModalOpen(true); // Open the PDF modal
   };
 
   return (
@@ -150,10 +164,10 @@ const StatusSidebar = ({ isOpen, onClose }) => {
               <FaSortAmountDown className="text-[rgba(22,22,59)]" />
             </button>
             <button
-            onClick={handlePdfClick}
+              onClick={handleExport}
               className="p-2 bg-transparent rounded hover:bg-[#ffffffbf] focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <FaFilePdf  className="text-[rgba(22,22,59)]" />
+              <FaFilePdf className="text-[rgba(22,22,59)]" />
             </button>
             {isDropdownOpen && (
               <div className="absolute right-3 justify-items-center items-center font-medium w-[130px] border-b-[1px] border-[rgba(33,86,105,0.758)] bg-[#ffffffc9] backdrop-blur-[6px] border rounded-[10px] rounded-se-none shadow-lg z-50">
@@ -258,7 +272,14 @@ const StatusSidebar = ({ isOpen, onClose }) => {
       </div>
       {/* Render PDF Modal */}
       {isPdfModalOpen && (
-        <TablePDF users={pdfUsers} onClose={() => setIsPdfModalOpen(false)} />
+        <DynamicTablePDF
+          data={pdfUsers}
+          logo="https://cdn.universitykart.com//Content/upload/admin/regycmyd.21e.jpeg"
+          headers={["Name", "Email", "Branch", "ProfileCompletion", "Message", "Note"]}
+          title="Profile Completion Status"
+          subtitle="List of users with profile completion status."
+          onClose={() => setIsPdfModalOpen(false)}
+        />
       )}
     </div>
   );
