@@ -246,10 +246,16 @@ const PostsPage = () => {
               >
                 ×
               </button> */}
-              
-              <button className="close-btn z-50" onClick={() => {setShowPopup(false) 
-                        setStep(1)
-                      }}>×</button>
+
+              <button
+                className="close-btn z-50"
+                onClick={() => {
+                  setShowPopup(false);
+                  setStep(1);
+                }}
+              >
+                ×
+              </button>
 
               <div className="popup-header">
                 {/* <button className="close-btn" onClick={() => setShowPopup(false)}>×</button> */}
@@ -258,7 +264,9 @@ const PostsPage = () => {
 
               {/* Filtration form here */}
               <div className="filter-group">
-                <label><span className="text-red-500">* </span>Branches:</label>
+                <label>
+                  <span className="text-red-500">* </span>Branches:
+                </label>
                 {["CSE", "IT", "Aero", "Bio", "Mech", "EE", "ECE"].map(
                   (branch) => (
                     <button
@@ -277,7 +285,9 @@ const PostsPage = () => {
               </div>
 
               <div className="filter-group">
-                <label><span className="text-red-500">* </span>Gender:</label>
+                <label>
+                  <span className="text-red-500">* </span>Gender:
+                </label>
                 {["Male", "Female"].map((gender) => (
                   <button
                     key={gender}
@@ -423,27 +433,39 @@ const PostsPage = () => {
               {showEligibleStudents && (
                 <div className="eligible-students-list">
                   <h3 className="font-bold text-[17px]">Eligible Students :</h3>
-                  <ul className=" p-[10px]">
-                    {eligibleStudents.map((student) => (
-                      <li
-                        key={student._id}
-                        className="px-4 py-2 mb-3 bg-[#ffffff3e] backdrop:blur-[5px] border-[1px] rounded-[12px] border-[rgba(60,118,138,0.37)] shadow-lg"
-                      >
-                        <div>
-                          <strong>Name:</strong> {student.profile.firstName}{" "}
-                          {student.profile.lastName}
-                        </div>
-                        <div className="flex items-center gap-8">
-                          <div>
-                            <strong>Branch:</strong> {student.profile.branch}
-                          </div>
-                          <div>
-                            <strong>Session:</strong> {student.profile.session}
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
+                  <table className="min-w-full bg-white border border-gray-300">
+                    <thead>
+                      <tr className="bg-gray-200">
+                        <th className="px-4 py-2 border">Profile Picture</th>
+                        <th className="px-4 py-2 border">Name</th>
+                        <th className="px-4 py-2 border">Branch</th>
+                        <th className="px-4 py-2 border">Session</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {eligibleStudents.map((student) => (
+                        <tr key={student._id} className="border-b">
+                          <td className="px-4 py-2 border">
+                            <img
+                              src={student.profile.profilePic} // Assuming profilePic is the URL to the image
+                              alt={`${student.profile.firstName} ${student.profile.lastName}`}
+                              className="w-12 h-12 rounded-full"
+                            />
+                          </td>
+                          <td className="px-4 py-2 border">
+                            {student.profile.firstName}{" "}
+                            {student.profile.lastName}
+                          </td>
+                          <td className="px-4 py-2 border">
+                            {student.profile.branch}
+                          </td>
+                          <td className="px-4 py-2 border">
+                            {student.profile.session}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
 

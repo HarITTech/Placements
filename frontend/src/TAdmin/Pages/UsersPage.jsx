@@ -32,6 +32,10 @@ function Users() {
     semester: "",
     tenthPercent: "",
     twelfthPercent: "",
+    subCollege: "", // Add subCollege
+    courses: "", // Add degree
+    studentType: '',
+    year: "", // Add year
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for
@@ -65,7 +69,7 @@ function Users() {
       toast.success("Student created successfully!");
       setIsOpen(false);
     } catch (error) {
-     toast.error(`${error}`, { position: "top-center" });
+      toast.error(`${error}`, { position: "top-center" });
     } finally {
       setIsCreatingStudent(false); // Reset loading state
     }
@@ -134,6 +138,20 @@ function Users() {
         return false;
       if (filterCriteria.year && user.profile?.year !== filterCriteria.year)
         return false;
+      if (filterCriteria.studentType && user.profile?.studentType !== filterCriteria.studentType)
+        return false;
+      if (
+        filterCriteria.courses &&
+        user.profile?.courses !== filterCriteria.courses
+      )
+        return false; // Assuming degree is part of user profile
+      if (
+        filterCriteria.subCollege &&
+        user.profile?.subcollege !== filterCriteria.subCollege
+      )
+        return false; // Assuming subcollege is part of user profile
+      if (filterCriteria.year && user.profile?.year !== filterCriteria.year)
+        return false;
       if (
         filterCriteria.cgpa &&
         user.profile?.academicRecords?.cgpa?.[0]?.semesters?.[0]?.cgpa <
@@ -189,11 +207,18 @@ function Users() {
 
   const handleExport = () => {
     const formattedData = filteredUsers.map((user) => ({
-      Name: `${user.profile?.firstName || ""} ${user.profile?.lastName || "N/A"}`,
-      CollegeID: user.profile?.collegeID || "N/A",
-      Branch: user.profile?.branch || "N/A",
-      YearSem: `${user.profile?.year || "N/A"}/${user.profile?.semester || "N/A"}`,
-      CGPA: user.profile?.academicRecords?.cgpa?.[0]?.semesters?.[0]?.cgpa || "N/A",
+      Name: `${user.profile?.firstName || ""} ${
+        user.profile?.lastName || "N/A"
+      }`,
+      CollegeID: user.profile?.collegeID || "N/A" ,
+      Branch: `${user.profile?.branch || "N/A"}/${
+        user.profile?.courses || "N/A"
+      }`,
+      YearSem: `${user.profile?.year || "N/A"}/${
+        user.profile?.semester || "N/A"
+      }`,
+      CGPA:
+        user.profile?.academicRecords?.cgpa?.[0]?.semesters?.[0]?.cgpa || "N/A",
       Phone: user.profile?.phoneNum || "N/A",
     }));
 
@@ -273,6 +298,9 @@ function Users() {
                 <tr>
                   <th className="text-left p-4 text-sm font-bold">Name</th>
                   <th className="text-left p-4 text-sm font-bold">
+                    Sub College
+                  </th>
+                  <th className="text-left p-4 text-sm font-bold">
                     College ID
                   </th>
                   <th className="text-left p-4 text-sm font-bold">Branch</th>
@@ -290,15 +318,26 @@ function Users() {
                       index % 2 === 0 ? "bg-[#cdd9e165]" : ""
                     } hover:bg-[#ffffff82] hover:backdrop-blur-sm hover:text-blue-500 hover:shadow-lg cursor-pointer`}
                   >
-                    <td className="flex items-center gap-2 p-3 border border-[#cdd9e1bc]">
-                      <img
-                        src={user.profile?.profilePic}
-                        alt="img"
-                        className="w-10 h-10 mr-3 object-cover text-center font-semibold text-sm transition-all border-gray-300 hover:bg-opacity-20 hover:backdrop-blur-sm hover:bg-white text-red-400 rounded-3xl shadow-sm"
-                      />
-                      {`${user.profile?.firstName || ""} ${
-                        user.profile?.lastName || "New User"
-                      }`}
+                    <td className="flex items-center gap-3 p-3 border border-[#cdd9e1bc]">
+                      <div className="flex flex-col items-center">
+                        <img
+                          src={user.profile?.profilePic}
+                          alt="Profile Image"
+                          className="w-10 h-10 object-cover rounded-full shadow-sm"
+                        />
+                        <span className="text-xs mt-1 bg-sky-400 px-1 border-[1px] rounded-sm border-gray-500 font-normal text-white text-center">
+                          {user.profile?.courses}
+                        </span>
+                      </div>
+                      <span className="text-sm font-medium">
+                        {`${user.profile?.firstName || ""} ${
+                          user.profile?.lastName || "New User"
+                        }`}
+                      </span>
+                    </td>
+
+                    <td className="p-3 border border-[#cdd9e1bc]">
+                      {user.profile?.subcollege || "N/A"}
                     </td>
                     <td className="p-3 border border-[#cdd9e1bc]">
                       {user.profile?.collegeID || "N/A"}
@@ -331,14 +370,14 @@ function Users() {
         filteredUsers={filteredUsers}
       />
 
-       {/* PDF Preview Modal */}
-       {isPDFPreviewOpen && (
+      {/* PDF Preview Modal */}
+      {isPDFPreviewOpen && (
         <DynamicTablePDF
           data={pdfData}
-          logo= "https://cdn.universitykart.com//Content/upload/admin/regycmyd.21e.jpeg"
+          logo="https://cdn.universitykart.com//Content/upload/admin/regycmyd.21e.jpeg"
           headers={["Name", "CollegeID", "Branch", "YearSem", "CGPA", "Phone"]}
           title="All Students Data"
-          subtitle="List of all students in the college."
+          subtitle="List of  students in the college."
           onClose={() => setIsPDFPreviewOpen(false)}
         />
       )}
